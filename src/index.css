@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-bg: #111315;
+  --color-panel: #171A1D;
+  --color-panel-alt: #1E2227;
+  --color-border-ui: #2B3138;
+  --color-text-primary: #F3F4F6;
+  --color-text-soft: #C7CDD4;
+  --color-text-mute: #8B949E;
+}
+
+@layer base {
+  body {
+    @apply font-mono;
+  }
+}
+
+@layer utilities {
+  /* ADVANCED PRINT ENGINE SUPPORT */
+  :root {
+    --forge-accent: #c84b31;
+    --print-text: #111111;
+    --print-muted: #555555;
+    --print-border: #d9d9d9;
+    --print-bg: #ffffff;
+  }
+
+  @media print {
+    .no-print,
+    .export-controls,
+    nav,
+    header,
+    footer,
+    aside,
+    .app-toolbar,
+    .sidebar,
+    .topbar,
+    .preview-controls {
+      display: none !important;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff !important;
+      color: var(--print-text) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    body * {
+      visibility: hidden;
+    }
+
+    #print-capture-root,
+    #print-capture-root * {
+      visibility: visible;
+    }
+
+    #print-capture-root {
+      display: block !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Screen filtering by export mode */
+    body[data-export-mode="true"][data-export-section="unit"] .print-section-a5,
+    body[data-export-mode="true"][data-export-section="unit"] .print-section-pack-header {
+      display: none !important;
+    }
+
+    body[data-export-mode="true"][data-export-section="operator"] .print-section-a4 {
+      display: none !important;
+    }
+
+    .page {
+      break-after: page;
+      page-break-after: always;
+      box-sizing: border-box;
+      background: #ffffff !important;
+      margin: 0 auto;
+      visibility: visible;
+      overflow: hidden;
+    }
+
+    .segment {
+      break-inside: avoid;
+    }
+
+    .page.a4 {
+      width: 210mm;
+      height: 297mm;
+      padding: 12mm;
+    }
+
+    .page.a5 {
+      width: 148mm;
+      height: 210mm;
+      padding: 10mm;
+    }
+
+    .break-after-page {
+      page-break-after: always !important;
+      break-after: page !important;
+    }
+
+    .texture-lock {
+      color: var(--forge-accent) !important;
+      font-weight: 700;
+    }
+  }
+}
