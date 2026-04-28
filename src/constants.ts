@@ -1,4 +1,6 @@
 import { Engine } from "./types";
+import { iceCreamDoctrine } from "./forge/engines/iceCreamDoctrine";
+import { iceCreamRecipes } from "./forge/engines/iceCreamRecipes";
 
 export const ENGINES: Record<string, Engine> = {
   dashboard: {
@@ -16,17 +18,17 @@ export const ENGINES: Record<string, Engine> = {
           {
             title: "1. FOUNDER RULE — YIELD WIDTH",
             content: [
-              "• Max 6 ACTIVE production items per service.",
-              "• PRODUCTION LIMIT, not menu limit.",
-              "• Master Bible remains fully accessible archive."
+              "• Live production window is capped at 6 active production items per service.",
+              "• This is a production limitation, not a menu/archive limitation.",
+              "• Master Bible archive remains unlimited and accessible."
             ]
           },
           {
             title: "2. 20 UNIT LAW — PRODUCTION DEPTH",
             content: [
-              "• Batch prep locked at 20 portions.",
+              "• Batch prep is strictly locked at 20 portions.",
               "• No estimation. Repeatable batch cycles only.",
-              "• 20 / 40 / 60 cover scaling."
+              "• 20 / 40 / 60 cover scaling for full governance."
             ]
           },
           {
@@ -51,88 +53,6 @@ export const ENGINES: Record<string, Engine> = {
             quote: "Control the number. Control the volume. Control the outcome."
           }
         ]
-      },
-      {
-        name: "FORGE EVALUATION CARD — DESSERTS",
-        subtitle: "Weekly Feedback Loop / Jemma Ingest",
-        sections: [
-          {
-            title: "KPI: SPEED & CONTROL",
-            content: [
-              "TARGET: <60s assembly per unit. (Current Stability: 🟢 HIGH)",
-              "BATCH STATUS: 20 Unit Law compliance at 100%. (Current Status: 🟢 LOCKED)",
-              "MEP RATING: 6x6 Grade (De Zühr Layer Execution)."
-            ],
-            quote: "Speed is the visible byproduct of control."
-          },
-          {
-            title: "DESSERT PERFORMANCE TRACKER",
-            content: [
-              "Sticky Toffee Pudding: 🟢 SYSTEM READY (Volume Engine)",
-              "Lemon Posset: 🟢 SYSTEM READY (Margin Engine)",
-              "Tiramisu: 🟢 SYSTEM READY (Perception Dish)",
-              "Apple Crumble: 🟢 SYSTEM READY (Control System)",
-              "Chocolate Cake: 🟡 PREMIUM EXCEPTION (Control Test)"
-            ]
-          },
-          {
-            title: "SYSTEM RISKS (JEMMA FLAGS)",
-            content: [
-              "SERVICE LAW: Enforced (Zero Live Cooking).",
-              "TEXTURE LAW: Enforced (Mandatory Crunch Layer).",
-              "SAUCE LAW: Enforced (v2.5.2a Lock)."
-            ]
-          }
-        ]
-      },
-      {
-        name: "FOUNDER RULE — 6 ITEM QTY + 20 SCALE PREP LAW",
-        subtitle: "Global Governance & Production Discipline",
-        sections: [
-          {
-            title: "1. 6 ITEM QTY (FOUNDER RULE)",
-            content: "Each section limited to 6 ACTIVE items in production. The Master Bible is an unlimited library; the 6 QTY rule governs the Live Service window only."
-          },
-          {
-            title: "2. PRODUCTION vs LIBRARY",
-            content: "Bible = Arsenal (Unlimited). 6 QTY = What you bring into battle (Live Service). Forces menu strength without creative restriction."
-          },
-          {
-            title: "3. 20 SCALE PREP LAW",
-            content: "All production built in 20 UNIT BLOCKS ONLY. Measured, repeatable batch cycles tied to cover projections."
-          },
-          {
-            title: "3. SCALE STRUCTURE",
-            content: "1-20 Covers: 1 batch | 21-40 Covers: 2 batches | 41-60 Covers: 3 batches."
-          },
-          {
-            title: "4. FAILURE CONDITION",
-            content: "More than 6 items active = System Dilution. Immediate correction required.",
-            quote: "Control the number. Control the volume. Control the outcome."
-          }
-        ]
-      },
-      {
-        name: "SYSTEM HEALTH MONITOR",
-        subtitle: "Global Stability Layers",
-        sections: [
-          {
-            title: "FLAVOUR ARCHITECTURE",
-            content: [
-              "ACID LAYER: LOCKED (Jemma Protocol active across all stations)",
-              "FAT LAYER: LOCKED (Emulsion Laws synchronized)",
-              "SALT LAYER: UNLOCKED (Station-specific drift risk identified)"
-            ]
-          },
-          {
-            title: "DOUGH ENGINE",
-            content: [
-              "HYDRATION: 65% Fixed.",
-              "FERMENTATION: 48h Cold-Lock.",
-              "YIELD: 260g Precision balls."
-            ]
-          }
-        ]
       }
     ]
   },
@@ -144,43 +64,116 @@ export const ENGINES: Record<string, Engine> = {
     tag: "FOUNDATION",
     items: [
       {
+        id: "PIZZA-001",
+        name: "Pizza Dough 65% / 44h",
+        batchYield: "5.2kg / 20 balls @ 260g",
+        portion: "260g per dough ball",
+        portionTool: "Digital scale",
+        hydration: "65%",
+        ferment: "48h total (3–4h RT + 44h cold)",
+        ingredients: "Flour (00): 3.10 kg · Water: 2.01 kg (65%) · Salt: 77 g (2.5%) · Yeast (fresh): 3 g",
+        method: "1. MIX: Water in first (20°C) → Add yeast → Add flour → Add salt last. 2. TEMP: Achieve 23°C FDT. 3. BALLING: Scale 260g balls. 4. FERMENT: 48h cold ferment lock.",
+        allergens: ["gluten"],
+        shelfLife: "72h max",
+        station: "Prep → Pizza",
+        serviceReady: "Room temp temper 2–4h (Target 18°C internally)",
+        failureSigns: ["Overproof (sticky)", "Underproof (tight)"],
+        correction: ["Underproof → extend RT bench time"],
+        pass: "Elastic · abundant air pockets · matte finish",
+        larousse: {
+          principle: "Pizza dough is a living system; fermentation creates the digestibility and the structure.",
+          method: [
+            "HYDRATION LAW: 65% fixed. No deviation without head chef audit.",
+            "TEMPERATURE LAW: Target 23°C FDT to regulate yeast activity.",
+            "FERMENTATION LOCK: 44h cold ferment minimum for enzymatic breakdown."
+          ],
+          quality: ["Smooth surface", "Stable gas retention", "High extensibility"],
+          faults: ["Sticky surface", "Snap-back (underproof)", "Sour smell"],
+          correction: ["Adjust water temp for seasonal drift."]
+        },
+        fellini: {
+          identity: "The foundation of the entire pizza engine.",
+          pressurePoint: "Ambient heat spikes destroying proofing window.",
+          watchPoint: "FDT (23°C) and ball tension.",
+          passSignal: "Elastic stretch to 12 inches without tearing.",
+          failureSignal: "Sticky collapse or stubborn snap-back.",
+          recoveryMove: "Underproof: move to warmer area. Overproof: move to coldest part of fridge."
+        }
+      },
+      {
+        id: "PIZZA-002",
+        name: "Tomato Base (San Marzano)",
+        batchYield: "10L (approx 110 pizzas)",
+        portionTool: "Ladle #2 (90g)",
+        shelfLife: "48h",
+        ingredients: "San Marzano tomatoes · 100g Salt · 50g Fresh Basil",
+        method: "Hand crush · season · chill 2h before use",
+        allergens: ["none"],
+        failureSigns: ["Metallic taste", "Watery separation", "Fermentation bubbles"],
+        correction: ["Drain excess water", "Re-season if flat", "Discard if gassy"],
+        pass: "Vibrant red · fresh aroma · chunks visible · no metallic taste",
+        station: "Prep",
+        larousse: {
+          principle: "Tomato sauce for pizza should remain fresh, bright, and minimally worked.",
+          method: [
+            "Use hand-crush method, not blending.",
+            "Season lightly to preserve tomato character.",
+            "Avoid long cooking; freshness is the point."
+          ],
+          quality: [
+            "Fresh red colour",
+            "Balanced acidity",
+            "No metallic or cooked-down heaviness"
+          ],
+          faults: [
+            "Over-seasoned",
+            "Too wet",
+            "Too reduced"
+          ],
+          correction: [
+            "Adjust salt carefully",
+            "Drain excess liquid if needed",
+            "Do not simmer down aggressively"
+          ]
+        },
+        fellini: {
+          identity: "Bright, raw acidity to cut through fat.",
+          pressurePoint: "Oxidation and metallic taint from storage containers.",
+          watchPoint: "Water separation; the pulp must hold the juice.",
+          passSignal: "Vibrant red color with visible, non-macerated chunks.",
+          failureSignal: "Dull orange hue or a thin, watery consistency.",
+          recoveryMove: "Drain excess water through a sieve or re-season with 5g salt."
+        }
+      },
+      {
+        id: "PIZZA-003",
         name: "Margherita",
         portion: "12 inch / 260g dough",
-        dough: "260g FORGE standard (24–48h)",
-        sauce: "90g tomato base (Ladle #2)",
-        cheese: "90g fior di latte (cubed 1cm)",
-        finish: "3 basil leaves + 5ml extra virgin olive oil",
+        price: "£11.50",
+        cost: "£3.12",
+        gp: "73%",
+        dough: "260g FORGE standard (48h)",
+        sauce: "90g San Marzano Base",
+        cheese: "100g Mozzarella Fiodilatte",
+        finish: "Fresh basil · Extra virgin olive oil",
         cookTemp: "420–450°C",
         cookTime: "90–120 sec",
         cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
         allergens: ["gluten", "dairy"],
-        dependencies: ["FORGE Dough", "Tomato Base"],
-        pass: "Leopard spotting · dry base · no centre flop · basil wilted not burnt",
+        pass: "Leopard spotting on rim · cheese fully melted but not oily · dough fully aerated",
         station: "Pizza",
-        menuLayers: {
-          core: "Pizza Dough (Fermented)",
-          bulk: "Fior di Latte (Cheese)",
-          wet: "San Marzano Base",
-          acid: "Tomato Acidity",
-          finish: "Fresh Basil + EVOO"
-        },
-        specLayers: {
-          functional: "Fermentation gas expansion + quick thermal flash.",
-          control: "Floor Temp + Hydration % + Sequencing (90s flash).",
-          output: "12 inch round, 2cm aerated rim (cornicione)."
-        },
         larousse: {
-          principle: "Classic tomato-and-cheese pizza requires restraint, balance, and preservation of dough structure.",
+          principle: "The Margherita is the benchmark for the entire engine; it requires perfect balance between water (mozzarella), acid (tomato), and heat (dough).",
           method: [
-            "Stretch by hand only to 12 inches; do not crush rim gas.",
-            "Apply sauce thinly and evenly from centre outward leaving 1 inch rim.",
-            "Distribute cheese lightly to avoid steaming the centre.",
-            "Finish after bake with basil and olive oil to preserve aromatics."
+            "Stretch to 12 inches with uniform rim thickness.",
+            "Ladle 90g sauce in a spiral from centre.",
+            "Dot mozzarella evenly to prevent pooling.",
+            "Flash bake at peak heat."
           ],
           quality: [
-            "Rim should be aerated, light, and 2cm high.",
-            "Base should be cooked through without soggy centre.",
-            "Tomato acidity and dairy sweetness must remain balanced."
+            "Charred 'leopard' spots",
+            "Vibrant red/white/green visual",
+            "Elastic, light crumb"
           ],
           faults: [
             "Over-saucing causes centre collapse.",
@@ -188,306 +181,164 @@ export const ENGINES: Record<string, Engine> = {
             "Poor stretch destroys final structure."
           ],
           correction: [
-            "Reduce sauce by 10–15g if centre is wet.",
-            "Temper dough longer if too tight.",
-            "Reduce cheese load if bake lacks lift."
+            "Reduce sauce by 10g if base is wet",
+            "Increase floor temp to 420°C",
+            "Rotate faster to avoid hot-spot scorching"
           ]
         },
         fellini: {
-          identity: "Benchmark pizza — exposes every flaw instantly.",
-          pressurePoint: "Volume + speed = undercooked centre or pale bake.",
-          watchPoint: "Oven floor heat + sauce spread.",
-          passSignal: "Leopard spotting · dry base · bright red sauce",
-          failureSignal: "Wet centre · pale crust",
-          recoveryMove: "Reduce sauce 10g · increase floor heat · extend 10–15 sec"
+          identity: "The system's fundamental calibration dish.",
+          pressurePoint: "Dough hydration vs floor heat.",
+          watchPoint: "The rim (cornicione) expansion.",
+          passSignal: "Aerated rim · spotted base",
+          failureSignal: "Dense dough · flat rim",
+          recoveryMove: "Increase floor heat recovery time"
         }
       },
       {
+        id: "PIZZA-004",
         name: "Diavola",
         portion: "12 inch / 260g dough",
+        price: "£14.50",
+        cost: "£3.85",
+        gp: "73%",
         dough: "260g",
         sauce: "90g",
         cheese: "90g",
-        topping: "40g Pepperoni (1.5mm slice) + 2g dried chilli",
+        topping: "60g Spicy Ventricina Salami + 10g fresh chilli (rounds)",
         cookTemp: "420–450°C",
         cookTime: "90–120 sec",
         cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
         allergens: ["gluten", "dairy"],
-        pass: "Crisp pepperoni edges · orange oil emulsion · no pooling · heat forward",
+        pass: "Salami crisp at edges · visible chilli · glowing red oil release",
         station: "Pizza",
         larousse: {
-          principle: "The Diavola is a study in heat management and fat balance.",
+          principle: "The fat in the salami will render and emulsify with the tomato acid; ensure salami is sliced thin enough to crisp but not burn.",
           method: [
-            "Ensure pepperoni is sliced thin enough to crisp but thick enough to hold fat.",
-            "Distribute chilli evenly to avoid 'hot spots'.",
-            "Monitor bake closely; high-fat toppings accelerate browning."
+            "Layer salami last to catch direct radiant heat.",
+            "Evenly distribute chilli rounds for consistent heat.",
+            "Bake until fat release is active and bubbling."
           ],
           quality: [
-            "Crispy pepperoni edges",
-            "Balanced heat profile",
-            "No pooling of orange fat in the centre"
+            "Crisp meat edges",
+            "Pungent chilli aroma",
+            "Glossy oil sheen"
           ],
           faults: [
-            "Greasy finish from over-cheesing",
-            "Burnt chilli flakes",
-            "Soggy base from fat release"
+            "Burnt salami (bitter)",
+            "Cold chilli centres",
+            "Excessive grease pooling"
           ],
           correction: [
-            "Reduce cheese if pepperoni is very fatty",
-            "Apply chilli under cheese to protect from direct flame",
-            "Increase floor heat for a crisper base"
+            "Increase rotation frequency",
+            "Drain excess oil with paper towel if required post-bake",
+            "Ensure salami is wafer-thin"
           ]
         },
         fellini: {
-          identity: "Fat + spice balance pizza.",
-          pressurePoint: "Pepperoni grease flooding under rush.",
-          watchPoint: "Oil pooling and edge crisp.",
-          passSignal: "Crisp cups · no oil runoff",
-          failureSignal: "Greasy surface",
-          recoveryMove: "Reduce pepperoni load · hotter bake"
+          identity: "High-fat, high-heat spice pizza.",
+          pressurePoint: "Salami fat smoke point.",
+          watchPoint: "The 'curl' of the salami.",
+          passSignal: "Crisp edges · rendered fat",
+          failureSignal: "Pool of liquid fat · burnt salami",
+          recoveryMove: "Reduce cheese 10g to balance salami fat"
         }
       },
       {
+        id: "PIZZA-005",
         name: "Quattro Formaggi",
         portion: "12 inch / 260g dough",
+        price: "£15.50",
+        cost: "£4.10",
+        gp: "74%",
         dough: "260g",
-        sauce: "— (no tomato base)",
-        cheese: "30g Mozz · 20g Gorgonzola · 20g Parmesan · 20g Goat",
+        cheese: "40g Mozzarella · 30g Gorgonzola · 30g Parmesan · 20g Ricotta",
         cookTemp: "420–450°C",
         cookTime: "90–120 sec",
-        cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
+        cook: "420–450°C · 90–120 sec",
+        finish: "Black pepper cracked",
         allergens: ["gluten", "dairy"],
-        pass: "Even golden bubbling · gorgonzola blue veins visible · no grease separation",
+        pass: "Molten cheese landscape · pungent blue notes · golden cheese crust",
         station: "Pizza",
         larousse: {
-          principle: "A white pizza (Bianca) focusing on the interplay of four distinct dairy profiles.",
+          principle: "A white pizza (Bianca) where the four cheeses must melt into a single heterogeneous layer while retaining their individual flavour pockets.",
           method: [
-            "Distribute cheeses from strongest (Gorgonzola) to mildest (Mozzarella).",
-            "Ensure Gorgonzola is in small 1cm dots to prevent overpowering.",
-            "Bake until the rim is dark gold and cheese is fully emulsified."
+            "Apply cheeses in order of melting point: Ricotta → Mozzarella → Gorgonzola → Parmesan.",
+            "Do not add tomato sauce; the fats from the cheese provide the moisture.",
+            "Finish with pepper immediately out of the oven."
           ],
           quality: [
-            "Creamy texture with sharp accents",
-            "No pooled oil",
-            "Distinct flavour from each cheese quadrant"
+            "Rich, creamy texture",
+            "Sharp parmesan bite",
+            "Pungent blue cheese depth"
           ],
           faults: [
-            "Gorgonzola bleeding into entire base",
-            "Oily separation from high-fat cheeses",
-            "Dough undercooked due to lack of sauce moisture"
+            "Split cheese fat (oily)",
+            "Unmelted blue cheese clumps",
+            "Burnt bottom base"
           ],
           correction: [
-            "Reduce Mozzarella if using high-fat Gorgonzola",
-            "Increase oven floor heat to compensate for lack of sauce",
-            "Add a touch of black pepper to cut the richness"
+            "Lower floor heat slightly for white pizzas",
+            "Whisk ricotta slightly to loosen before applying",
+            "Ensure even distribution"
           ]
         },
         fellini: {
-          identity: "Dairy balance, not weight.",
-          pressurePoint: "Fat separation from mixed cheeses.",
-          watchPoint: "Centre stability and melt.",
-          passSignal: "Even bubbling · no oil split",
-          failureSignal: "Grease pooling",
-          recoveryMove: "Reduce mozzarella · increase floor heat"
+          identity: "Bianca (White) cheese-mass system.",
+          pressurePoint: "Fat separation from high cheese volume.",
+          watchPoint: "Bubble size; indicates water boiling off cheese.",
+          passSignal: "Heterogeneous melt · golden blisters",
+          failureSignal: "Grease lake in centre",
+          recoveryMove: "Lower cheese mass by 5% total"
         }
       },
       {
-        name: "Nduja",
+        id: "PIZZA-006",
+        name: "Nduja & Honey",
         portion: "12 inch / 260g dough",
+        price: "£15.00",
+        cost: "£3.90",
+        gp: "74%",
         dough: "260g",
         sauce: "90g",
         cheese: "90g",
         topping: "40g Nduja (dotted) + 5g fresh red chilli (rounds)",
+        finish: "15ml Hot Honey drizzle",
         cookTemp: "420–450°C",
         cookTime: "90–120 sec",
         cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
         allergens: ["gluten", "dairy"],
-        pass: "Nduja rendered · spicy oil sheen · no dough saturation · vibrant red",
+        pass: "Nduja rendered · spicy oil sheen · sweet honey finish · vibrant red",
         station: "Pizza",
         larousse: {
-          principle: "Nduja is a spreadable, spicy pork salumi that must render its fat without soaking the dough.",
+          principle: "The Nduja provides intense heat and fat, which is perfectly balanced by the floral sweetness of the honey applied post-bake.",
           method: [
-            "Apply Nduja in small 5g dots evenly across the surface.",
-            "Do not clump; clumps will remain raw in the centre.",
-            "Bake at high heat to ensure rapid rendering."
+            "Apply Nduja in small 5g dots.",
+            "Bake as standard.",
+            "Drizzle honey in a spiral from centre after exiting oven."
           ],
           quality: [
-            "Spicy, melted pork fat integrated with sauce",
-            "Vibrant red colour",
-            "Clean heat profile"
+            "Spice-sweet balance",
+            "Glossy appearance",
+            "Pungent aromatics"
           ],
           faults: [
-            "Oil pooling in the centre",
-            "Raw Nduja clumps",
-            "Soggy base from fat saturation"
+            "Over-honeying (cloying)",
+            "Burnt Nduja",
+            "Soggy centre"
           ],
           correction: [
-            "Reduce cheese by 10g to compensate for Nduja fat",
-            "Increase bake time by 10s if Nduja isn't fully rendered",
-            "Drain excess oil with a spoon before service if necessary"
+            "Control honey pour with precision nozzle",
+            "Rotate frequently"
           ]
         },
         fellini: {
-          identity: "Heat-led pizza with controlled fat release.",
-          pressurePoint: "Nduja oil bleed under high heat.",
-          watchPoint: "Oil dispersion across surface.",
-          passSignal: "Even heat gloss · no pooling",
-          failureSignal: "Oil flooding",
-          recoveryMove: "Reduce nduja 5–10g"
-        }
-      },
-      {
-        name: "Pollo",
-        portion: "12 inch / 260g dough",
-        dough: "260g",
-        sauce: "90g",
-        cheese: "90g",
-        topping: "80g Roasted chicken (pulled) + 20g sweetcorn",
-        cookTemp: "420–450°C",
-        cookTime: "90–120 sec",
-        cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
-        allergens: ["gluten", "dairy"],
-        pass: "Chicken core 75°C · even distribution · no dry protein",
-        station: "Pizza",
-        larousse: {
-          principle: "Poultry on pizza must be protected from the high heat to prevent drying.",
-          method: [
-            "Place chicken under the cheese layer to retain moisture.",
-            "Ensure chicken is pre-cooked to 72°C before topping.",
-            "Use pulled meat for better surface area and heat penetration."
-          ],
-          quality: [
-            "Moist chicken pieces",
-            "Evenly distributed protein",
-            "No scorched meat"
-          ],
-          faults: [
-            "Dry, stringy chicken",
-            "Cold chicken centres",
-            "Burnt toppings"
-          ],
-          correction: [
-            "Tuck chicken deeper into sauce/cheese",
-            "Reduce chicken portion if bake is too slow",
-            "Ensure chicken is at room temp before topping"
-          ]
-        },
-        fellini: {
-          identity: "Protein pizza requiring balance.",
-          pressurePoint: "Chicken dries or clumps.",
-          watchPoint: "Distribution + moisture.",
-          passSignal: "Even spread · moist bite",
-          failureSignal: "Dry chunks",
-          recoveryMove: "Pre-oil chicken lightly"
-        }
-      },
-      {
-        name: "Vegetariano",
-        portion: "12 inch / 260g dough",
-        dough: "260g",
-        sauce: "90g",
-        topping: "60g Roasted aubergine + 30g Feta + 10g spinach",
-        cookTemp: "420–450°C",
-        cookTime: "90–120 sec",
-        cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
-        allergens: ["gluten", "dairy"],
-        pass: "Aubergine tender · feta charred · no water release · vibrant greens",
-        station: "Pizza",
-        larousse: {
-          principle: "Vegetable-heavy pizzas must manage moisture release to avoid 'souping' the centre.",
-          method: [
-            "Pre-roast aubergine to remove 30% moisture.",
-            "Add spinach in the last 30s of bake or under cheese.",
-            "Crumble Feta in 1cm chunks for targeted salt hits."
-          ],
-          quality: [
-            "Tender vegetables",
-            "Crisp base",
-            "Balanced vegetable sweetness and feta salt"
-          ],
-          faults: [
-            "Water pooling from raw vegetables",
-            "Soggy centre",
-            "Bitter aubergine"
-          ],
-          correction: [
-            "Increase pre-roast time for aubergine",
-            "Squeeze spinach dry before use",
-            "Increase floor heat for a firmer base"
-          ]
-        },
-        fellini: {
-          identity: "Vegetable-led, moisture-sensitive pizza.",
-          pressurePoint: "Water release from veg.",
-          watchPoint: "Centre hydration.",
-          passSignal: "Firm base · no sog",
-          failureSignal: "Wet centre",
-          recoveryMove: "Pre-roast veg"
-        }
-      },
-      {
-        name: "Bufala",
-        portion: "12 inch / 260g dough",
-        dough: "260g",
-        sauce: "90g San Marzano",
-        cheese: "125g Buffalo Mozzarella (torn)",
-        finish: "Cherry tomatoes · Basil · Garlic oil",
-        cookTemp: "420–450°C",
-        cookTime: "90–120 sec",
-        cook: "420–450°C · 90–120 sec · 180° rotation at 60s",
-        allergens: ["gluten", "dairy"],
-        pass: "Cheese just melted · fresh tomato pop · fragrant basil",
-        station: "Pizza",
-        larousse: {
-          principle: "Buffalo mozzarella has high water content and must be applied with strategic timing or handled to prevent a wet base.",
-          method: [
-            "Tear mozzarella into large chunks to slow the melt.",
-            "Add cherry tomatoes at 60s mark to prevent bursting too early.",
-            "Finish with fresh basil and garlic oil post-bake."
-          ],
-          quality: ["Creamy dairy profile", "Vibrant fresh fruit", "Light, airy rim"],
-          faults: ["Wet base", "Rubberized cheese", "Burnt basil"],
-          correction: ["Drain mozzarella before use", "Increase floor heat"]
-        },
-        fellini: {
-          identity: "High-moisture luxury pizza.",
-          pressurePoint: "Mozzarella water release.",
-          watchPoint: "Centre stability.",
-          passSignal: "Molten white islands · dry base",
-          failureSignal: "Water pooling",
-          recoveryMove: "Lower sauce 10g · hotter floor"
-        }
-      },
-      {
-        name: "Pistachio & Mortadella",
-        portion: "12 inch / 260g dough",
-        cheese: "90g Mozzarella",
-        topping: "40g Pistachio pesto · 60g Mortadella (wafer thin)",
-        finish: "Crushed pistachios · Lemon zest",
-        cookTemp: "420–450°C",
-        cookTime: "90–120 sec",
-        cook: "420–450°C · 90–120 sec",
-        allergens: ["gluten", "dairy", "nuts"],
-        pass: "Silk mortadella texture · nutty aroma · bright green finish",
-        station: "Pizza",
-        larousse: {
-          principle: "Mortadella must be applied post-bake to preserve its delicate fat structure and aromatic profile.",
-          method: [
-            "Bake base with mozzarella and pesto base.",
-            "Drape mortadella in 'waves' instantly after bake.",
-            "Scatter pistachios and zest for top-level aromatics."
-          ],
-          quality: ["Silky meat", "Crunchy nut finish", "Zesty counterpoint"],
-          faults: ["Cooked mortadella (rubbery)", "Burnt nuts", "Heavy pesto"],
-          correction: ["Apply meat post-bake ONLY"]
-        },
-        fellini: {
-          identity: "Gourmet textural assembly.",
-          pressurePoint: "Plating speed post-bake.",
-          watchPoint: "Meat draping.",
-          passSignal: "Voluminous meat · bright green pesto",
-          failureSignal: "Flat plating · burnt nuts",
-          recoveryMove: "Lighten pesto layer"
+          identity: "Sweet/Heat balance pizza.",
+          pressurePoint: "Honey viscosity and application timing.",
+          watchPoint: "Balance of oil vs honey.",
+          passSignal: "Red oil gloss · honey sheen",
+          failureSignal: "Sticky mess · burnt meat",
+          recoveryMove: "Apply honey sparingly"
         }
       }
     ],
@@ -535,606 +386,191 @@ export const ENGINES: Record<string, Engine> = {
     tag: "CORE",
     items: [
       {
+        id: "BURGER-001",
         name: "Galyons Fire Burger",
-        portion: "230g patty",
-        category: "Volume Engine",
+        portion: "230g Patty",
         price: "£15.50",
         cost: "£3.85",
         gp: "75%",
-        patty: "230g beef (20% fat) · hand-pressed",
-        bun: "Brioche (toasted 20s until golden)",
-        build: [
-          "Bottom bun",
-          "20g fire sauce",
-          "Patty",
-          "20g cheddar",
-          "3 pickles",
-          "Top bun"
-        ],
-        cookTemp: "Grill",
-        cookTime: "5 min per side",
-        cook: "Grill 5 min per side · Core 72°C",
-        rest: "3 min on warm rack",
+        ingredients: "Beef Patty (20% Fat) · Brioche · Cheddar · Pickles · Fire Sauce",
+        method: "1. Sear patty (High heat) - Maillard lock. 2. Cloche with cheese (60s). 3. Toast bun (Moisture barrier). 4. Layer: Bun Base -> Fire Sauce -> Pickles -> Patty/Cheese -> Fire Sauce -> Bun Top.",
         allergens: ["gluten", "dairy", "mustard"],
-        dependencies: ["Fire Sauce"],
-        pass: "Bun holds 30s without collapse · no mayo bleed · juice runs clear",
+        pass: "Bun holds 30s without collapse · cheese fully melted · vibrant sauce line",
         station: "Grill",
-        failurePoints: [
-          "Undercook centre → reject",
-          "Charred exterior / raw core → reject",
-          "Missing pickles → NO SEND"
-        ],
-        chefNote: "Protein mass increase requires thermal patience. 230g is a structural protein adjustment.",
-        menuLayers: {
-          core: "Hand-pressed Beef Patty (230g)",
-          bulk: "Toasted Brioche + Triple Cooked Chips",
-          wet: "Galyons Fire Sauce",
-          acid: "Pickles (3 per stack)",
-          finish: "Melted Cheddar"
-        },
-        specLayers: {
-          functional: "Vertical fat-acid emulsion stack.",
-          control: "Toast Law (Moisture barrier) + No-Press Law (Juice retention).",
-          output: "10cm height, stable stack."
-        },
         larousse: {
-          principle: "A burger is a vertical emulsion of fats and acids; stability is as important as flavour. Increased mass requires a cloche to ensure core hits 72°C.",
+          principle: "The vertical emulsion of fat/acid. Moisture barrier is key.",
           method: [
-            "Do not press the patty during cooking; preserves internal juices.",
-            "Toast the bun to create a moisture barrier against the sauce.",
-            "Apply cheese in the last 60s of cooking to ensure full melt.",
-            "Use a cloche for the final 2 mins of cooking."
+            "Toast bun vigorously to create a moisture barrier.",
+            "Seal patty on high heat for Maillard crust.",
+            "Cloche for 60s with cheese to ensure even melt."
           ],
-          quality: [
-            "Juicy but not greasy patty",
-            "Intact bun structure",
-            "Balanced heat from the Fire sauce"
-          ],
-          faults: [
-            "Soggy bottom bun",
-            "Overcooked, dry meat",
-            "Cheese not fully melted",
-            "Undercooked core (recalibrate timing)"
-          ],
-          correction: [
-            "Increase bun toast time",
-            "Reduce heat if exterior burns before core hits 72°C",
-            "Use a cloche to accelerate cheese melt"
-          ]
+          quality: ["Juicy interior", "Crisp crust", "Acid balance"],
+          faults: ["Soggy bottom", "Raw core", "Burnt bun"],
+          correction: ["Extend resting time to 2 mins for juice redistribution."]
         },
         fellini: {
-          identity: "Juice-led stack with structure (v2.5.2a).",
-          pressurePoint: "Thermal penetration of 230g mass.",
-          watchPoint: "Bun integrity + sauce viscosity + core temp.",
-          passSignal: "Stable stack · juicy core · 72°C target.",
-          failureSignal: "Sliding layers · sauce bleed · cold centre.",
-          recoveryMove: "Reduce sauce · toast bun more · cloche finish."
-        },
-        executionCard: {
-          setup: ["Patty tempered (230g)", "Bun sliced", "Fire sauce ready", "Cheddar ready"],
-          build: [
-            "1. Season patty",
-            "2. Grill 5 min / side",
-            "3. Add cheese + cloche (last 1 min)",
-            "4. Toast bun (20s)",
-            "5. Assemble: Base → Sauce → Patty → Pickles → Top",
-            "6. Send"
-          ],
-          timeLaw: "≤8 min cook + 3 min rest",
-          failures: ["Internal < 72°C", "Split bun", "No pickles"],
-          reset: ["Replace patty", "New bun", "Rebuild"]
+          identity: "High-volume, heat-forward burger.",
+          pressurePoint: "Bun collapse from sauce weight.",
+          watchPoint: "The 'Toast Law'.",
+          passSignal: "Stable stack · glistening meat",
+          failureSignal: "Soggy collapse",
+          recoveryMove: "Re-toast fresh bun if collapse occurs"
         }
       },
       {
-        name: "Classic Burger",
-        portion: "230g patty",
-        category: "Volume Engine",
-        price: "£14.50",
-        cost: "£3.60",
-        gp: "75%",
-        patty: "230g beef (20% fat)",
-        cheese: "20g Mature Cheddar",
-        build: [
-          "Bottom bun",
-          "Mayo",
-          "Lettuce",
-          "Tomato",
-          "Patty",
-          "Cheddar",
-          "Pickles",
-          "Top bun"
-        ],
-        cookTemp: "Grill",
-        cookTime: "5 min per side",
-        cook: "Grill 5 min per side · Core 72°C",
-        rest: "3 min",
-        allergens: ["gluten", "dairy", "egg"],
-        pass: "Clean stack · 10cm height · no sliding components",
-        station: "Grill",
-        failurePoints: [
-          "Soggy bun → reject",
-          "Wilted lettuce → reject",
-          "Internal < 72°C → NO SEND"
-        ],
-        chefNote: "The 230g upgrade moves this from a snack to a structural meal. Thermal profile is critical.",
-        menuLayers: {
-          core: "230g Beef Patty",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "House Mayo",
-          acid: "Pickles + Tomato + Lettuce",
-          finish: "Melted Mature Cheddar"
-        },
-        specLayers: {
-          functional: "Temperature contrast stack (hot protein / cold veg).",
-          control: "Garnish Integrity Law: Dry veg before assembly.",
-          output: "Clean vertical layers."
-        },
-        larousse: {
-          principle: "The classic burger relies on the contrast between hot protein and cold, crisp garnish. 230g mass requires rest to avoid blood leak.",
-          method: [
-            "Use only the crispest heart of the lettuce.",
-            "Slice tomatoes to exactly 5mm for consistent moisture.",
-            "Season patty with 2g salt/pepper mix just before grilling.",
-            "Mandatory 3 min rest on warm rack."
-          ],
-          quality: [
-            "Temperature contrast (hot meat/cold veg)",
-            "Structural integrity",
-            "Clean beef flavour"
-          ],
-          faults: [
-            "Wilting lettuce from meat heat",
-            "Watery tomato soaking the bun",
-            "Unseasoned meat",
-            "Protein leak from insufficient rest"
-          ],
-          correction: [
-            "Drain tomatoes on paper towel before assembly",
-            "Ensure lettuce is kept in ice water until needed",
-            "Check seasoning levels in prep"
-          ]
-        },
-        fellini: {
-          identity: "Temperature contrast stack (v2.5.2a).",
-          pressurePoint: "Garnish water release vs protein heat.",
-          watchPoint: "Tomato moisture + lettuce integrity + cook depth.",
-          passSignal: "Clean stack · balanced bite · hot core.",
-          failureSignal: "Wet bun · slipping layers · raw centre.",
-          recoveryMove: "Drain tomato · dry lettuce · increase bun toast."
-        },
-        executionCard: {
-          setup: ["Patty tempered", "Veg dry & chilled", "Bun prepped"],
-          build: [
-            "1. Grill patty (5m/side)",
-            "2. Toast bun (20s)",
-            "3. Rest patty (3 min)",
-            "4. Build: Base → Mayo → Cold Veg → Patty → Cheese → Pickles → Top",
-            "5. Final check for verticality",
-            "6. Send"
-          ],
-          timeLaw: "≤10 min assembly window",
-          failures: ["Wilting veg", "Wet bun", "Cold centre"],
-          reset: ["Replace patty", "Fresh bun", "Dry veg"]
-        }
-      },
-      {
-        name: "Chipotle Chicken",
-        portion: "160g breast",
-        category: "Volume Engine",
-        price: "£13.50",
-        cost: "£2.95",
-        gp: "78%",
-        protein: "160g Chicken breast · butterflied to 1.5cm thickness",
-        sauce: "30g Chipotle mayo (batch #4)",
-        build: "Bottom bun → Sauce → Lettuce → Tomato → Chicken → Jalapeños → Top bun",
-        cookTemp: "Grill",
-        cookTime: "3 min per side",
-        cook: {
-          method: "Grill",
-          time: "3 min per side",
-          coreTemp: "74°C",
-          note: "Butterflied for even cook"
-        },
-        rest: "1 min",
-        allergens: ["gluten", "dairy", "egg"],
-        pass: "No fibre tearing · audible crisp on char · moist core · no albumin flooding",
-        station: "Grill",
-        menuLayers: {
-          core: "Butterflied 160g Chicken Breast",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "Chipotle Mayo",
-          acid: "Pickled Jalapeños",
-          finish: "Fresh Tomato + Lettuce"
-        },
-        specLayers: {
-          functional: "High-protein lean stack with smoke.",
-          control: "Butterfly Law (Uniform 1.5cm) + Core Temp (74°C).",
-          output: "Charred, moist chicken build."
-        },
-        larousse: {
-          principle: "Chicken breast must be cooked to the exact point of safety (74°C) to avoid the rapid transition to dryness.",
-          method: [
-            "Butterfly evenly to ensure uniform heat penetration.",
-            "Marinate for 4h in chipotle oil to tenderise fibres.",
-            "Press lightly with a weight for the first 60s to ensure char."
-          ],
-          quality: [
-            "Charred exterior with juicy interior",
-            "Smoky chipotle profile",
-            "Uniform thickness"
-          ],
-          faults: [
-            "Dry, stringy texture",
-            "Rubbery exterior",
-            "Undercooked centre near the 'hinge'"
-          ],
-          correction: [
-            "Reduce heat and increase time if exterior is too dark",
-            "Ensure butterfly cut is deep enough",
-            "Rest longer if core is below 74°C"
-          ]
-        },
-        fellini: {
-          identity: "Moisture-controlled chicken build.",
-          pressurePoint: "Dry breast.",
-          watchPoint: "Thickness + cook time.",
-          passSignal: "Moist cut face.",
-          failureSignal: "Stringy texture.",
-          recoveryMove: "Butterfly chicken."
-        }
-      },
-      {
-        name: "BBQ Pulled Pork",
-        portion: "150g pork",
-        category: "Volume Engine",
-        price: "£14.00",
-        cost: "£3.15",
-        gp: "77%",
-        protein: "150g Pulled pork (batch #12) · reheated in 30ml BBQ sauce",
-        sauce: "20g BBQ sauce (extra)",
-        build: "Bottom bun → 40g Slaw → Pork → Crispy onions → Top bun",
-        cookTemp: "Hot hold reheat",
-        cookTime: "Until 75°C",
-        cook: {
-          method: "Hot hold reheat",
-          targetTemp: "75°C",
-          note: "Do not dry out fibres"
-        },
-        allergens: ["gluten"],
-        pass: "Hot core · balanced texture (crunch vs soft) · no sauce dripping",
-        station: "Hot Holding / Assembly",
-        menuLayers: {
-          core: "Slow-roasted Pulled Pork",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "BBQ Glaze",
-          acid: "House Slaw Acidity",
-          finish: "Crispy Onions"
-        },
-        specLayers: {
-          functional: "Gelatinous moisture + starch crunch.",
-          control: "Hot Hold Reheat Law (75°C) + Drain Slaw Law.",
-          output: "Juicy, stable build."
-        },
-        larousse: {
-          principle: "Pulled pork relies on the gelatinous breakdown of collagen; reheating must not dry out the strands.",
-          method: [
-            "Reheat with a splash of apple juice or water to maintain moisture.",
-            "Do not boil the sauce; simmer gently to avoid sugar burning.",
-            "Drain excess liquid before mounting on the bun."
-          ],
-          quality: [
-            "Tender, easily shredded pork",
-            "Tangy, glossy sauce",
-            "Crunchy slaw contrast"
-          ],
-          faults: [
-            "Dry, 'woody' pork strands",
-            "Overly sweet/cloying sauce",
-            "Soggy bun from excess liquid"
-          ],
-          correction: [
-            "Add more sauce/liquid to dry pork",
-            "Balance sweetness with a dash of cider vinegar",
-            "Toast bun harder"
-          ]
-        },
-        fellini: {
-          identity: "Heat + texture balance.",
-          pressurePoint: "Dry reheat.",
-          watchPoint: "Sauce integration.",
-          passSignal: "Juicy pull · hot core.",
-          failureSignal: "Dry strands · soggy bun.",
-          recoveryMove: "Add BBQ glaze during reheat."
-        }
-      },
-      {
-        name: "New York (Pastrami)",
-        portion: "230g patty + 60g pastrami",
-        category: "Margin Engine",
-        price: "£17.50",
-        cost: "£4.80",
-        gp: "73%",
-        patty: "230g Beef patty + 60g Sliced pastrami",
-        sauce: "15g American mustard · 15g Mayo",
-        build: [
-          "Bottom bun",
-          "Mayo",
-          "Patty",
-          "Pastrami",
-          "Swiss cheese",
-          "Pickles",
-          "Mustard",
-          "Top bun"
-        ],
-        cookTemp: "Grill",
-        cookTime: "5 min per side",
-        cook: "Grill patty 5 min per side · Steam pastrami 60s",
-        rest: "3 min",
-        allergens: ["gluten", "dairy", "mustard", "egg"],
-        pass: "Layered flavour · cheese fully draped over pastrami · hot meat",
-        station: "Grill",
-        failurePoints: [
-          "Pastrami too dry → NO SEND",
-          "Beef core < 72°C → reject",
-          "Swiss not melted → cloche fix"
-        ],
-        chefNote: "Double protein salt-load must be controlled via precise steam-cloche application.",
-        menuLayers: {
-          core: "230g Beef Patty + 60g Pastrami",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "House Mayo",
-          acid: "American Mustard + Pickles",
-          finish: "Swiss Cheese Melt"
-        },
-        specLayers: {
-          functional: "Double protein salt-acid balance.",
-          control: "Steam Cloche Law (60s) + Layered Heat Sync.",
-          output: "Molten Swiss over Pastrami."
-        },
-        larousse: {
-          principle: "A deli-style burger where the saltiness of the pastrami must be balanced by the fat of the beef (now 230g) and the acidity of the mustard.",
-          method: [
-            "Steam pastrami on the grill under a cloche with a splash of water for 60s.",
-            "Place Swiss cheese over the pastrami to trap steam and heat.",
-            "Use a dry-toasted bun to support the significantly increased protein weight."
-          ],
-          quality: [
-            "Rich, salty, and tangy profile",
-            "Tender, steamed pastrami",
-            "Molten Swiss cheese"
-          ],
-          faults: [
-            "Dry, curled pastrami",
-            "Overly salty overall profile",
-            "Cold pastrami centre",
-            "Soggy base from protein juice"
-          ],
-          correction: [
-            "Ensure cloche is used for steaming",
-            "Reduce salt seasoning on the beef patty",
-            "Increase steam time if cold"
-          ]
-        },
-        fellini: {
-          identity: "Layered salt + acid build (230g standardized).",
-          pressurePoint: "Over-salted stack vs steam timing.",
-          watchPoint: "Pastrami ratio + heat sync + base integrity.",
-          passSignal: "Balanced bite · cheese drape.",
-          failureSignal: "Salt overload · dry pastrami.",
-          recoveryMove: "Reduce pastrami weight next batch · increase steam."
-        },
-        executionCard: {
-          setup: ["Beef Patty (230g)", "Pastrami (60g)", "Swiss slicesready", "Mustard/Mayo"],
-          build: [
-            "1. Grill beef (5m/side)",
-            "2. Steam pastrami + cheese (cloche 60s)",
-            "3. Build base → Mayo → Beef → Pastrami/Cheese → Pickles → Mustard → Top",
-            "4. Send"
-          ],
-          timeLaw: "≤12 min total flow",
-          failures: ["Cold pastrami", "Unmelted cheese"],
-          reset: ["Fresh pastrami", "New patty"]
-        }
-      },
-      {
-        name: "Bangkok Veg",
-        portion: "160g patty",
-        category: "Margin Engine",
-        price: "£13.50",
-        cost: "£2.55",
-        gp: "81%",
-        patty: "160g Chickpea & Spinach patty",
-        sauce: "20g Sweet soy glaze · 20g Sriracha mayo",
-        build: "Bottom bun → Mayo → Asian slaw → Patty → Glaze → Coriander → Top bun",
-        cookTemp: "Grill",
-        cookTime: "4 min per side",
-        cook: {
-          method: "Grill",
-          time: "4 min per side",
-          coreTemp: "75°C",
-          note: "Handle gently"
-        },
-        allergens: ["gluten", "soy", "egg"],
-        pass: "Not dry · visible herbs · slaw remains crunchy · vibrant aromatics",
-        station: "Hot / Assembly",
-        menuLayers: {
-          core: "Chickpea & Spinach Patty",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "Sriracha Mayo + Sweet Soy Glaze",
-          acid: "Asian Slaw (Soy-Ginger)",
-          finish: "Fresh Coriander"
-        },
-        specLayers: {
-          functional: "Sauce-led moisture preservation.",
-          control: "High Heat Sear Law + Drain Slaw Law.",
-          output: "Zingy, fragrant veg build."
-        },
-        larousse: {
-          principle: "Vegetarian patties lack animal fat; moisture must be introduced via the sauce and slaw layers.",
-          method: [
-            "Handle patty gently; lacks the protein bind of beef.",
-            "Sear at high heat to create a crust before the interior softens.",
-            "Dress slaw just before assembly to maintain crunch."
-          ],
-          quality: [
-            "Crisp exterior, soft but set interior",
-            "Fresh, zingy flavour profile",
-            "Aromatic herb presence"
-          ],
-          faults: [
-            "Patty crumbling on the grill",
-            "Dry, bland interior",
-            "Soggy slaw"
-          ],
-          correction: [
-            "Use a flat-top grill if the char-grill is too aggressive",
-            "Increase sauce portion if patty is dry",
-            "Ensure patty is fully chilled before cooking"
-          ]
-        },
-        fellini: {
-          identity: "Sauce-led veg stack.",
-          pressurePoint: "Soggy structure.",
-          watchPoint: "Slaw moisture + patty fragility.",
-          passSignal: "Clean bite.",
-          failureSignal: "Collapse.",
-          recoveryMove: "Drain slaw."
-        }
-      },
-      {
-        name: "Blue & Bacon",
-        portion: "230g patty",
-        category: "Margin Engine",
+        id: "BURGER-002",
+        name: "Forge Double",
+        portion: "2x 115g Patties",
         price: "£16.50",
         cost: "£3.95",
         gp: "76%",
-        patty: "230g Beef (20% fat)",
-        topping: "30g Gorgonzola · 2 slices Smoked Streaky Bacon",
-        build: "Bottom bun → Mayo → Patty → Blue cheese → Bacon → Caramelized Onions → Top bun",
-        cookTemp: "Grill",
-        cookTime: "5 min per side",
-        cook: "Grill patty 5 min per side · Core 72°C",
-        rest: "3 min",
-        allergens: ["gluten", "dairy", "egg"],
-        pass: "Pungent blue aroma · crisp bacon · deep caramelization",
+        ingredients: "2x Beef Smash Patties · American Cheese · Secret Sauce · Fried Onions · Potato Bun",
+        method: "1. Smash 10kg pressure. 2. Scrape crust. 3. Double cheese layers.",
+        allergens: ["gluten", "dairy"],
+        pass: "Lacy patty edges · molten cheese layers · soft bun hug",
         station: "Grill",
-        failurePoints: [
-          "Bacon soft → reject",
-          "Pork blood on bun → rest fail",
-          "Raw beef centre → reject"
-        ],
-        chefNote: "Significant funky-fat ratio with the 230g increase. Onions must be deeply reduced to cut the protein mass.",
-        menuLayers: {
-          core: "230g Beef Patty",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "House Mayo",
-          acid: "Caramelized Onions",
-          finish: "Gorgonzola Melt + Crisp Bacon"
-        },
-        specLayers: {
-          functional: "Rich funk-smoke-sweet vertical balance.",
-          control: "Blue Cheese Melt Law (60s) + Bacon Crisp Law.",
-          output: "Lava cheese over crisp shards."
-        },
         larousse: {
-          principle: "Strong blue cheese requires a sweet counterpoint (onions) to avoid a one-dimensional salt profile. Increased mass requires a 3 min rest.",
+          principle: "Maillard maximization. Plancha v Plancha recovery.",
           method: [
-            "Add blue cheese in the last 60s of cook (under cloche).",
-            "Ensure bacon is glass-crisp for textural contrast.",
-            "Use a high-fat 230g patty to stand up to the cheese strength."
+            "Smash with 10kg pressure on first contact.",
+            "Scrape with sharp tool to preserve crust.",
+            "Double cheese instantly on flip."
           ],
-          quality: ["Rich funk", "Smoky crunch", "Sweet onion finish"],
-          faults: ["Salt overload", "Soggy bacon", "Cold cheese centre", "Massive protein leak"],
-          correction: ["Reduce seasoning on patty", "Toast bun harder", "Extend rest time"]
+          quality: ["Lacy edges", "Deep brown crust", "Maximum cheese melt"],
+          faults: ["Grey meat (low heat)", "Dry core", "Poor smash (thick)"],
+          correction: ["Increase plancha temp to 260°C."]
         },
         fellini: {
-          identity: "Strong profile power burger (v2.5.2a).",
-          pressurePoint: "Blue cheese melt vs mass penetration.",
-          watchPoint: "Bacon rendering + core temp.",
-          passSignal: "Lava cheese · crisp shards · 72°C hot core",
-          failureSignal: "Greasy overflow · raw centre",
-          recoveryMove: "Control melt with cloche · check core temp"
-        },
-        executionCard: {
-          setup: ["230g Beef Patty", "Blue Cheese weighted", "Bacon pre-crisped", "Jam prepped"],
-          build: [
-            "1. Grill beef (5m/side)",
-            "2. Melt blue cheese (cloche 60s)",
-            "3. Build: Base → Mayo → Beef → Blue/Bacon → Onions → Top",
-            "4. Send"
-          ],
-          timeLaw: "≤10 min assembly",
-          failures: ["Soft bacon", "Split stack"],
-          reset: ["New bun", "New patty"]
+          identity: "Maillard-maximized smash burger.",
+          pressurePoint: "Plancha temp recovery between batches.",
+          watchPoint: "Patty 'lace'.",
+          passSignal: "Irregular crisp edges",
+          failureSignal: "Boiled grey meat",
+          recoveryMove: "Lower batch count per plancha load"
         }
       },
       {
-        name: "Forge Double",
-        portion: "2x 150g patties",
-        category: "Perception Dish",
-        price: "£18.50",
-        cost: "£5.12",
-        gp: "72%",
-        patty: "2x 150g Beef patties",
-        butter: "15g Bone Marrow Butter",
-        cheese: "2x Double American Slices",
-        build: "Bun → Sauce → Patty 1 → Cheese → Patty 2 → Cheese → Bone Marrow Butter → Bun",
-        cookTemp: "Grill",
-        cook: "Grill 3.5 min per side · Stack and melt",
-        rest: "2 min (Mandatory for marrow melt)",
+        id: "BURGER-003",
+        name: "Blue & Bacon",
+        portion: "230g Patty",
+        price: "£17.50",
+        cost: "£4.25",
+        gp: "76%",
+        ingredients: "Beef · Stilton · Streaky Bacon · Onion Jam · Brioche",
+        method: "1. Grill to medium-rare. 2. Melt Stilton under cloche. 3. Shatter-crisp bacon finish.",
         allergens: ["gluten", "dairy"],
-        pass: "Maximum umami · structural height · molten stack",
+        pass: "Pungent blue cheese scent · crisp bacon · deep dark onion jam",
         station: "Grill",
-        failurePoints: [
-          "Marrow butter raw → NO SEND",
-          "Stack slide → pin required",
-          "Dry patties → reduce cook time"
-        ],
-        chefNote: "300g total beef mass. This is the volume benchmark. Marrow butter must emulsify into the crust.",
-        menuLayers: {
-          core: "Double 150g Beef Patty (300g Total)",
-          bulk: "Brioche Bun + Triple Cooked Chips",
-          wet: "House Sauce Matrix",
-          acid: "None (Intense umami strategy)",
-          finish: "Bone Marrow Butter + Double Cheese"
-        },
-        specLayers: {
-          functional: "Maximum umami vertical stack.",
-          control: "Marrow Melt Law (Resting phase) + Double Melt Law.",
-          output: "Glossy drip, stable core."
-        },
         larousse: {
-          principle: "The double stack relies on the thinness of the patties (150g) and the speed of the melt to maintain moisture.",
+          principle: "Salinity balance (Stilton vs Jam).",
           method: [
-            "Use thinner 150g patties for faster service.",
-            "Apply marrow butter during the rest phase to emulsify.",
-            "Stack immediately to trap heat and accelerate cheese melt."
+            "Cook bacon until brittle for texture contrast.",
+            "Apply Stilton away from direct flame (cloche only).",
+            "Onion jam must be room temp to prevent cooling the meat."
           ],
-          quality: ["Intense beefiness", "Gooey core", "Rich gloss"],
-          faults: ["Stack collapse", "Undercooked core", "Dry patties"],
-          correction: ["Pin with skewer if served high"]
+          quality: ["Rich/Salty profile", "Deep sweetness", "Crunch"],
+          faults: ["Bitter burnt blue cheese", "Flabby bacon", "Jam bleed"],
+          correction: ["Ensure onion jam is reduced to a glaze consistency."]
         },
         fellini: {
-          identity: "Max-volume beef stack (300g benchmark).",
-          pressurePoint: "Speed vs core temp vs marrow melt.",
-          watchPoint: "Marrow butter integration.",
-          passSignal: "Glossy drip · stable core",
-          failureSignal: "Dry protein · sliding stack",
-          recoveryMove: "Steam stack under cloche 20s"
-        },
-        executionCard: {
-          setup: ["2x 150g patties ready", "Marrow butter tempered", "Cheese slices prepped"],
-          build: [
-            "1. Grill both patties (3.5m/side)",
-            "2. Add cheese to both (last 1m)",
-            "3. Stack patties",
-            "4. Top with bone marrow butter",
-            "5. Rest 2 min",
-            "6. Send"
+          identity: "Umami-heavy premium burger.",
+          pressurePoint: "Blue cheese salt levels.",
+          watchPoint: "Bacon rigidity.",
+          passSignal: "Shatter-crisp bacon · molten blue patches",
+          failureSignal: "Greasy bacon · un-melted cheese",
+          recoveryMove: "Double-cloche cheese for speed"
+        }
+      },
+      {
+        id: "BURGER-004",
+        name: "Truffle Umami",
+        portion: "230g Patty",
+        price: "£18.50",
+        cost: "£4.50",
+        gp: "76%",
+        ingredients: "Beef · Bone Marrow Butter · Truffle Mayo · Crispy Shallots · Rocket",
+        method: "1. Finish steak with Bone Marrow Butter. 2. Layer truffle mayo base. 3. High-pile crispy shallots.",
+        allergens: ["gluten", "dairy"],
+        pass: "Peak umami aroma · golden shallot crown · glossy marrow finish",
+        station: "Grill",
+        larousse: {
+          principle: "The Lipid Bridge. Fat-on-fat enrichment.",
+          method: [
+            "Apply 10g bone marrow butter immediately post-grill.",
+            "Garnish with room-temp shallots to preserve crunch.",
+            "Truffle mayo applied cold to toasted bun base."
           ],
-          timeLaw: "≤7 min active grill",
-          failures: ["Raw marrow", "Split stack"],
-          reset: ["New patties", "Re-toast bun"]
+          quality: ["Rich mouthfeel", "Earthy aroma", "Crunchy shallots"],
+          faults: ["Soggy shallots", "Marrow butter split", "Bland profile"],
+          correction: ["Fresh shallots for every stack", "Cold mayo lock"]
+        },
+        fellini: {
+          identity: "Peak umami luxury burger.",
+          pressurePoint: "Shallot texture vs meat heat.",
+          watchPoint: "Marrow melt timing.",
+          passSignal: "Golden crown + glossy meat",
+          failureSignal: "Shallot wilt"
+        }
+      },
+      {
+        id: "BURGER-005",
+        name: "Nashville Hot Chicken",
+        portion: "200g Breast",
+        price: "£16.00",
+        cost: "£3.50",
+        gp: "78%",
+        ingredients: "Fried Chicken · Nashville Glaze · Slaw · Jalapeños · Sweet Bun",
+        method: "1. Double-fry chicken (CO2 Batter). 2. Drench in Nashville Oil. 3. Cool slaw base for heat contrast.",
+        allergens: ["gluten", "dairy", "eggs"],
+        pass: "Audible crunch vs Liquid fire · bright red glaze · cold slaw contrast",
+        station: "Fry / Assembly",
+        larousse: {
+          principle: "The Heat Lag. Capsaicin vs Fat binder.",
+          method: [
+            "Nashville oil must be at 60°C for optimal chicken drench.",
+            "Slaw must be ice-cold to act as a thermal buffer.",
+            "Double-dip for maximum capsaicin load if medium heat requested."
+          ],
+          quality: ["Snap crunch", "Deep red hue", "Thermal contrast"],
+          faults: ["Pale coating", "Limp slaw", "Oily drench"],
+          correction: ["Recover oil temp", "Drain chicken properly"]
+        },
+        fellini: {
+          identity: "Audible crunch vs Liquid fire.",
+          pressurePoint: "Glaze saturation of crumb.",
+          watchPoint: "Slaw temperature.",
+          passSignal: "Glistening red + white contrast",
+          failureSignal: "Soggy red mess"
+        }
+      },
+      {
+        id: "BURGER-006",
+        name: "The Galyons Vegan (Specialist)",
+        portion: "200g Plant Patty",
+        price: "£15.00",
+        cost: "£4.00",
+        gp: "73%",
+        ingredients: "Beyond/House Mix · Vegan Cheese · Vegan Mayo · Kimchi · Sesame Bun",
+        method: "1. Pan-sear (separate surface). 2. Melt vegan mozzarella. 3. Kimchi acid spike.",
+        allergens: ["gluten", "sesame"],
+        pass: "Perfect plant-melt · fermentation spike · clean sesame toast",
+        station: "Grill / Cold",
+        larousse: {
+          principle: "High-protein plant matrix stabilization. Umami substitute check.",
+          method: [
+            "Use separate dedicated surface for plant patties.",
+            "Kimchi must be drained (DRAIN LAW) to prevent bun rot.",
+            "Vegan cheese requires moisture (steam flash) to melt optimally."
+          ],
+          quality: ["Seared exterior", "Acid bite", "Clean melt"],
+          faults: ["Rubber texture", "Cold cheese", "Soggy base"],
+          correction: ["Increase pan heat for plant protein sear"]
+        },
+        fellini: {
+          identity: "The clean plant profile with deep fermented secondary notes.",
+          pressurePoint: "Cross-contamination + melt time.",
+          watchPoint: "Kimchi drainage.",
+          passSignal: "Upright stack + pink plant interior"
         }
       }
     ],
@@ -1181,8 +617,12 @@ export const ENGINES: Record<string, Engine> = {
     tag: "CORE",
     items: [
       {
+        id: "MAIN-001",
         name: "Aged Ribeye",
         portion: "300g (dry-aged 28 days)",
+        price: "£28.50",
+        cost: "£8.50",
+        gp: "70%",
         weight: "300g (dry-aged 28 days)",
         cookTemp: "Grill",
         cookTime: "4 min per side",
@@ -1191,18 +631,6 @@ export const ENGINES: Record<string, Engine> = {
         allergens: ["none"],
         pass: "Deep Maillard crust · uniform internal colour · relaxed muscle fibres · no blood pooling",
         station: "Grill",
-        menuLayers: {
-          core: "35 Day Aged Ribeye",
-          bulk: "Triple Cooked Chips",
-          wet: "Choice: Peppercorn / Blue Cheese / Bone Marrow Jus",
-          acid: "Dressed Rocket + Parmesan Salad",
-          finish: "Resting Juices + Bone Marrow Butter"
-        },
-        specLayers: {
-          functional: "Maillard reaction + fat rendering + pressure equalisation (rest).",
-          control: "Aged Beef Law: High heat char + 5m precise rest.",
-          output: "300g served Med-Rare (52°C core)."
-        },
         larousse: {
           principle: "Aged beef requires high-intensity heat followed by a significant rest period to equalise internal pressure.",
           method: [
@@ -1210,21 +638,9 @@ export const ENGINES: Record<string, Engine> = {
             "Season aggressively with coarse salt just before hitting the grill.",
             "Rest for a minimum of 5 minutes in a warm area."
           ],
-          quality: [
-            "Deep Maillard crust",
-            "Uniform internal colour",
-            "Relaxed muscle fibres"
-          ],
-          faults: [
-            "Grey band (overcooked outer layer)",
-            "Cold centre",
-            "Blood pooling on plate (insufficient rest)"
-          ],
-          correction: [
-            "Increase grill temperature for better crust",
-            "Flip more frequently for even heat penetration",
-            "Double resting time if steak is thick"
-          ]
+          quality: ["Deep Maillard crust", "Uniform internal colour", "Relaxed muscle fibres"],
+          faults: ["Grey band", "Cold centre", "Blood pooling"],
+          correction: ["Increase grill temperature for better crust", "Rest longer if steak is thick"]
         },
         fellini: {
           identity: "Fire-driven protein with precision rest.",
@@ -1236,8 +652,12 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "MAIN-002",
         name: "Chicken Parmigiana",
         portion: "200g breast",
+        price: "£17.50",
+        cost: "£3.95",
+        gp: "77%",
         protein: "200g Chicken breast · hammered to 1cm uniform thickness",
         build: "Breaded chicken → 60g Tomato base (centre only) → 60g Mozzarella",
         cookTemp: "Oven / Broiler",
@@ -1246,40 +666,16 @@ export const ENGINES: Record<string, Engine> = {
         allergens: ["gluten", "dairy", "eggs"],
         pass: "Melted top · hot centre · crisp breading perimeter · no sauce bleed",
         station: "Hot",
-        menuLayers: {
-          core: "Breaded Chicken Breast",
-          bulk: "Triple Cooked Chips or Salad",
-          wet: "Tomato Sauce + Molten Mozzarella",
-          acid: "House Dressed Salad",
-          finish: "Parmesan + Fresh Basil"
-        },
-        specLayers: {
-          functional: "Crisp-melt textural contrast.",
-          control: "Hammer Law (Uniform 1cm) + Flash Bake (90s).",
-          output: "Golden perimeter, molten centre."
-        },
         larousse: {
           principle: "The Parmigiana is a balance of textures: crisp breading, bright sauce, and elastic cheese.",
           method: [
             "Ensure chicken is hammered to even thickness.",
             "Apply sauce only to the centre to keep edges crisp.",
-            "Flash under broiler until cheese is bubbling and spotted brown."
+            "Flash under broiler until cheese is bubbling."
           ],
-          quality: [
-            "Crisp breading on the perimeter",
-            "Molten cheese",
-            "Hot, juicy chicken"
-          ],
-          faults: [
-            "Soggy breading from over-saucing",
-            "Tough, overcooked chicken",
-            "Cold tomato sauce under cheese"
-          ],
-          correction: [
-            "Reduce sauce volume",
-            "Use higher broiler heat for faster melt",
-            "Ensure chicken is hot before adding toppings"
-          ]
+          quality: ["Crisp breading", "Molten cheese", "Hot juicy chicken"],
+          faults: ["Soggy breading", "Tough chicken", "Cold tomato sauce"],
+          correction: ["Reduce sauce volume", "Use higher broiler heat"]
         },
         fellini: {
           identity: "Crisp + melt contrast dish.",
@@ -1291,50 +687,30 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "MAIN-003",
         name: "Pan-Seared Sea Bass",
         portion: "140g fillet",
+        price: "£22.50",
+        cost: "£5.85",
+        gp: "74%",
         protein: "140g Sea bass fillet · skin-on · scaled",
         cookTemp: "Pan",
         cookTime: "4 min total",
         method: "Pan sear in 10ml oil · Skin-side 3 min · Flesh finish 1 min",
-        finish: "10g Bone marrow butter (batch #3) finish",
+        finish: "10g Bone marrow butter finish",
         allergens: ["fish", "dairy"],
         pass: "Skin fully rendered · audible crisp · no albumin flooding · moist translucent flesh",
         station: "Hot",
-        menuLayers: {
-          core: "Sea Bass Fillet",
-          bulk: "Crushed New Potatoes",
-          wet: "Fish Bisque Sauce",
-          acid: "Wilted Greens / Lemon",
-          finish: "Herb Oil"
-        },
-        specLayers: {
-          functional: "Skin rendering (collagen snap) + flesh steaming.",
-          control: "Spatula Pressure Law (30s) + Skin-side Dominance (75% cook).",
-          output: "Piping hot skin, translucent core."
-        },
         larousse: {
-          principle: "Fish skin must be rendered of its fat to achieve crispness, while the flesh remains delicate and just-opaque.",
+          principle: "Fish skin must be rendered of its fat to achieve crispness, while the flesh remains delicate.",
           method: [
-            "Dry the skin thoroughly with paper towel before searing.",
-            "Apply constant pressure with a spatula for the first 30s to prevent curling.",
-            "Finish with butter and aromatics to baste the flesh side."
+            "Dry the skin thoroughly before searing.",
+            "Apply constant pressure with a spatula for 30s.",
+            "Finish with butter and aromatics to baste flesh."
           ],
-          quality: [
-            "Glass-like skin texture",
-            "Flaky, moist flesh",
-            "No white albumin protein leakage"
-          ],
-          faults: [
-            "Rubbery skin",
-            "Overcooked, dry flesh",
-            "Fish sticking to the pan"
-          ],
-          correction: [
-            "Increase pan heat for better skin render",
-            "Reduce flesh-side time",
-            "Ensure pan is properly seasoned/non-stick"
-          ]
+          quality: ["Glass-like skin", "Flaky moist flesh", "No albumin leakage"],
+          faults: ["Rubbery skin", "Dry flesh", "Fish sticking"],
+          correction: ["Increase pan heat", "Reduce flesh-side time"]
         },
         fellini: {
           identity: "Skin-crisp precision fish.",
@@ -1346,59 +722,30 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "MAIN-004",
         name: "Ale Battered Fish & Chips",
         portion: "180g fillet",
+        price: "£16.50",
+        cost: "£3.65",
+        gp: "78%",
         protein: "180g Haddock fillet · skinless",
-        batter: "100ml Ale batter (batch #15) · chilled to 4°C",
+        batter: "100ml Ale batter · chilled to 4°C",
         cookTemp: "Fryer",
         cookTime: "5-7 min",
         fry: "180°C · 5–7 min until deep gold",
         allergens: ["gluten", "fish"],
         pass: "Fully adhered batter · Crisp, dry shell · Moist, flaky fish · Even golden colour",
         station: "Fry",
-        menuLayers: {
-          core: "Ale Battered Fish (Haddock)",
-          bulk: "Triple Cooked Chips",
-          wet: "Mushy Peas",
-          acid: "House Tartar Sauce + Lemon Wedge",
-          finish: "Maldon Sea Salt"
-        },
-        specLayers: {
-          functional: "Pressure-steamed protein + aerated starch shell.",
-          control: "Fish System v1 + Ale Batter v1 (Temp/Moisture/Timing).",
-          output: "180g fish / 250g chips / 50ml peas / 30ml tartar."
-        },
         larousse: {
-          principle: "ROOT LAYER: Moisture management + protein control → clean cook + stable batter adhesion. CONTROL LAW: Water must be removed before batter. Batter must hit oil immediately.",
+          principle: "Moisture management is key; fish must be bone-dry before battering to prevent steam separation.",
           method: [
-            "PORTION LAW: Fillets trimmed to even thickness (2–3 cm max). No mixed thickness in batch.",
-            "MOISTURE LAW: Fish must be fully dried (blue roll/cloth) before flouring. No visible surface moisture.",
-            "FLOUR LAW: Light dusting of flour before batter. Full coverage, shake excess for adhesion layer.",
-            "SEQUENCE LAW: Trim → Dry thoroughly → Light flour dust → Dip in batter → Immediate transfer to fryer.",
-            "TIME LAW: Max time in batter before fry: <10 seconds. No staging battered fish.",
-            "OIL LAW: Fry at 180°C. Oil must be at temp before entry with recovery between batches.",
-            "ENTRY LAW: Lower fish away from body into oil cleanly. Ensure full submersion immediately.",
-            "BATCH CONTROL LAW: Max 2–3 fillets per fryer. Never crowd fryer.",
-            "HANDLING LAW: Do not move fish for first 60–90 seconds. Allow batter to set. Turn once only.",
-            "COOK LAW: Total fry time 5–7 min. Opaque flesh, flakes easily.",
-            "FINAL SERVICE LAW: Lift → drain → plate immediately. No holding."
+            "Portion fillets to even thickness.",
+            "MOISTURE LAW: Dry thoroughly with blue roll.",
+            "Dip in batter and transfer to fryer within 10s."
           ],
-          quality: [
-            "Light, bubbly batter texture",
-            "Moist, steamed fish",
-            "Even golden colour"
-          ],
-          faults: [
-            "AUTO REJECT: Batter detached",
-            "AUTO REJECT: Greasy coating",
-            "AUTO REJECT: Pale + soft shell",
-            "AUTO REJECT: Raw centre / overcooked exterior"
-          ],
-          correction: [
-            "Check oil temperature (must be 180°C)",
-            "Ensure batter is cold and fish is dry",
-            "Increase fry time"
-          ]
+          quality: ["Light bubbly batter", "Moist steamed fish", "Even gold color"],
+          faults: ["Batter detached", "Greasy shell", "Pale color"],
+          correction: ["Check oil temperature (180°C)", "Ensure batter is cold"]
         },
         fellini: {
           identity: "Fry benchmark dish focusing on moisture management.",
@@ -1406,12 +753,16 @@ export const ENGINES: Record<string, Engine> = {
           watchPoint: "Surface dryness before flouring.",
           passSignal: "Crisp batter · dry finish · adhered shell",
           failureSignal: "Greasy batter · detached shell",
-          recoveryMove: "Fry smaller batches · reset oil temp. [VERDICT: PATCHED — SERVICE SAFE]"
+          recoveryMove: "Fry smaller batches · reset oil temp"
         }
       },
       {
+        id: "MAIN-005",
         name: "Beef Lasagne",
         portion: "400g pre-batch portion",
+        price: "£15.50",
+        cost: "£3.45",
+        gp: "78%",
         cookTemp: "Oven",
         cookTime: "15 min",
         method: "Oven finish 180°C · 15 min · Core 75°C",
@@ -1419,180 +770,60 @@ export const ENGINES: Record<string, Engine> = {
         allergens: ["gluten", "dairy", "eggs"],
         pass: "Hot centre · holds shape on plate · bubbling edges · golden top",
         station: "Hot",
-        menuLayers: {
-          core: "Hand-layered Lasagne",
-          bulk: "Garlic Bread (Side)",
-          wet: "Internal Ragù + Béchamel Matrix",
-          acid: "Dressed House Salad",
-          finish: "Grated Parmesan"
-        },
-        specLayers: {
-          functional: "Dairy-protein emulsification via heat.",
-          control: "Rest-to-Set Law (5 min) + Coverage Law (No dry pasta).",
-          output: "Structured slice, bubbling perimeter."
-        },
         larousse: {
           principle: "A layered pasta dish where the ragu and béchamel must emulsify during the final bake.",
           method: [
-            "Allow lasagne to rest for 5 min after oven before serving to set layers.",
-            "Ensure the top layer of pasta is fully covered by sauce/cheese to prevent drying.",
-            "Check core temp with a probe to ensure even reheating."
+            "Allow lasagne to rest for 5 min after oven to set layers.",
+            "Ensure full sauce coverage to avoid dry pasta edges.",
+            "Check core temp with probe."
           ],
-          quality: [
-            "Distinct, visible layers",
-            "Rich, meaty ragu",
-            "Creamy, stable béchamel"
-          ],
-          faults: [
-            "Cold centre",
-            "Layers sliding apart",
-            "Dry, burnt pasta edges"
-          ],
-          correction: [
-            "Increase oven time",
-            "Ensure portion is cut cleanly when cold",
-            "Cover with foil if top browns too fast"
-          ]
+          quality: ["Visible layers", "Rich ragu", "Stable béchamel"],
+          faults: ["Cold centre", "Runny ragu", "Dry pasta edges"],
+          correction: ["Increase bake time", "Ensure 5 min rest"]
         },
         fellini: {
-          identity: "Layered structure dish.",
-          pressurePoint: "Collapse under rushed plating.",
-          watchPoint: "Set time after heat.",
-          passSignal: "Holds shape · hot core",
-          failureSignal: "Runny collapse",
-          recoveryMove: "Rest 2–3 min before serve"
+          identity: "Structured pasta build.",
+          pressurePoint: "Layer collapse from over-wet ragu.",
+          watchPoint: "Ragu reduction in prep.",
+          passSignal: "Clean vertical slice",
+          failureSignal: " Ragù puddle",
+          recoveryMove: "Flash bake to reduce moisture"
         }
       },
-      {
-        name: "Pie of the Week",
-        portion: "350g individual pie",
-        cookTemp: "Oven",
-        cookTime: "20 min",
-        method: "Oven 180°C · 20 min · Core 75°C",
-        finish: "Brush with egg wash before bake",
-        allergens: ["gluten", "dairy", "eggs"],
-        pass: "Hot + structured · golden pastry · no leakage",
-        station: "Hot",
-        menuLayers: {
-          core: "Select Filling (Meat/Veg)",
-          bulk: "Creamy Mash or Triple Cooked Chips",
-          wet: "Galyons Gravy (Finish)",
-          acid: "Buttered Seasonal Greens",
-          finish: "Glossy Pastry finish"
-        },
-        specLayers: {
-          functional: "Shortcrust/Puff steam containment.",
-          control: "Venting Law + Core Temp (75°C).",
-          output: "Structured pie, golden cap."
-        },
-        larousse: {
-          principle: "The pastry must be fully cooked and crisp to support the weight of the internal filling.",
-          method: [
-            "Vent the pie top to allow steam to escape.",
-            "Bake on a pre-heated tray for a crisper base.",
-            "Rest for 3 min before serving."
-          ],
-          quality: [
-            "Flaky, golden pastry",
-            "Rich, thick filling",
-            "Aromatic steam"
-          ],
-          faults: [
-            "Soggy bottom pastry",
-            "Filling leaking out",
-            "Cold centre"
-          ],
-          correction: [
-            "Increase bottom heat",
-            "Ensure filling is cold before topping with pastry",
-            "Check oven calibration"
-          ]
-        },
-        fellini: {
-          identity: "Batch-controlled comfort dish.",
-          pressurePoint: "Cold centre from reheat inconsistency.",
-          watchPoint: "Core temperature.",
-          passSignal: "Hot centre · structured slice",
-          failureSignal: "Cold middle",
-          recoveryMove: "Longer oven finish"
-        }
-      },
-      {
-        name: "Vegetable Tart",
-        portion: "250g tart",
-        cookTemp: "Oven",
-        cookTime: "10 min",
-        method: "Oven finish 180°C · 10 min · Core 72°C",
-        finish: "Dressed salad + Herb oil",
-        allergens: ["gluten", "dairy", "eggs"],
-        pass: "Wobbly set custard · crisp pastry shell · vibrant veg",
-        station: "Hot",
-        menuLayers: {
-          core: "Seasonal Vegetable Tart",
-          bulk: "Crushed New Potatoes",
-          wet: "Internal Custard Moisture",
-          acid: "Dressed Rocket Salad",
-          finish: "Fresh Herbs"
-        },
-        specLayers: {
-          functional: "Custard coagulation (72°C) + pastry support.",
-          control: "Egg-Dairy Ratio Law + Shell bake stability.",
-          output: "Golden custard, firm shell."
-        }
-      },
-      {
-        name: "Roast Belly of Pork",
-        portion: "220g braised belly",
-        finish: "Cider apple sauce · Crisp crackling shard",
-        cookTemp: "Oven / Hot Hold",
-        cook: "Slow braised 160°C · Flash 220°C for crackling",
-        allergens: ["none"],
-        pass: "Glistening fat layers · glass crackling · tender muscle · hot core",
-        station: "Hot",
-        larousse: {
-          principle: "Belly pork is a study in fat rendering; the muscle must be tender while the fat achieves a creamy, not oily, texture.",
-          method: [
-            "Score skin at 5mm intervals.",
-            "Bake skin-side up at high heat initially for bubble crackle.",
-            "Rest meat in braising liquid to prevent drying."
-          ],
-          quality: ["Melting fat", "Brittle skin", "Sweet/acidic apple balance"],
-        },
-        fellini: {
-          identity: "Fat-balance centerpiece.",
-          pressurePoint: "Crackling vs meat moisture.",
-          watchPoint: "The snap.",
-          passSignal: "Crunch + render",
-          failureSignal: "Flabby skin · dry fibres"
-        }
-      },
-      {
-        name: "Gnocchi Sorrento",
-        portion: "250g handmade gnocchi",
-        sauce: "Tomato base · 60g Bufala Mozzarella",
-        finish: "Basil oil · Parmesan",
-        cookTemp: "Pan / Broiler",
-        cook: "Boil until float → Pan toss with sauce → Flash under broiler",
-        allergens: ["gluten", "dairy", "eggs"],
-        pass: "Cloud-like texture · molten cheese strings · bubbling sauce",
-        station: "Hot",
-        larousse: {
-          principle: "Gnocchi must be handled with extreme delicacy to prevent gluten development and heaviness.",
-          method: [
-            "Use riced potato at room temp.",
-            "Fold flour in with minimal strokes.",
-            "Flash bake only until cheese is spotted."
-          ],
-          quality: ["Lightness", "Mozzarella elasticity", "Sweet tomato lift"],
-        },
-        fellini: {
-          identity: "Soft texture precision bake.",
-          pressurePoint: "Gnocchi toughness from over-work.",
-          watchPoint: "Float timing.",
-          passSignal: "Light bite · stretchy cheese"
-        }
-      }
     ],
+    operationalLayers: [
+      {
+        name: "GLOBAL CARD — HOT STATION LAW (v2.5.2a)",
+        subtitle: "Thermal & Textural Integrity Protocol",
+        sections: [
+          {
+            title: "1. THE 'REST' LAW",
+            content: [
+              "• MASSIVE PROTEIN: Ribeye (300g) MUST rest 5 mins minimum. No bypass.",
+              "• PRESSURE EQUALISATION: Resting allows muscle fibres to relax and juices to redistribute.",
+              "• SERVING TEMP: Serve on pre-heated plates only."
+            ]
+          },
+          {
+            title: "2. SKIN INTEGRITY (SEA BASS)",
+            content: [
+              "• DRY SKIN: Paper towel dry skin side before hitting pan.",
+              "• PRESSURE: Spatula pressure for first 30s ensures flat skin/full render.",
+              "• NO FLIP-FLOP: 75% cook skin side. Flip once only."
+            ]
+          },
+          {
+            title: "3. BATTER INTEGRITY (FISH & CHIPS)",
+            content: [
+              "• COLD CHAIN: Batter must be <4°C.",
+              "• SURFACE DRYNESS: Flour coat must be dry before batter dip.",
+              "• REJECTION: Any batter separation = AUTO REJECT."
+            ],
+            quote: "Hot plates, cold batter, rested meat. The three pillars of the Hot Line."
+          }
+        ]
+      }
+    ]
   },
   starters: {
     label: "STARTERS ENGINE",
@@ -1602,50 +833,12 @@ export const ENGINES: Record<string, Engine> = {
     tag: "CORE",
     items: [
       {
-        name: "Bone Marrow on Toast",
-        portion: "200g Roasted marrow (2 bones) · 2 slices sourdough",
-        cookTemp: "Oven",
-        cookTime: "10 min",
-        method: "Roast 200°C · 10 min · Char sourdough on grill",
-        finish: "10g Parsley salad · 2g Maldon salt",
-        allergens: ["gluten"],
-        pass: "Rich, bubbling marrow · charred bread · salt crunch · no grey marrow",
-        station: "Hot",
-        larousse: {
-          principle: "Marrow is pure fat; it must be rendered until translucent but not liquid, balanced by sharp acidity and salt.",
-          method: [
-            "Soak bones in ice water for 12h to remove blood before roasting.",
-            "Roast at high heat to achieve a crust on the marrow surface.",
-            "Serve immediately; marrow sets rapidly as it cools."
-          ],
-          quality: [
-            "Translucent, buttery texture",
-            "Clean, beefy aroma",
-            "Crisp sourdough contrast"
-          ],
-          faults: [
-            "Grey, unrendered marrow",
-            "Excessive oil pooling",
-            "Cold bread"
-          ],
-          correction: [
-            "Increase roast time if marrow is opaque",
-            "Drain excess oil before plating",
-            "Re-toast bread if delayed"
-          ]
-        },
-        fellini: {
-          identity: "Pure, beefy indulgence balanced by sharp acid.",
-          pressurePoint: "Marrow rendering vs sourdough char timing.",
-          watchPoint: "The bubble; marrow must be active and bubbling when plated.",
-          passSignal: "Translucent, buttery marrow that spreads like silk.",
-          failureSignal: "Grey, opaque marrow or cold, uncharred sourdough.",
-          recoveryMove: "Flash under the broiler for 20s to force rendering."
-        }
-      },
-      {
+        id: "STARTER-001",
         name: "Calamari Fritti",
         portion: "150g Squid rings & tentacles · 30g Lemon aioli",
+        price: "£9.50",
+        cost: "£1.95",
+        gp: "79%",
         cookTemp: "Fryer",
         cookTime: "2 min",
         method: "Dust in seasoned flour · Fry 180°C · 2 min",
@@ -1660,21 +853,9 @@ export const ENGINES: Record<string, Engine> = {
             "Shake off excess flour to prevent oil contamination.",
             "Salt immediately upon exiting the fryer while oil is still tacky."
           ],
-          quality: [
-            "Tender, non-chewy squid",
-            "Light, crisp coating",
-            "Clean oil flavour"
-          ],
-          faults: [
-            "Rubbery texture (overcooked)",
-            "Soggy coating",
-            "Excessive salt"
-          ],
-          correction: [
-            "Reduce fry time",
-            "Check oil temp (must be 180°C)",
-            "Ensure flour is seasoned correctly"
-          ]
+          quality: ["Tender, non-chewy squid", "Light, crisp coating", "Clean oil flavour"],
+          faults: ["Rubbery texture", "Soggy coating", "Excessive salt"],
+          correction: ["Reduce fry time", "Check oil temp (180°C)", "Ensure flour is seasoned"]
         },
         fellini: {
           identity: "A flash-fried study in tenderness and salt.",
@@ -1686,49 +867,46 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
-        name: "Burrata & Heritage Tomato",
-        portion: "125g Burrata ball · 100g Heritage tomatoes",
-        cookTemp: "Ambient",
-        cookTime: "Assembly only",
-        build: "Sliced tomatoes → Burrata centre → 10ml Basil oil → 2g Sea salt",
-        allergens: ["dairy"],
-        pass: "Creamy centre release on cut · vibrant tomato colours · room temp burrata",
+        id: "STARTER-002",
+        name: "Bruschetta Pomodoro",
+        portion: "2 slices sourdough",
+        price: "£7.50",
+        cost: "£1.45",
+        gp: "81%",
+        cookTemp: "Grill",
+        cookTime: "2 min",
+        method: "Char sourdough → Rub with garlic → Top with tomato mix",
+        finish: "Balsamic glaze · Fresh basil",
+        allergens: ["gluten"],
+        pass: "Crisp bread · vibrant seasoned tomatoes · aromatic garlic",
         station: "Cold",
         larousse: {
-          principle: "The quality of this dish is entirely dependent on the temperature of the cheese and the ripeness of the fruit.",
+          principle: "The contrast between hot, charred bread and cold, seasoned tomatoes is the soul of this dish.",
           method: [
-            "Temper Burrata at room temperature for 30 mins before service.",
-            "Slice tomatoes to various shapes for visual texture.",
-            "Do not refrigerate tomatoes; destroys cellular structure and flavour."
+            "Dice tomatoes to 5mm cubes.",
+            "Marinate with olive oil, sea salt, and basil for 30 mins.",
+            "Char bread until dark grill lines appear."
           ],
-          quality: [
-            "Molten stracciatella centre",
-            "Sweet, ripe tomato profile",
-            "Fragrant basil finish"
-          ],
-          faults: [
-            "Ice-cold cheese centre",
-            "Mealy, underripe tomatoes",
-            "Excessive oil drowning the fruit"
-          ],
-          correction: [
-            "Increase tempering time for cheese",
-            "Use only vine-ripened fruit",
-            "Control oil pour with a precision nozzle"
-          ]
+          quality: ["Crisp base", "Juicy tomatoes", "Garlic punch"],
+          faults: ["Soggy bread", "Unseasoned tomatoes", "Burnt garlic"],
+          correction: ["Toast bread fresh", "Balance acidity", "Rub garlic gently"]
         },
         fellini: {
-          identity: "The temperature-sensitive heart of the cold station.",
-          pressurePoint: "Burrata core temperature vs ambient room temp.",
-          watchPoint: "Tomato ripeness; they must be at peak sugar levels.",
-          passSignal: "A molten stracciatella release when the burrata is pierced.",
-          failureSignal: "Ice-cold cheese center or mealy, underripe tomatoes.",
-          recoveryMove: "Temper the burrata in a warm area of the kitchen for 15 mins."
+          identity: "Simple texture contrast benchmark.",
+          pressurePoint: "Tomato juice soaking bread.",
+          watchPoint: "Plating speed.",
+          passSignal: "Crunch base",
+          failureSignal: "Bread collapse",
+          recoveryMove: "Drain tomato mix before topping"
         }
       },
       {
-        name: "Chicken Wings (Fire)",
+        id: "STARTER-003",
+        name: "Buffalo Wings (Fire)",
         portion: "6 wings (approx 300g) · 40g Fire glaze",
+        price: "£8.50",
+        cost: "£1.85",
+        gp: "78%",
         cookTemp: "Grill",
         cookTime: "8 min",
         method: "Grill 8 min (4 min per side) · Glaze in bowl · Flash 1 min",
@@ -1743,21 +921,9 @@ export const ENGINES: Record<string, Engine> = {
             "Toss in a warm bowl to ensure even coating.",
             "Flash on the hottest part of the grill to caramelise sugars in the sauce."
           ],
-          quality: [
-            "Crisp, rendered skin",
-            "Succulent meat",
-            "Balanced sweet/heat glaze"
-          ],
-          faults: [
-            "Flabby, unrendered skin",
-            "Cold bone centre",
-            "Burnt glaze (bitter)"
-          ],
-          correction: [
-            "Increase initial grill time",
-            "Use a probe to check bone temp",
-            "Move to cooler zone if glaze darkens too fast"
-          ]
+          quality: ["Crisp, rendered skin", "Succulent meat", "Balanced sweet/heat glaze"],
+          faults: ["Flabby skin", "Cold bone centre", "Burnt glaze"],
+          correction: ["Increase initial grill time", "Probe bone temp", "Move to cooler zone"]
         },
         fellini: {
           identity: "Sticky, charred, and hot to the bone.",
@@ -1769,50 +935,12 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
-        name: "Garlic Focaccia",
-        portion: "200g FORGE dough · 20g Garlic butter (batch #3)",
-        cookTemp: "Pizza Oven / 250°C",
-        cookTime: "6 min",
-        method: "Stretch to 10 inch · Dimple · Bake 250°C · 6 min",
-        finish: "Fresh rosemary sprig · extra sea salt",
-        allergens: ["gluten", "dairy"],
-        pass: "Fluffy interior · crisp base · aromatic garlic punch · golden top",
-        station: "Pizza",
-        larousse: {
-          principle: "Focaccia relies on high hydration and significant olive oil to achieve its characteristic 'fried' base and airy crumb.",
-          method: [
-            "Dimple deeply with fingertips to create oil pools.",
-            "Do not over-work the dough; preserve the fermentation bubbles.",
-            "Apply garlic butter immediately after bake to melt into dimples."
-          ],
-          quality: [
-            "Open, airy crumb structure",
-            "Crisp, golden exterior",
-            "Strong garlic and herb aroma"
-          ],
-          faults: [
-            "Dense, heavy dough",
-            "Burnt garlic (bitter)",
-            "Dry surface"
-          ],
-          correction: [
-            "Increase proofing time",
-            "Apply butter post-bake if oven is too hot",
-            "Increase oil in the dimpling stage"
-          ]
-        },
-        fellini: {
-          identity: "The aromatic, airy bridge between bread and pizza.",
-          pressurePoint: "Dough proofing state vs oven temperature.",
-          watchPoint: "The dimples; they must hold the garlic butter without soaking through.",
-          passSignal: "A fluffy, aerated interior with a crisp, golden base.",
-          failureSignal: "Dense, heavy dough or burnt garlic on the surface.",
-          recoveryMove: "Increase proofing time for the next batch or apply butter post-bake."
-        }
-      },
-      {
-        name: "Arancini",
+        id: "STARTER-004",
+        name: "Arancini (Mushroom)",
         portion: "3 balls (50g each) · 30g Truffle mayo",
+        price: "£8.00",
+        cost: "£1.65",
+        gp: "79%",
         cookTemp: "Fryer",
         cookTime: "4 min",
         method: "Fry 180°C · 4 min · Core 75°C",
@@ -1827,21 +955,9 @@ export const ENGINES: Record<string, Engine> = {
             "Use a double-crumb (panko) for extra crunch and protection.",
             "Fry from chilled to ensure the centre melts as the exterior crisps."
           ],
-          quality: [
-            "Crisp, dry exterior",
-            "Creamy, seasoned rice",
-            "Distinct truffle aroma"
-          ],
-          faults: [
-            "Bursting in the fryer",
-            "Cold, grainy rice centre",
-            "Oily coating"
-          ],
-          correction: [
-            "Ensure crumb is complete with no gaps",
-            "Increase fry time and check core temp",
-            "Check oil temp"
-          ]
+          quality: ["Crisp, dry exterior", "Creamy, seasoned rice", "Distinct truffle aroma"],
+          faults: ["Bursting in the fryer", "Cold, grainy centre", "Oily coating"],
+          correction: ["Ensure crumb is complete", "Increase fry time", "Check oil temp"]
         },
         fellini: {
           identity: "A crunchy, golden sphere with a molten, aromatic heart.",
@@ -1853,50 +969,97 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
-        name: "Scotch Egg",
-        portion: "1 egg (size L)",
-        protein: "50g Black pudding & Sausage meat wrap",
-        finish: "Mustard mayo · Watercress",
-        cookTemp: "Fryer",
-        cook: "Boil egg 6.5 min → Shock → Wrap → Crumb → Fry 3 min",
-        allergens: ["gluten", "dairy", "eggs", "mustard"],
-        pass: "Liquid golden yolk · crisp shell · rendered meat layer",
-        station: "Starters",
+        id: "STARTER-005",
+        name: "Burrata & Heritage Tomato",
+        portion: "125g Burrata ball · 100g Heritage tomatoes",
+        price: "£10.50",
+        cost: "£2.85",
+        gp: "73%",
+        cookTemp: "Ambient",
+        cookTime: "Assembly only",
+        build: "Sliced tomatoes → Burrata centre → 10ml Basil oil → 2g Sea salt",
+        allergens: ["dairy"],
+        pass: "Creamy centre release on cut · vibrant tomato colours · room temp burrata",
+        station: "Cold",
         larousse: {
-          principle: "A technical study in multi-stage cooking where the yolk must remain set-liquid while the meat layer reaches safe temperature.",
-          method: ["Use fridge-cold eggs for wrapping", "Double crumb for oil protection", "Rest for 2 min before slicing"],
-          quality: ["Jammy yolk", "Savoury crust", "Uniform wrap"],
+          principle: "The quality of this dish is entirely dependent on the temperature of the cheese and the ripeness of the fruit.",
+          method: [
+            "Temper Burrata at room temperature for 30 mins before service.",
+            "Slice tomatoes to various shapes for visual texture.",
+            "Do not refrigerate tomatoes; destroys cellular structure and flavour."
+          ],
+          quality: ["Molten stracciatella centre", "Sweet, ripe tomato profile", "Fragrant basil finish"],
+          faults: ["Ice-cold cheese center", "Mealy tomatoes", "Excessive oil"],
+          correction: ["Increase tempering time", "Use vine-ripened fruit", "Control oil pour"]
         },
         fellini: {
-          identity: "The technician's starter.",
-          pressurePoint: "Egg yolk overcooking in the fryer.",
-          watchPoint: "Bubble speed.",
-          passSignal: "Running gold",
-          failureSignal: "Hard yolk"
+          identity: "The temperature-sensitive heart of the cold station.",
+          pressurePoint: "Burrata core temperature vs ambient room temp.",
+          watchPoint: "Tomato ripeness; they must be at peak sugar levels.",
+          passSignal: "A molten stracciatella release when the burrata is pierced.",
+          failureSignal: "Ice-cold cheese center or mealy, underripe tomatoes.",
+          recoveryMove: "Temper the burrata in a warm area of the kitchen for 15 mins."
         }
       },
       {
-        name: "Classic Prawn Cocktail",
-        portion: "120g prawns",
-        build: "Iceberg base → King Prawns → Marie Rose sauce → Avocado → Lemon",
-        finish: "Paprika dust",
-        allergens: ["crustaceans", "eggs", "mustard"],
-        pass: "Ice cold · vibrant colour · crisp lettuce · no watery bleed",
+        id: "STARTER-006",
+        name: "Antipasti Misto",
+        portion: "Sharing platter for 2",
+        price: "£12.50",
+        cost: "£3.85",
+        gp: "69%",
+        cookTemp: "Ambient",
+        cookTime: "Assembly only",
+        build: "Cured meats → Olives → Pickles → Focaccia",
+        finish: "Herb oil drizzle",
+        allergens: ["gluten"],
+        pass: "Varied textures · fresh cuts · room temp meats",
         station: "Cold",
         larousse: {
-          principle: "A vintage cold emulsion dish relying on the temperature contrast of the prawns and the creaminess of the sauce.",
-          method: ["Dry prawns thoroughly", "Whisk sauce until thick/glossy", "Serve in chilled glass"],
-          quality: ["Cold and fresh", "Glossy finish", "Balanced acidity"],
+          principle: "Meats must be sliced ultra-thin to allow for optimal melting on the palate.",
+          method: [
+            "Slice Prosciutto to 0.5mm thickness.",
+            "Arrange loosely on board to create height.",
+            "Serve with warm focaccia."
+          ],
+          quality: ["Sheen on meats", "Firm olives", "Tangy pickles"],
+          faults: ["Thick meat cuts", "Cold bread", "Oxidised meats"],
+          correction: ["Adjust slicer blade", "Warm bread fresh", "Slice to order"]
         },
         fellini: {
-          identity: "Cold station speed classic.",
-          pressurePoint: "Water release from prawns.",
-          watchPoint: "Sauce adherence.",
-          passSignal: "Coated, not swimming",
-          failureSignal: "Pink water at base"
+          identity: "Curated cold assembly.",
+          pressurePoint: "Slicer speed vs board detail.",
+          watchPoint: "Meat oxidation.",
+          passSignal: "Vertical height and sheen",
+          failureSignal: "Flat, grey appearance",
+          recoveryMove: "Light oil brush on meats"
         }
       }
     ],
+    operationalLayers: [
+      {
+        name: "GLOBAL CARD — STARTER STATION LAW (v2.5.2a)",
+        subtitle: "Flash Heat & Ambient Control",
+        sections: [
+          {
+            title: "1. THE FRY LAW",
+            content: [
+              "• RECOVERY TIME: Oil must hit 180°C before every batch. No exceptions.",
+              "• MOISTURE: Calamari must be dry before dusting. Wet squid = soggy coating.",
+              "• SALT: Season immediately. The first 5 seconds out of the oil determines taste."
+            ]
+          },
+          {
+            title: "2. THE TEMPERING LAW (COLD STATION)",
+            content: [
+              "• CHEESE TEMPERATURE: Burrata must never be served 'fridge cold'.",
+              "• ROOM TEMP: 30 minutes minimum tempering for optimal stracciatella flow.",
+              "• FRUIT CARE: Tomatoes kept at 18-20°C. Never refrigerated."
+            ]
+          }
+        ]
+      }
+    ]
   },
   sides: {
     label: "SIDES ENGINE",
@@ -1906,374 +1069,225 @@ export const ENGINES: Record<string, Engine> = {
     tag: "SUPPORT",
     items: [
       {
+        id: "SIDE-001",
         name: "Triple Cooked Chips",
         portion: "250g portion · 5g Sea salt",
         batchYield: "Shift batch",
         price: "£5.50",
+        cost: "£0.85",
+        gp: "81%",
         shelfLife: "Post-second fry: 30–45 min max hold",
         ingredients: "Maris Piper potatoes · Sunflower oil · Sea salt",
         method: "1. Cut 12–15mm & Rinse clear. 2. Blanch fry (140°C / 6–8m). 3. Air-dry completely. 4. Second fry (170°C / 2–3m). 5. Final fry to order (190°C / 2–3m).",
         allergens: ["none"],
-        failureSigns: ["Pale + soft after final fry", "Greasy surface", "Limp structure", "Dark before crisp (oil too hot / sugar burn)"],
         pass: "Audible crisp shell · Dry surface (no oil sheen) · Fluffy interior · Even golden colour",
         station: "Fry",
-        menuLayers: {
-          core: "Maris Piper Potato",
-          bulk: "Volume serving (250g)",
-          wet: "None (internal fluff)",
-          acid: "None (internal balance)",
-          finish: "Sea salt"
-        },
-        specLayers: {
-          functional: "Starch gelatinisation + moisture extraction.",
-          control: "Size Law + Drying Law + Batch Control Law.",
-          output: "250g portion, 190°C final flash."
-        },
         larousse: {
-          principle: "ROOT LAYER: Moisture removal + starch gelatinisation → crisp exterior, fluffy core. CONTROL LAW: Water is the enemy. Oil is the tool.",
+          principle: "ROOT LAYER: Moisture removal + starch gelatinisation → crisp exterior, fluffy core.",
           method: [
-            "SIZE LAW: Cut to uniform 12–15 mm chips. No mixed sizes per batch.",
-            "STARCH LAW: Rinse cut chips until water runs clear. Optional soak: 20–30 min (cold water).",
-            "SEQUENCE LAW: 1. Cut/Rinse → 2. Blanch (140°C, no colour) → 3. Cool/Dry → 4. Second fry (170°C) → 5. Final fry (190°C, golden).",
-            "DRYING LAW: Chips must be visibly dry before second fry (rack + airflow). Wet chips = oil contamination + soggy result.",
-            "BATCH CONTROL LAW: Fryer load ≤ 50% basket capacity. Oil must recover temp before next batch.",
-            "TIME LAW: Post second fry hold: max 30–45 min. After that → discard.",
-            "FINAL SERVICE LAW: Fry to order only. Salt immediately. Serve instantly."
+            "Cut to uniform 12–15 mm chips.",
+            "Rinse cut chips until water runs clear.",
+            "DRYING LAW: Chips must be visibly dry before second fry."
           ],
           quality: ["Audible crunch", "Steamy, floury interior", "Deep gold colour"],
-          faults: ["Soggy/limp texture", "Burnt edges", "Oily mouthfeel"],
-          correction: ["Ensure chips are dry before frying", "Check oil temp", "Reduce batch size"]
+          faults: ["Soggy texture", "Burnt edges", "Oily mouthfeel"],
+          correction: ["Ensure chips are dry", "Check oil temp", "Reduce batch size"]
         },
         fellini: {
-          identity: "OPERATOR TRUTH: Chips are not fried — they are dried in stages. If you rush moisture removal → you lose.",
+          identity: "OPERATOR TRUTH: Chips are not fried — they are dried in stages.",
           pressurePoint: "Moisture trapped in core. Holding kills texture.",
           watchPoint: "Surface dryness before second fry.",
           passSignal: "Audible glass-like crunch + fluffy centre",
           failureSignal: "Soft exterior or greasy sheen",
-          recoveryMove: "Refry for 1 min if within hold window. [VERDICT: PATCHED — SERVICE SAFE]"
+          recoveryMove: "Final flash at 190°C for 2 mins"
         }
       },
       {
-        name: "Mushy Peas",
-        portion: "50ml ramekin",
-        batchYield: "3L",
-        ingredients: "Marrowfat peas · Bicarb · Salt · Butter · Mint",
-        method: "Soak 12h → Simmer with bicarb until soft → Crush with butter and mint",
-        allergens: ["dairy"],
-        pass: "Vibrant green · thick texture · no watery runoff",
-        station: "Prep / Hot Hold",
-        menuLayers: {
-          core: "Marrowfat Peas",
-          bulk: "50ml volume",
-          wet: "Pea starch emulsion",
-          acid: "None (sweetness/mint balance)",
-          finish: "Fresh mint"
-        },
-        specLayers: {
-          functional: "Pulse hydration + starch release.",
-          control: "Soak time + Bicarb ratio.",
-          output: "50ml ramekin, 72°C service temp."
-        }
-      },
-      {
-        name: "House Tartar Sauce",
-        portion: "30ml ramekin",
-        batchYield: "2L",
-        ingredients: "Mayo · Capers · Gherkins · Shallots · Parsley · Lemon",
-        method: "Fine dice all solids → Fold into house mayo → Balance with lemon zest",
-        allergens: ["eggs", "mustard"],
-        pass: "Thick hold · sharp acidity · even herb distribution",
-        station: "Cold Prep",
-        menuLayers: {
-          core: "Mayonnaise base",
-          bulk: "30ml volume",
-          wet: "Emulsion matrix",
-          acid: "Capers + Gherkins + Lemon",
-          finish: "Parsley"
-        },
-        specLayers: {
-          functional: "Acid suspension in fat matrix.",
-          control: "ACID LAW (Drain Law for solids) + Dice uniformity.",
-          output: "30ml chill serve."
-        },
+        id: "SIDE-002",
+        name: "Skin-on Fries",
+        portion: "200g portion · 3g Sea salt",
+        price: "£4.50",
+        cost: "£0.65",
+        gp: "82%",
+        cookTemp: "Fryer",
+        cookTime: "3 min",
+        method: "Fry 180°C · 3 min · Shake vigorously",
+        finish: "Sea salt touch",
+        allergens: ["none"],
+        pass: "Crisp and upright · uniform gold · dry surface",
+        station: "Fry",
         larousse: {
-          principle: "Tartar sauce is a stable emulsion hosting suspended acids. Textural contrast is key.",
+          principle: "The smaller surface area of fries compared to chips means they lose heat faster; speed from fryer to table is critical.",
           method: [
-            "THE DRAIN LAW: Capers and gherkins must be pulsed and drained over a fine sieve for 1 min before folding.",
-            "RATIO: 60% Mayo base : 40% Solids/Citrus.",
-            "SEQUENCE: Fold solids gently to avoid bleeding water into the emulsion."
+            "Check oil temperature regularly (180°C).",
+            "Salt immediately while oil is tacky.",
+            "Do not over-fill the basket."
           ],
-          quality: ["Sharp pickling", "Creamy bind", "Visible herbs"],
-          faults: [
-            "AUTO REJECT: Watery pooling on top",
-            "AUTO REJECT: Bland profile",
-            "AUTO REJECT: Large gherkin lumps"
-          ]
+          quality: ["Snap crispness", "Hot core", "Clean taste"],
+          faults: ["Soggy", "Cold", "Oily"],
+          correction: ["Small batches only", "Fast service", "Dry fries well"]
+        },
+        fellini: {
+          identity: "High-volume speed side.",
+          pressurePoint: "Oil temp recovery.",
+          watchPoint: "Salt adhesion.",
+          passSignal: "Unerring crunch",
+          failureSignal: "Limp fries"
         }
       },
       {
+        id: "SIDE-003",
+        name: "Buttered Seasonal Greens",
+        portion: "150g mixed greens",
+        price: "£4.50",
+        cost: "£0.95",
+        gp: "74%",
+        cookTemp: "Stove / Pan",
+        cookTime: "3 min",
+        method: "Blanch 2 min → Sauté with butter and seasoned salt",
+        finish: "Lemon zest touch",
+        allergens: ["dairy"],
+        pass: "Bright green · glossy butter coating · al dente bite",
+        station: "Veg",
+        larousse: {
+          principle: "Chlorophyll preservation requires short cooking times and immediate serving.",
+          method: [
+            "Use salted water for blanching.",
+            "Shock in ice water if not for immediate service.",
+            "Emulsify butter with a touch of cooking water for a glossy coat."
+          ],
+          quality: ["Snap", "Vibrant green", "Butter sheen"],
+          faults: ["Grey/Overcooked", "Dry", "Bland"],
+          correction: ["Reduce cook time", "Mount with more butter", "Balance with salt"]
+        },
+        fellini: {
+          identity: "Freshness benchmark.",
+          pressurePoint: "Over-boiling in rush.",
+          watchPoint: "Color transition from bright to dull.",
+          passSignal: "Snap + gloss",
+          failureSignal: "Grey wilt"
+        }
+      },
+      {
+        id: "SIDE-004",
         name: "Truffle & Parmesan Fries",
         portion: "200g Skin-on fries · 5ml Truffle oil · 5g Parmesan",
+        price: "£6.00",
+        cost: "£1.20",
+        gp: "76%",
         cookTemp: "Fryer",
         cookTime: "3 min",
         method: "Fry 180°C · 3 min · Toss in warm bowl",
         finish: "Finely grated parmesan · Chopped parsley",
         allergens: ["dairy"],
-        pass: "Evenly coated · fries remain crisp · strong truffle aroma · no oil pooling",
+        pass: "Evenly coated · fries remain crisp · strong truffle aroma",
         station: "Fry",
         larousse: {
-          principle: "Truffle oil is volatile; it must be applied to hot fries to release aroma but served immediately before it dissipates.",
+          principle: "Truffle oil is volatile; it must be applied to hot fries to release aroma.",
           method: [
-            "Toss in a stainless steel bowl to ensure even distribution.",
-            "Use microplane for parmesan to achieve 'snow' effect.",
-            "Serve in a pre-warmed container."
+            "Toss in a stainless steel bowl for even distribution.",
+            "Use microplane for parmesan snow.",
+            "Serve in pre-warmed container."
           ],
-          quality: [
-            "Crisp fries",
-            "Pungent truffle scent",
-            "Lightly melted cheese coating"
-          ],
-          faults: [
-            "Soggy fries from oil",
-            "Clumped cheese",
-            "Weak aroma"
-          ],
-          correction: [
-            "Reduce oil volume",
-            "Toss more vigorously",
-            "Ensure fries are piping hot"
-          ]
+          quality: ["Crisp fries", "Pungent aroma", "Melting cheese"],
+          faults: ["Soggy", "Weak aroma", "Clumped cheese"],
+          correction: ["Piping hot fries", "Toss vigorously", "Check oil volume"]
         },
         fellini: {
-          identity: "Aroma-led side.",
+          identity: "Aroma-led premium side.",
           pressurePoint: "Oil saturation.",
           watchPoint: "Season timing.",
-          passSignal: "Dry finish",
-          failureSignal: "Greasy",
-          recoveryMove: "Season post-drain"
+          passSignal: "Dry, aromatic finish",
+          failureSignal: "Greasy/flat"
         }
       },
       {
-        name: "House Slaw",
-        portion: "150g portion (batch #4)",
+        id: "SIDE-005",
+        name: "House Side Salad",
+        portion: "Mixed leaves · Radish · Vinaigrette",
+        price: "£4.00",
+        cost: "£0.65",
+        gp: "80%",
         cookTemp: "Ambient",
         cookTime: "Assembly only",
-        prep: "Red cabbage · White cabbage · Carrot · House mayo",
-        allergens: ["eggs", "mustard"],
-        pass: "Crunchy texture · balanced acidity · no liquid pooling at base",
+        finish: "House dressing · Maldon salt",
+        allergens: ["mustard"],
+        pass: "Crisp upright leaves · even dressing coating · vibrant radish slices",
         station: "Cold",
-        menuLayers: {
-          core: "Fresh Cabbage Mix",
-          bulk: "150g serving",
-          wet: "House Mayo Binder",
-          acid: "Cider Vinegar / Mustard",
-          finish: "Herb Garnish"
-        },
-        specLayers: {
-          functional: "Osmotic control of vegetable moisture.",
-          control: "DRAIN LAW (30s) + DRESS-TO-ORDER.",
-          output: "Crisp cold counterpoint."
-        },
         larousse: {
-          principle: "Slaw is a fresh pickling; the dressing should coat the vegetables without drawing out excessive water.",
+          principle: "The simpler the dish, the more visible the flaws. Leaves must be bone-dry.",
           method: [
-            "Salt cabbage for 10 min then rinse and dry before dressing.",
-            "ACID LAW: Dress only what is needed for the shift.",
-            "Keep chilled at 4°C at all times."
+            "Spin-dry leaves meticulously.",
+            "Dress in a large bowl to avoid bruising.",
+            "Radish sliced to transparency."
           ],
-          quality: [
-            "Vibrant colours",
-            "Crisp vegetable bite",
-            "Creamy, tangy dressing"
-          ],
-          faults: [
-            "Watery base",
-            "Discoloured/bleeding red cabbage",
-            "Limp vegetables"
-          ],
-          correction: [
-            "Drain before serving",
-            "Add a touch of lemon juice to brighten",
-            "Refresh with fresh herbs"
-          ]
+          quality: ["Crunch", "Brightness", "Zest"],
+          faults: ["Bruised leaves", "Drowning in oil", "Wilted"],
+          correction: ["New leaves", "Lighten dressing", "Ice-water refresh"]
         },
         fellini: {
-          identity: "The fresh, acidic counterpoint to heavy proteins.",
-          pressurePoint: "Water release (osmosis) over the course of a shift.",
-          watchPoint: "Cabbage color bleed; red cabbage must not turn the slaw purple.",
-          passSignal: "A crunchy, vibrant mix with no liquid pooling at the base.",
-          failureSignal: "Limp vegetables or a watery, discolored dressing.",
-          recoveryMove: "Drain through a colander and refresh with a squeeze of lemon."
+          identity: "Clean palate cleanser.",
+          pressurePoint: "Leaf bruising.",
+          watchPoint: "Dressing volume.",
+          passSignal: "Upright, glossy structure"
         }
       },
       {
-        name: "Charred Broccoli",
-        portion: "150g Tenderstem broccoli",
-        cookTemp: "Grill",
-        cookTime: "4 min",
-        method: "Grill 4 min · Char tips · Squeeze 1/4 lemon",
-        finish: "3g Chilli flakes · 5ml Garlic oil",
-        allergens: ["none"],
-        pass: "Charred tips · tender stem · bright green · acidic punch",
-        station: "Grill",
-        larousse: {
-          principle: "High-heat grilling caramelises the natural sugars in the broccoli while preserving its structural integrity.",
-          method: [
-            "Blanch for 60s in salted water before grilling to ensure stem tenderness.",
-            "Shock in ice water to set colour.",
-            "Grill on the highest heat zone."
-          ],
-          quality: [
-            "Smoky flavour",
-            "Al dente texture",
-            "Vibrant green with black accents"
-          ],
-          faults: [
-            "Mushy stems",
-            "Unpleasant raw taste",
-            "Burnt/bitter tips"
-          ],
-          correction: [
-            "Reduce blanch time",
-            "Increase grill heat",
-            "Move away from direct flame if burning"
-          ]
-        },
-        fellini: {
-          identity: "A study in smoky caramelization and al dente texture.",
-          pressurePoint: "Blanching time vs grill char speed.",
-          watchPoint: "The tips; they must be charred but not turned to ash.",
-          passSignal: "Vibrant green stems with black, smoky accents and a sharp lemon hit.",
-          failureSignal: "Mushy stems or bitter, over-burnt tips.",
-          recoveryMove: "Move to a cooler zone of the grill and finish with a lid to steam the stems."
-        }
-      },
-      {
-        name: "Sweet Potato Fries",
+        id: "SIDE-006",
+        name: "Creamy Mash",
         portion: "200g portion",
-        cookTemp: "Fryer",
-        cookTime: "4 min",
-        fry: "180°C · 4 min",
-        allergens: ["none"],
-        pass: "Not soggy · uniform orange · light salt",
-        station: "Fry",
-        larousse: {
-          principle: "Sweet potatoes have higher sugar and lower starch than white potatoes; they require precise timing to avoid burning.",
-          method: [
-            "Do not over-fry; sugars will turn bitter.",
-            "Drain thoroughly on paper towel.",
-            "Serve immediately; they lose heat and crispness faster than standard fries."
-          ],
-          quality: [
-            "Soft, sweet interior",
-            "Lightly crisp exterior",
-            "Bright orange colour"
-          ],
-          faults: [
-            "Burnt/blackened ends",
-            "Limp/soggy texture",
-            "Oily finish"
-          ],
-          correction: [
-            "Reduce fry time by 30s",
-            "Check oil temp",
-            "Ensure batch size is small"
-          ]
-        },
-        fellini: {
-          identity: "A sugar-rich, fragile alternative to standard fries.",
-          pressurePoint: "Sugar caramelization speed in the fryer.",
-          watchPoint: "The ends; they are the first part to turn bitter and black.",
-          passSignal: "A bright orange, lightly crisp exterior with a soft, sweet center.",
-          failureSignal: "Blackened ends or a soft, soggy texture.",
-          recoveryMove: "Reduce fry time by 30s and ensure oil is exactly 180°C."
-        }
-      },
-      {
-        name: "Rocket & Parmesan Salad",
-        portion: "50g Wild rocket · 10g Parmesan shavings",
-        cookTemp: "Ambient",
-        cookTime: "Assembly only",
-        finish: "10ml Balsamic glaze · 5ml Olive oil",
+        price: "£4.50",
+        cost: "£0.85",
+        gp: "77%",
+        cookTemp: "Stove / Prep",
+        cookTime: "Prep lead",
+        method: "Rice potatoes → Beat in butter and cream (batch #2)",
+        finish: "Chive oil or Plain butter",
         allergens: ["dairy"],
-        pass: "Fresh, upright leaves · peppery punch · no wilting · even glaze",
-        station: "Cold",
+        pass: "No lumps · silky smooth · holds shape · glossy finish",
+        station: "Hot Hold",
         larousse: {
-          principle: "A simple assembly where the quality of the balsamic and the freshness of the greens are the only variables.",
+          principle: "Mash is an emulsion of starch and fat. Cold milk/butter will split it.",
           method: [
-            "Wash and spin-dry rocket twice.",
-            "Shave parmesan into wide, thin ribbons.",
-            "Dress at the absolute last second."
+            "Use riced, hot potatoes only.",
+            "Warm the dairy before folding in.",
+            "Do not over-beat (will go 'gluey' from starch breakdown)."
           ],
-          quality: [
-            "Crisp, peppery greens",
-            "Sharp, salty cheese",
-            "Sweet, viscous glaze"
-          ],
-          faults: [
-            "Wilted leaves",
-            "Drowning in dressing",
-            "Bitter/old rocket"
-          ],
-          correction: [
-            "Refresh rocket in ice water",
-            "Reduce glaze volume",
-            "Check rocket batch for flowering/bitterness"
-          ]
+          quality: ["Silky", "Buttery", "Aromatic"],
+          faults: ["Lumps", "Gluey texture", "Cold"],
+          correction: ["Re-rice if possible", "Fold gently", "Check hold temp"]
         },
         fellini: {
-          identity: "A clean, peppery palate cleanser.",
-          pressurePoint: "Leaf bruising during high-speed assembly.",
-          watchPoint: "Dressing volume; it must coat, not drown.",
-          passSignal: "Crisp, upright leaves with a light, glossy sheen.",
-          failureSignal: "Wilting leaves or dressing pooling at the bottom of the bowl.",
-          recoveryMove: "Toss with fresh, dry leaves to absorb excess dressing."
-        }
-      },
-      {
-        name: "Truffle Mac & Cheese",
-        portion: "250g batch portion",
-        build: "Macaroni → Béchamel → 30g Gruyere → 5ml Truffle oil",
-        finish: "Panko herb crumb",
-        cookTemp: "Oven",
-        cook: "Bake 180°C · 10 min bubbling",
-        allergens: ["gluten", "dairy"],
-        pass: "Cheese pull · crispy top · pungent truffle aroma · uniform heat",
-        station: "Sides",
-        larousse: {
-          principle: "The cheese sauce must be a stable emulsion; extreme heat can cause the fat to split.",
-          method: ["Melt cheese into warm béchamel off-heat", "Bake only until bubbling", "Garnish post-bake"],
-          quality: ["Stable emulsion", "Glossy finish", "Crisp top"],
-        },
-        fellini: {
-          identity: "Heavy comfort side.",
-          pressurePoint: "Fat separation in sauce.",
-          watchPoint: "The top; must be golden, not burnt.",
-          passSignal: "Stable sauce · crisp top"
-        }
-      },
-      {
-        name: "Garlic Sautéed Mushrooms",
-        portion: "150g mixed mushrooms",
-        cookTemp: "Pan",
-        cook: "High heat sear → Butter mount → Garlic/Thyme finish",
-        finish: "Chopped parsley",
-        allergens: ["dairy"],
-        pass: "No water in pan · golden edges · intense earthy aroma · glossy finish",
-        station: "Sides",
-        larousse: {
-          principle: "Mushrooms must be seared to achieve Maillard reaction before they release their internal water.",
-          method: ["High pan heat", "Do not crowd the mushrooms", "Add garlic at the very end"],
-          quality: ["Golden colour", "Intense flavour", "Dry pan"],
-        },
-        fellini: {
-          identity: "Speed-sear side.",
-          pressurePoint: "Boiling instead of searing.",
-          watchPoint: "Pan volume.",
-          passSignal: "Brown edges · dry pan"
+          identity: "Texture-emulsion staple.",
+          pressurePoint: "Starch development (gluey).",
+          watchPoint: "The beat; must be airy, not heavy.",
+          passSignal: "Velvet finish"
         }
       }
     ],
+    operationalLayers: [
+      {
+        name: "GLOBAL CARD — SIDES & SUPPORT LAW (v2.5.2a)",
+        subtitle: "Texture & Thermal Continuity",
+        sections: [
+          {
+            title: "1. THE STARCH LAW",
+            content: [
+              "• CRISP vs SOGGY: Any side involving a fryer MUST be served in <60s of exit.",
+              "• AIRFLOW: Never pile fries too high; they steam themselves and lose the snap.",
+              "• SALT TIMING: Salt IMMEDIATELY. Once the oil surface sets, salt won't stick."
+            ]
+          },
+          {
+            title: "2. THE EMULSION LAW (MASH)",
+            content: [
+              "• STARCH ABUSE: Over-whipping mash releases starch chains, turning velvet into glue.",
+              "• THERMAL HOLD: Mash must be held at 65-70°C. Below 60°C is a safety fail. Above 75°C is a texture fail."
+            ]
+          }
+        ]
+      }
+    ]
   },
   prep: {
     label: "PREP ENGINE",
@@ -2283,6 +1297,7 @@ export const ENGINES: Record<string, Engine> = {
     tag: "SYSTEM",
     items: [
       {
+        id: "PREP-001",
         name: "FORGE Dough",
         batchYield: "5.2kg / 20 balls @ 260g",
         portion: "260g per dough ball",
@@ -2319,6 +1334,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-002",
         name: "Tomato Base",
         batchYield: "10L (approx 110 pizzas)",
         portionTool: "Ladle #2 (90g)",
@@ -2363,6 +1379,65 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-003",
+        name: "Bone Reduction (Base)",
+        type: "prep_component",
+        category: "Flavour & Structure Base (Sauce Engine Input)",
+        prepLevel: "Level 6: 12-16h Extraction Window",
+        batchYield: "Reduction to 50% volume (Target: Deep Mahogany)",
+        portionTool: "N/A (Liquid Base)",
+        shelfLife: "7 days (4°C gel state)",
+        ingredients: "Bones (Beef/Veal) · Mirepoix · Tomato Paste (NIGHTSHADE) · Red Wine (SULFITES) · Cold Water",
+        allergens: ["sulfites", "nightshade"],
+        method: "1. ROAST: Deep mahogany bones/mirepoix. 2. DEGLAZE: Red wine reduce by 50%. 3. EXTRACTION: Cold water covers, 85-90°C Sub-simmer. 4. WINDOW: 12-16h extraction. 5. SKIM: Active skimming every 20-30m (3h) then 60-90m. 6. STRAIN: Chinois/Muslin pass. 7. DEGREASE: Chill ≤4°C, remove fat cap. 8. REDUCTION: Reduce by 50% to clean viscosity.",
+        station: "Prep / Sauce",
+        pass: "Deep mahogany · clean viscosity · glossy finish · balanced seasoning · stable gel at 4°C",
+        conversionAction: "Reheat to 60–70°C | Liquid conversion",
+        fellini: {
+          identity: "Collagen Extraction Foundation",
+          pressurePoint: "Protein-Fat Emulsification (Clouding)",
+          watchPoint: "Surface Tension / Clarity",
+          controlLaw: "Lipid Management Law — Continuous skimming + NO rolling boil (85-90°C). Post-cook degrease is non-negotiable.",
+          passSignals: [
+            "Holds stable gel at 4°C",
+            "Deep mahogany lucidity",
+            "No grease separation atop liquid",
+            "Glossy spoon coat (nappe)"
+          ],
+          failSignals: [
+            "Cloudy/Boiled appearance",
+            "Greasy oil slick",
+            "Bitter/Burnt note",
+            "Weak gel/Unset"
+          ],
+          autoReject: [
+            "Cloudy",
+            "Greasy",
+            "Bitter",
+            "Missing degrease phase"
+          ],
+          verdict: "PASS: Fully degreased, collagen-locked base.",
+          validationPoint: ["postPrep", "preService", "atPass"]
+        },
+        executionCard: {
+          setup: ["Roasting trays ready", "Cold water source", "Muslin cloths", "Chilling space (≤4°C)"],
+          build: [
+            "1. Roast bones + mirepoix + tomato paste (Deep mahogany)",
+            "2. Deglaze with red wine (Reduce 50%)",
+            "3. Extract at 85–90°C (12–16h)",
+            "4. Active skim (20–30m intervals first 3h)",
+            "5. Strain through muslin",
+            "6. Full Degrease (Post-cook chill ≤4°C)",
+            "7. Final Reduction (50% volume)"
+          ],
+          buildSequence: "Roast → Extraction → Lipid Removal → Reduction",
+          timeLaw: "12–16h Extraction Window",
+          failures: ["Boiling", "Inadequate skimming", "Burnt mirepoix", "Incomplete degrease"],
+          reset: ["Discard if cloudy/emulsified. No recovery for grease-saturation."]
+        }
+      },
+      {
+        id: "PREP-004",
         name: "Bone Marrow Butter",
         batchYield: "2kg yield · 200 portions",
         portionTool: "10g disc mould",
@@ -2426,6 +1501,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-005",
         name: "Pickled Red Onion",
         batchYield: "5L yield · 100 portions",
         portionTool: "Blue tongs (approx 30g)",
@@ -2482,6 +1558,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-006",
         name: "Garlic Fire Oil",
         batchYield: "2L yield · 400 portions",
         portionTool: "Precision squeeze bottle",
@@ -2526,6 +1603,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-007",
         name: "Fire Sauce",
         batchYield: "5L yield · 250 portions",
         portionTool: "Ladle #4 (20g)",
@@ -2578,6 +1656,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-008",
         name: "Ale Batter",
         batchYield: "Max 2.5L",
         portionTool: "100ml measure",
@@ -2613,6 +1692,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-009",
         name: "Herb Garnish",
         batchYield: "Daily batch (500g)",
         portionTool: "Pinch / 2g",
@@ -2649,6 +1729,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-010",
         name: "Chili-Lime Sugar",
         batchYield: "1kg yield · 200 portions",
         portionTool: "5g shaker",
@@ -2685,6 +1766,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-011",
         name: "Tiramisu Cream",
         portion: "150g",
         prepLevel: "6 Units (900g total output)",
@@ -2772,6 +1854,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-012",
         name: "Coffee Soak",
         batchYield: "2L yield · 30 portions",
         portionTool: "50ml squeeze bottle",
@@ -2808,6 +1891,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-013",
         name: "Panna Cotta",
         batchYield: "2L yield · 20 units",
         portion: "100g",
@@ -2849,6 +1933,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-014",
         name: "Mascarpone Cream",
         batchYield: "1kg yield · 10 portions",
         portion: "100g",
@@ -2888,6 +1973,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-015",
         name: "Sticky Toffee Sauce",
         batchYield: "3L yield · 60 portions",
         portionTool: "50ml ladle",
@@ -2952,70 +2038,62 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-016",
         name: "Crumble Mix",
+        type: "prep_component",
+        category: "structural_fat_system",
         batchYield: "5kg yield · 50 portions",
         portionTool: "100g scoop",
         shelfLife: "5 days",
         ingredients: "2kg Flour · 1.5kg Butter · 1kg Sugar · 500g Oats",
-        method: "Rub butter into dry ingredients until pea-sized · chill",
+        method: "ZERO DRIFT VERSION: Butter 1cm cubes (0-4°C) → Rub in dry → Stop at rubble stage → Chill",
         allergens: ["gluten", "dairy"],
-        failureSigns: ["Sandy/fine texture", "Greasy/melted", "Raw flour pockets"],
-        correction: ["Add more butter if too sandy", "Chill immediately", "Ensure thorough mixing"],
-        pass: "Rubbly texture · uniform pea-size · no loose flour · cold",
-        fellini: {
-          identity: "Structural Fat System",
-          pressurePoint: "Butter temperature during rubbing-in.",
-          controlLaw: "Crumble must bake into discrete, crisp clusters with no grease bleed and no flour dust. It must hold dry contrast against soft dessert elements.",
-          watchPoint: "Oven temperature vs sugar caramelization.",
-          passSignals: [
-            "golden even colour",
-            "crisp bite",
-            "soft interior within clusters",
-            "distinct clusters not sand",
-            "no oil residue on tray"
-          ],
-          failSignals: [
-            "greasy texture",
-            "powdery underbound mix",
-            "burnt edges with pale centre",
-            "slab formation",
-            "floury raw finish"
-          ],
-          autoReject: [
-            "greasy texture",
-            "raw flour pockets",
-            "burnt edges"
-          ],
-          verdict: "PASS: Rubbly, crisp, uniform pea-size.",
-          validationPoint: ["postPrep", "preService", "atPass"],
-          recoveryMove: "Chill immediately if melting · re-batch if oily."
-        },
         station: "Prep",
+        pass: "Audible crunch · Golden brown clusters · No grease bleed · No moisture clumping",
+        fellini: {
+          identity: "Shortening / Contrast System",
+          controlLaw: "FAT ENCAPSULATION LAW: Fat must encapsulate flour particles without melting to inhibit gluten formation and preserve discrete clusters. Failure of encapsulation = → Gluten activation → Structural collapse → Loss of crumble identity",
+          pressurePoint: "THERMAL & FRICTION CONTROL: Butter temperature (0–6°C) and Max working temp (<8°C).",
+          autoReject: [
+            "Greasy/Oily residue → fat melt",
+            "Powdery/Sand texture → overworked",
+            "Flour pockets → incomplete encapsulation"
+          ],
+          validationPoints: {
+            postPrep: "Texture: Rubble / irregular; No dust; Temp: ≤8°C",
+            preService: "No moisture clumping; No butter bleed; Loose structure",
+            atPass: "Crisp fracture; No grease bleed; Audible crunch"
+          },
+          conversionAction: "Bake 170°C (fan) / 180°C (deck) | Spread ≤ 2cm | 18–25 min | Target: Golden brown + Crisp clusters",
+          verdict: "PASS — FULLY LOCKED (v2.5.2a)"
+        },
+        executionCard: {
+          setup: ["Butter: 1cm cubes (0–4°C)", "Combine dry ingredients first", "Chilling space ready"],
+          build: [
+            "1. Add butter → pinch/rub using fingertips only",
+            "2. STOP at “rubble” stage (pea → hazelnut clusters)",
+            "3. DO NOT homogenise",
+            "4. Tray spread ≤2cm (no compression)",
+            "5. Bake 170°C (fan) 18–25 min (Turn 1x mid-bake)"
+          ],
+          timeLaw: "18–25 min Bake (Zero Drift)",
+          failures: ["Greasy/Oily (Fat melt)", "Powder (Overworked)", "Flour pockets"],
+          reset: ["IMMEDIATE DISCARD — NO CORRECTION PERMITTED"]
+        },
         larousse: {
-          principle: "The 'rubbing-in' method coats flour particles in fat to prevent gluten development, ensuring a short, crisp texture.",
+          principle: "The prevention of moisture bleed through anhydrous barrier creation.",
           method: [
-            "Use chilled, cubed butter.",
-            "Work quickly to prevent butter melting from hand heat.",
-            "Keep chunks irregular for better texture."
+            "Use chilled, 1cm cubed butter (0-4°C)",
+            "Work with fingertips ONLY",
+            "Maintain cold working temp <8°C"
           ],
-          quality: [
-            "Short, biscuit-like bite",
-            "Golden when baked",
-            "Rubble-like appearance"
-          ],
-          faults: [
-            "Sandy/fine texture",
-            "Greasy/melted",
-            "Raw flour pockets"
-          ],
-          correction: [
-            "Add more butter if too sandy",
-            "Chill immediately",
-            "Ensure thorough mixing"
-          ]
+          quality: ["Irregular clusters", "Dry feel", "Cold pre-bake"],
+          faults: ["Smooth/uniform (overworked)", "Sticky (warming)", "Dense (compressed)"],
+          correction: ["FORBIDDEN: Added butter to sandy mix (Technique Failure)"]
         }
       },
       {
+        id: "PREP-017",
         name: "House Mayo",
         batchYield: "5L yield · 250 portions",
         portionTool: "20g squeeze",
@@ -3058,6 +2136,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-018",
         name: "Chipotle Mayo",
         batchYield: "2L yield",
         portionTool: "30g ramekin",
@@ -3081,6 +2160,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-019",
         name: "Sriracha Mayo",
         batchYield: "2L yield",
         portionTool: "30g ramekin",
@@ -3104,6 +2184,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-020",
         name: "Lemon Aioli",
         batchYield: "2L yield · 100 portions",
         portionTool: "30g ramekin",
@@ -3144,6 +2225,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-021",
         name: "Truffle Mayo",
         batchYield: "2L yield · 100 portions",
         portionTool: "30g ramekin",
@@ -3184,7 +2266,8 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
-        name: "Bone Reduction (Base)",
+        id: "PREP-022",
+        name: "Bone Reduction (Batch)",
         batchYield: "10L yield",
         shelfLife: "5 days (4°C) / 30 days (Frozen)",
         ingredients: "Beef bones (roasted) · Mirepoix · Tomato paste · Red wine · Water",
@@ -3221,6 +2304,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-023",
         name: "Galyons Gravy (Finish)",
         batchYield: "5L yield",
         portionTool: "50ml ladle",
@@ -3260,6 +2344,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-024",
         name: "Pulled Pork",
         batchYield: "10kg yield · 60 portions",
         portionTool: "150g weigh-out",
@@ -3292,6 +2377,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-025",
         name: "Peppercorn Sauce",
         batchYield: "2L yield",
         portionTool: "50ml ladle",
@@ -3341,6 +2427,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-026",
         name: "Blue Cheese Sauce",
         batchYield: "2L yield",
         portionTool: "50ml ladle",
@@ -3390,6 +2477,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-027",
         name: "Fish Bisque Sauce",
         batchYield: "2L yield",
         portionTool: "40ml ladle",
@@ -3439,6 +2527,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-028",
         name: "House Vinaigrette",
         batchYield: "2L yield",
         portionTool: "30ml squeeze",
@@ -3462,6 +2551,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-029",
         name: "Marie Rose Sauce",
         batchYield: "2L yield",
         portionTool: "50g ramekin",
@@ -3485,6 +2575,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-030",
         name: "Asian Slaw",
         batchYield: "5kg yield · 50 portions",
         portionTool: "100g scoop",
@@ -3665,6 +2756,7 @@ export const ENGINES: Record<string, Engine> = {
     tag: "SUNDAY",
     items: [
       {
+        id: "SUNDAY-001",
         name: "Roast Leg of Lamb",
         portion: "3-4 thick slices",
         protein: "Leg of Lamb (Garlic & Rosemary)",
@@ -3700,6 +2792,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-002",
         name: "Roast Beef",
         portion: "3-4 slices",
         protein: "Beef Sirloin or Topside",
@@ -3735,6 +2828,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-003",
         name: "Half Roast Chicken",
         portion: "One half bird",
         protein: "Brined Chicken",
@@ -3770,6 +2864,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-004",
         name: "Vegetarian Sunday Roast",
         portion: "Individual unit",
         protein: "Nut Roast or Mushroom Wellington",
@@ -3805,6 +2900,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-005",
         name: "Duck Fat Roast Potatoes",
         portion: "4-5 per portion",
         cook: "Par-boil → Steam dry → Rough up → Roast in hot fat",
@@ -3825,6 +2921,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-006",
         name: "Giant Yorkshire Pudding",
         portion: "1 large unit",
         cook: "Whisk batter → Rest → Pour into hot fat → Bake 200°C",
@@ -3845,6 +2942,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-007",
         name: "Cauliflower Cheese",
         portion: "Side bowl or plate",
         cook: "Blanch cauli → Coat in Béchamel → Add cheese → Bake",
@@ -3865,6 +2963,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-008",
         name: "Honey Roast Carrots & Parsnips",
         portion: "Mixed portion",
         cook: "Prep even batons → Roast until edges colour → Glaze with honey",
@@ -3885,6 +2984,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-009",
         name: "Peas",
         portion: "Side serving",
         cook: "Blanch → Refresh → Reheat with butter/seasoning to order",
@@ -3905,6 +3005,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-010",
         name: "Green Beans",
         portion: "Side serving",
         cook: "Top & Tail → Blanch → Refresh → Sauté in butter",
@@ -3925,6 +3026,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-011",
         name: "Broccoli",
         portion: "Florets or Stems",
         cook: "Cut even florets → Blanch → Refresh → Finish in pan",
@@ -3945,6 +3047,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-012",
         name: "Savoy Cabbage",
         portion: "Shredded portion",
         cook: "Slice even → Blanch → Sauté with butter/pepper",
@@ -3965,6 +3068,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "SUNDAY-013",
         name: "Braised Red Cabbage",
         portion: "Side serving",
         cook: "Slow braise with apple/vinegar/spice until glossy",
@@ -4138,6 +3242,7 @@ export const ENGINES: Record<string, Engine> = {
     tag: "SYSTEM",
     items: [
       {
+        id: "DESSERT-001",
         name: "Sticky Toffee Pudding",
         portion: "150g square",
         batchYield: "20 units / tray",
@@ -4236,6 +3341,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-002",
         name: "Lemon Posset",
         portion: "120g pot",
         batchYield: "20 units",
@@ -4326,6 +3432,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-003",
         name: "Tiramisu",
         portion: "180g slice",
         batchYield: "20 portions",
@@ -4418,6 +3525,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-004",
         name: "Apple & Berry Crumble",
         portion: "200g (150g fruit / 50g topping)",
         batchYield: "20 portions",
@@ -4504,6 +3612,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-005",
         name: "Flourless Chocolate Cake",
         portion: "1 slice (100g)",
         batchYield: "12 portions (Premium Exception)",
@@ -4592,6 +3701,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-006",
         name: "Chocolate Fondant",
         portion: "120g individual fondant",
         batchYield: "20 units (Technical Batch)",
@@ -4662,6 +3772,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-007",
         name: "Wood-Fired Pineapple",
         portion: "150g Pineapple wedge (1/8th)",
         batchYield: "20 units (5 pineapples)",
@@ -4708,6 +3819,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-008",
         name: "Gelato Selection",
         portion: "3 scoops (150g total)",
         batchYield: "20 units (3L total)",
@@ -4773,6 +3885,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-009",
         name: "Lemon Tart",
         portion: "1 slice (120g)",
         batchYield: "12 portions (Pattern Exception)",
@@ -4840,6 +3953,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-010",
         name: "Affogato",
         portion: "1 scoop Gelato · 1 shot Espresso",
         batchYield: "20 units (per service)",
@@ -4905,6 +4019,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "DESSERT-011",
         name: "Seasonal Flex Slot",
         portion: "Defined by special",
         batchYield: "20 units (Hard Law)",
@@ -4955,6 +4070,7 @@ export const ENGINES: Record<string, Engine> = {
         }
       },
       {
+        id: "PREP-031",
         name: "Praline Crunch",
         type: "prep_component",
         category: "structural_sugar_fat_system",
@@ -5198,6 +4314,90 @@ export const ENGINES: Record<string, Engine> = {
       }
     ]
   },
+  iceCream: {
+    label: "ICE CREAM ENGINE",
+    icon: "🍦",
+    color: "#FFB3DE",
+    station: "Pastry / Frozen",
+    tag: "SYSTEM",
+    items: iceCreamRecipes.systems as any,
+    operationalLayers: [
+      {
+        name: iceCreamDoctrine.title,
+        subtitle: iceCreamDoctrine.engineType,
+        sections: [
+          {
+            title: "CORE PRINCIPLE",
+            content: iceCreamDoctrine.corePrinciple
+          },
+          {
+            title: "ROOT LAYER: " + iceCreamDoctrine.rootLayer.name,
+            content: [...iceCreamDoctrine.rootLayer.phases]
+          },
+          {
+            title: "PRIMARY LAWS",
+            content: iceCreamDoctrine.primaryLaws.map(law => `${law.name}: ${law.rule}`)
+          },
+          {
+            title: "SIXES CORE STRUCTURE",
+            content: iceCreamDoctrine.sixesCoreStructure.map(s => `Slot ${s.slot}: ${s.name} — ${s.role}`)
+          },
+          {
+            title: "VALIDATION: POST-PREP",
+            content: [...iceCreamDoctrine.validationCheckpoints.postPrep]
+          },
+          {
+            title: "VALIDATION: PRE-SERVICE",
+            content: [...iceCreamDoctrine.validationCheckpoints.preService]
+          },
+          {
+            title: "VALIDATION: AT-PASS",
+            content: [...iceCreamDoctrine.validationCheckpoints.atPass]
+          },
+          {
+            title: "OPERATOR RULES",
+            content: [...iceCreamDoctrine.operatorRules]
+          },
+          {
+            title: "ENGINE STATUS",
+            content: [
+              `Status: ${iceCreamDoctrine.status}`,
+              `Version: ${iceCreamDoctrine.version}`,
+              `Parent: ${iceCreamDoctrine.parentSystem}`,
+              `Linked Recipes: ${iceCreamDoctrine.linkedRecipeEngine}`
+            ],
+            quote: iceCreamDoctrine.finalLock
+          }
+        ]
+      },
+      {
+        name: iceCreamRecipes.title,
+        subtitle: `v${iceCreamRecipes.version} | Status: ${iceCreamRecipes.status}`,
+        sections: [
+          {
+            title: "RECIPE SYSTEM METADATA",
+            content: [
+              `ID: ${iceCreamRecipes.id}`,
+              `Parent Doctrine: ${iceCreamRecipes.parentDoctrine}`,
+              `Status: ${iceCreamRecipes.status}`,
+              `Version: ${iceCreamRecipes.version}`
+            ]
+          },
+          {
+            title: "SERVICE WINDOW",
+            content: [
+              `Storage: ${iceCreamRecipes.globalServiceWindow.storageTemperature}`,
+              `Scoop: ${iceCreamRecipes.globalServiceWindow.scoopTemperature}`,
+              `Draw: ${iceCreamRecipes.globalServiceWindow.drawTemperature}`,
+              `Dairy Ageing: ${iceCreamRecipes.globalServiceWindow.dairyAgeingWindow}`,
+              `Sorbet Ageing: ${iceCreamRecipes.globalServiceWindow.sorbetAgeingWindow}`
+            ],
+            quote: iceCreamRecipes.finalLock
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export const BURGER_ENGINE_PATCH = {

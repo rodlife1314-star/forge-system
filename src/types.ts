@@ -8,14 +8,24 @@ export interface Larousse {
 
 export interface Fellini {
   identity: string;
-  pressurePoint: string;
-  watchPoint: string;
+  pressurePoint?: string;
+  watchPoint?: string;
   controlLaw?: string;
+  stabiliserHydrationLaw?: string;
   passSignal?: string;
   failureSignal?: string;
   passSignals?: string[];
   failSignals?: string[];
   autoReject?: string[];
+  validationPoints?: {
+    postPrep?: string;
+    preService?: string;
+    atPass?: string;
+  };
+  criticalAdditions?: string[];
+  repeatability?: string;
+  scalability?: string;
+  stability?: string;
   verdict?: string;
   validationPoint?: ("postPrep" | "preService" | "atPass")[];
   conversionAction?: string;
@@ -46,7 +56,13 @@ export interface ExecutionCard {
   reset: string[];
 }
 
+export interface YieldBlock {
+  sixPortions: string;
+  twentyPortions: string;
+}
+
 export interface DishItem {
+  id: string;
   name: string;
   station: string;
   allergens: string[];
@@ -63,6 +79,7 @@ export interface DishItem {
   cookTime?: string;
   reheatMethod?: string;
   batchYield?: string;
+  yieldBlock?: YieldBlock;
   portionTool?: string;
   shelfLife?: string;
   passHoldLimit?: string;
@@ -71,8 +88,11 @@ export interface DishItem {
   dependencies?: string[];
   larousse?: Larousse;
   fellini?: Fellini;
-  menuLayers?: MenuLayers;
-  specLayers?: SpecLayers;
+  escoffier?: {
+    principle: string;
+    brigadeStation: string;
+    refinementNote: string;
+  };
   mep6x6?: {
     core: string;
     sauce: string;

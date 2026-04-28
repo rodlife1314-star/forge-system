@@ -22,7 +22,18 @@ export const OperatorPrintCard: React.FC<PrintProps> = ({ item }) => {
         </div>
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-6 border-b-2 border-black pb-4 segment">
-          {(item as any).prepLevel ? (
+          {item.yieldBlock ? (
+            <>
+              <div>
+                <div className="text-[8px] font-bold text-emerald-600 uppercase tracking-widest">Yield (6)</div>
+                <div className="text-[14px] font-black uppercase">{item.yieldBlock.sixPortions}</div>
+              </div>
+              <div>
+                <div className="text-[8px] font-bold text-emerald-600 uppercase tracking-widest">Yield (20)</div>
+                <div className="text-[14px] font-black uppercase">{item.yieldBlock.twentyPortions}</div>
+              </div>
+            </>
+          ) : (item as any).prepLevel ? (
             <>
               <div>
                 <div className="text-[8px] font-bold text-orange-600 uppercase tracking-widest">Prep Level (6)</div>
@@ -218,7 +229,20 @@ export const OperatorPrintCard: React.FC<PrintProps> = ({ item }) => {
           <div className="space-y-4">
             <section>
               <div className="text-[10px] tracking-widest font-black border-b border-black mb-2">PASS CRITERIA</div>
-              <div className="text-[12px] font-black uppercase leading-tight">{item.pass}</div>
+              <div className="text-[11px] font-black uppercase leading-tight">
+                {item.passCriteria ? (
+                  <div className="space-y-0.5">
+                    {item.passCriteria.map((s, i) => (
+                      <div key={i} className="flex gap-1">
+                        <span>•</span>
+                        <span>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  item.pass || "Not defined"
+                )}
+              </div>
             </section>
             <section>
               <div className="text-[10px] tracking-widest font-black border-b border-black mb-2">ALLERGENS</div>
@@ -248,12 +272,70 @@ export const OperatorPrintCard: React.FC<PrintProps> = ({ item }) => {
 };
 
 export const UnitSpecificationPrint: React.FC<PrintProps> = ({ item }) => {
-  const formatValue = (v: any) => {
-    if (Array.isArray(v)) return v.join(" · ");
-    if (typeof v === 'object' && v !== null) {
-      return Object.entries(v).map(([k, val]) => `${k}: ${val}`).join(" · ");
+  const renderSafeValue = (value: unknown): React.ReactNode => {
+    if (value === null || value === undefined) return "—";
+
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      return String(value);
     }
-    return v;
+
+    if (Array.isArray(value)) {
+      return (
+        <div className="space-y-1">
+          {value.map((item, index) => {
+            if (
+              item &&
+              typeof item === "object" &&
+              "name" in item &&
+              ("six" in item || "twenty" in item)
+            ) {
+              const ingredient = item as {
+                name?: string;
+                six?: number | string;
+                twenty?: number | string;
+                unit?: string;
+              };
+
+              return (
+                <div key={index} className="text-[11px] font-bold">
+                  <span>{ingredient.name ?? "Ingredient"}</span>
+                  <span className="mx-1">—</span>
+                  <span>6: {ingredient.six ?? "—"}{ingredient.unit ?? ""}</span>
+                  <span className="mx-2">|</span>
+                  <span>20: {ingredient.twenty ?? "—"}{ingredient.unit ?? ""}</span>
+                </div>
+              );
+            }
+
+            return (
+              <div key={index} className="text-[11px] flex items-start gap-1">
+                  <span>•</span>
+                  <span>{renderSafeValue(item)}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (typeof value === "object") {
+      return (
+        <div className="space-y-2 border-l-2 border-black/10 pl-3">
+          {Object.entries(value as Record<string, unknown>).map(([key, nestedValue]) => (
+            <div key={key}>
+              <div className="text-[9px] uppercase font-bold text-gray-500 mb-0.5">{key}</div>
+              <div className="pl-2">{renderSafeValue(nestedValue)}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return String(value);
   };
 
   const Header = ({ title }: { title: string }) => (
@@ -288,6 +370,18 @@ export const UnitSpecificationPrint: React.FC<PrintProps> = ({ item }) => {
             <section className="segment">
               <h3 className="text-[10px] tracking-widest font-black border-b border-black mb-2 uppercase">UNIT METRICS</h3>
               <div className="text-[13px] space-y-1">
+                {item.yieldBlock && (
+                  <div className="grid grid-cols-2 gap-4 mb-4 bg-emerald-50 p-3 border border-emerald-200 rounded">
+                    <div>
+                      <div className="text-[9px] font-bold text-emerald-600 uppercase">Batch Yield (6)</div>
+                      <div className="text-[16px] font-black">{item.yieldBlock.sixPortions}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-bold text-emerald-600 uppercase">Batch Yield (20)</div>
+                      <div className="text-[16px] font-black">{item.yieldBlock.twentyPortions}</div>
+                    </div>
+                  </div>
+                )}
                 {(item as any).portion && <p><span className="font-bold">Portion:</span> {(item as any).portion}</p>}
                 {(item as any).prepLevel ? (
                   <>
@@ -298,30 +392,48 @@ export const UnitSpecificationPrint: React.FC<PrintProps> = ({ item }) => {
                   (item as any).batchYield && <p><span className="font-bold">Yield:</span> {(item as any).batchYield}</p>
                 )}
                 {(item as any).shelfLife && <p><span className="font-bold">Shelf Life:</span> {(item as any).shelfLife}</p>}
-                {(item as any).ingredients && <p><span className="font-bold">Ingredients:</span> {(item as any).ingredients}</p>}
+                {(item as any).ingredients && (
+                  <div className="mt-2">
+                    <span className="font-bold block mb-1">Ingredients:</span>
+                    <div className="pl-4">{renderSafeValue((item as any).ingredients)}</div>
+                  </div>
+                )}
+                {(item as any).serviceNotes && (
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                    <div className="text-[9px] font-bold text-blue-600 uppercase mb-1">Service Notes</div>
+                    <ul className="text-[11px] space-y-1">
+                      {(item as any).serviceNotes.map((note: string, i: number) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="text-blue-400">◈</span>
+                          <span>{note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {(item as any).texture && <p className="text-[#C84B31] font-black"><span className="font-bold uppercase tracking-tighter">Texture Lock:</span> {(item as any).texture}</p>}
               </div>
             </section>
 
             <section className="segment">
               <h3 className="text-[10px] tracking-widest font-black border-b border-black mb-2 uppercase">COMPONENT WEIGHTS</h3>
-              <div className="text-[13px] space-y-1">
-                {(item as any).dough && <p><span className="font-bold">Dough:</span> {formatValue((item as any).dough)}</p>}
-                {(item as any).sauce && <p><span className="font-bold">Sauce:</span> {formatValue((item as any).sauce)}</p>}
-                {(item as any).cheese && <p><span className="font-bold">Cheese:</span> {formatValue((item as any).cheese)}</p>}
-                {(item as any).topping && <p><span className="font-bold">Topping:</span> {formatValue((item as any).topping)}</p>}
-                {(item as any).build && <p><span className="font-bold">Build:</span> {formatValue((item as any).build)}</p>}
+              <div className="text-[13px] space-y-4">
+                {(item as any).dough && <div className="segment"><span className="font-bold block mb-1">Dough:</span> <div className="pl-2">{renderSafeValue((item as any).dough)}</div></div>}
+                {(item as any).sauce && <div className="segment"><span className="font-bold block mb-1">Sauce:</span> <div className="pl-2">{renderSafeValue((item as any).sauce)}</div></div>}
+                {(item as any).cheese && <div className="segment"><span className="font-bold block mb-1">Cheese:</span> <div className="pl-2">{renderSafeValue((item as any).cheese)}</div></div>}
+                {(item as any).topping && <div className="segment"><span className="font-bold block mb-1">Topping:</span> <div className="pl-2">{renderSafeValue((item as any).topping)}</div></div>}
+                {(item as any).build && <div className="segment"><span className="font-bold block mb-1">Build:</span> <div className="pl-2">{renderSafeValue((item as any).build)}</div></div>}
               </div>
             </section>
 
             <section className="segment">
               <h3 className="text-[10px] tracking-widest font-black border-b border-black mb-2 uppercase">COOK PARAMETERS</h3>
-              <div className="text-[13px] space-y-1">
-                {(item as any).cook && <p><span className="font-bold">Cook:</span> {formatValue((item as any).cook)}</p>}
-                {(item as any).method && <p><span className="font-bold">Method:</span> {formatValue((item as any).method)}</p>}
-                {(item as any).fry && <p><span className="font-bold">Fry:</span> {formatValue((item as any).fry)}</p>}
-                {(item as any).cookTemp && <p><span className="font-bold">Temp:</span> {formatValue((item as any).cookTemp)}</p>}
-                {(item as any).cookTime && <p><span className="font-bold">Time:</span> {formatValue((item as any).cookTime)}</p>}
+              <div className="text-[13px] space-y-4">
+                {(item as any).cook && <div className="segment"><span className="font-bold block mb-1">Cook:</span> <div className="pl-2">{renderSafeValue((item as any).cook)}</div></div>}
+                {(item as any).method && <div className="segment"><span className="font-bold block mb-1">Method:</span> <div className="pl-2">{renderSafeValue((item as any).method)}</div></div>}
+                {(item as any).fry && <div className="segment"><span className="font-bold block mb-1">Fry:</span> <div className="pl-2">{renderSafeValue((item as any).fry)}</div></div>}
+                {(item as any).cookTemp && <p><span className="font-bold">Temp:</span> {renderSafeValue((item as any).cookTemp)}</p>}
+                {(item as any).cookTime && <p><span className="font-bold">Time:</span> {renderSafeValue((item as any).cookTime)}</p>}
               </div>
             </section>
           </div>
@@ -342,7 +454,20 @@ export const UnitSpecificationPrint: React.FC<PrintProps> = ({ item }) => {
 
             <section className="segment">
               <h3 className="text-[10px] tracking-widest font-black border-b border-black mb-2 uppercase">PASS CRITERIA</h3>
-              <p className="text-[13px] font-bold leading-tight uppercase">{item.pass || "Not defined"}</p>
+              <div className="text-[11px] font-bold leading-tight uppercase">
+                {item.passCriteria ? (
+                  <div className="space-y-0.5">
+                    {item.passCriteria.map((s, i) => (
+                      <div key={i} className="flex gap-1">
+                        <span>•</span>
+                        <span>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  item.pass || "Not defined"
+                )}
+              </div>
             </section>
           </div>
         </div>
@@ -351,47 +476,100 @@ export const UnitSpecificationPrint: React.FC<PrintProps> = ({ item }) => {
 
       {/* PAGE 2: FELLINI LAYER */}
       {item.fellini && (
-        <div className="print-root print-page page a4 bg-white text-black font-mono print-section-a4 break-after-page flex flex-col">
+        <div className="print-root print-page page a4 bg-white text-black font-mono print-section-a4 break-after-page flex flex-col p-12">
           <Header title="FELLINI LIVE CONTROL" />
           <div className="flex-1 segment">
-            <div className="grid grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-3 gap-8 mb-8">
               <div className="col-span-2">
                 <div className="text-[9px] font-bold tracking-[0.3em] text-[#6b7280] mb-1 uppercase">IDENTITY</div>
                 <p className="text-[18px] font-black uppercase italic">"{item.fellini.identity}"</p>
               </div>
-              <div className="border-l-2 border-[#C84B31] pl-4">
-                <div className="text-[9px] font-bold tracking-[0.3em] text-[#C84B31] mb-1 uppercase">RECOVERY MOVE</div>
-                <p className="text-[14px] font-black uppercase text-[#C84B31]">{item.fellini.recoveryMove}</p>
-              </div>
+              {item.fellini.recoveryMove && (
+                <div className="border-l-2 border-[#C84B31] pl-4">
+                  <div className="text-[9px] font-bold tracking-[0.3em] text-[#C84B31] mb-1 uppercase">RECOVERY MOVE</div>
+                  <p className="text-[14px] font-black uppercase text-[#C84B31]">{item.fellini.recoveryMove}</p>
+                </div>
+              )}
             </div>
             
-            <div className="grid grid-cols-2 gap-12 mt-12">
-              <div className="space-y-8">
-                <section>
-                  <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">PRESSURE POINT</div>
-                  <p className="text-[13px] font-bold uppercase leading-tight">{item.fellini.pressurePoint}</p>
-                </section>
-                <section>
-                  <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">WATCH POINT</div>
-                  <p className="text-[13px] font-bold uppercase leading-tight">{item.fellini.watchPoint}</p>
-                </section>
+            <div className="grid grid-cols-2 gap-8 mt-8">
+              <div className="space-y-6">
+                {item.fellini.pressurePoint && (
+                  <section>
+                    <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">PRESSURE POINT</div>
+                    <p className="text-[13px] font-bold uppercase leading-tight">{item.fellini.pressurePoint}</p>
+                  </section>
+                )}
+                {item.fellini.watchPoint && (
+                  <section>
+                    <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">WATCH POINT</div>
+                    <p className="text-[13px] font-bold uppercase leading-tight">{item.fellini.watchPoint}</p>
+                  </section>
+                )}
+                {item.fellini.stabiliserHydrationLaw && (
+                  <section>
+                    <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">HYDRATION LAW</div>
+                    <p className="text-[13px] font-bold uppercase leading-tight italic">{item.fellini.stabiliserHydrationLaw}</p>
+                  </section>
+                )}
               </div>
-              <div className="space-y-8">
-                <section>
-                  <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">PASS SIGNAL (VISUAL)</div>
-                  <p className="text-[13px] font-bold uppercase leading-tight text-green-700">{item.fellini.passSignal}</p>
-                </section>
-                <section>
-                  <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">FAILURE SIGNAL (REJECT)</div>
-                  <p className="text-[13px] font-bold uppercase leading-tight text-red-700">{item.fellini.failureSignal}</p>
-                </section>
+              <div className="space-y-6">
+                {item.fellini.passSignal && (
+                  <section>
+                    <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">PASS SIGNAL (VISUAL)</div>
+                    <p className="text-[13px] font-bold uppercase leading-tight text-green-700">{item.fellini.passSignal}</p>
+                  </section>
+                )}
+                {item.fellini.failureSignal && (
+                  <section>
+                    <div className="text-[10px] font-bold tracking-[0.3em] text-[#6b7280] mb-2 uppercase border-b border-black">FAILURE SIGNAL (REJECT)</div>
+                    <p className="text-[13px] font-bold uppercase leading-tight text-red-700">{item.fellini.failureSignal}</p>
+                  </section>
+                )}
               </div>
             </div>
 
-            <div className="mt-16 p-6 border-4 border-black bg-gray-50 italic">
+            <div className="mt-10 p-6 border-4 border-black bg-gray-50">
               <div className="text-[10px] font-black tracking-widest mb-2 uppercase">CONTROL LAW</div>
               <p className="text-[16px] font-black uppercase leading-tight">{item.fellini.controlLaw || "---"}</p>
             </div>
+
+            {item.fellini.validationPoints && (
+              <div className="mt-8 grid grid-cols-3 gap-4">
+                {Object.entries(item.fellini.validationPoints).map(([key, value]) => (
+                  <section key={key} className="border border-black p-3 bg-white">
+                    <div className="text-[8px] font-bold tracking-widest text-[#6b7280] mb-1 uppercase">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                    <p className="text-[11px] font-bold uppercase leading-tight">{value as string}</p>
+                  </section>
+                ))}
+              </div>
+            )}
+
+            {item.fellini.autoReject && (
+              <div className="mt-8 p-4 border-2 border-red-600 bg-red-50">
+                <div className="text-[10px] font-black tracking-widest mb-2 uppercase text-red-600">AUTO REJECT PROTOCOL</div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                  {item.fellini.autoReject.map((r, i) => (
+                    <div key={i} className="text-[11px] font-black uppercase flex gap-2">
+                       <span>❌</span> {r}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {item.fellini.criticalAdditions && (
+              <div className="mt-8 p-4 border-2 border-emerald-600 bg-emerald-50">
+                <div className="text-[10px] font-black tracking-widest mb-2 uppercase text-emerald-600">CRITICAL ADDITIONS</div>
+                <div className="space-y-1">
+                  {item.fellini.criticalAdditions.map((a, i) => (
+                    <div key={i} className="text-[11px] font-bold uppercase flex gap-2">
+                       <span>▶</span> {a}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <Footer layer="FELLINI CONTROL" />
         </div>
@@ -461,7 +639,7 @@ export const PrintPackDocument: React.FC<{ items: DishItem[]; engineLabel: strin
       </div>
 
       {items.map((item) => (
-        <UnitSpecificationPrint key={item.name} item={item} />
+        <UnitSpecificationPrint key={item.id} item={item} />
       ))}
     </div>
   );
@@ -572,7 +750,7 @@ export const WeaponSystemPack: React.FC<{ items: DishItem[]; engineLabel: string
       </div>
 
       {items.map((item) => (
-        <React.Fragment key={item.name}>
+        <React.Fragment key={item.id}>
           {/* A4 Section Header */}
           <div className="print-page page a4 bg-[#D46E8D] flex flex-col items-center justify-center text-center p-20">
             <h1 className="text-8xl font-black text-white uppercase tracking-tighter mb-4">{item.name}</h1>
@@ -633,7 +811,7 @@ export const FullSystemPackDocument: React.FC<{ engines: Record<string, Engine> 
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-2">
                 {eng.items.map((item: any) => (
-                  <div key={item.name} className="flex justify-between items-baseline border-b border-dotted border-gray-300 pb-1">
+                  <div key={item.id} className="flex justify-between items-baseline border-b border-dotted border-gray-300 pb-1">
                     <span className="text-[12px] uppercase font-bold">{item.name}</span>
                     <span className="text-[10px] text-gray-500 italic">{item.station}</span>
                   </div>
@@ -655,7 +833,7 @@ export const FullSystemPackDocument: React.FC<{ engines: Record<string, Engine> 
           </div>
           
           {eng.items.map((item: any) => (
-            <UnitSpecificationPrint key={item.name} item={item} />
+            <UnitSpecificationPrint key={item.id} item={item} />
           ))}
         </React.Fragment>
       ))}

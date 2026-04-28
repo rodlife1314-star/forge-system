@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Pizza, 
@@ -14,6 +14,7 @@ import {
   Salad,
   Utensils,
   Cake,
+  IceCream,
   Menu,
   Printer,
   Download,
@@ -32,6 +33,9 @@ import { ExportWeaponPack as runWeaponExport } from "./lib/exportWeaponPack";
 import { OperatorPrintCard, UnitSpecificationPrint, PrintPackDocument, FullSystemPackDocument, WeaponSystemPack } from "./components/PrintViews";
 import { exportToPDF } from "./services/pdfService";
 import { ValidationStatusLayer } from "./components/ValidationStatusLayer";
+import { generateIceCreamSupply, getSupplierFriendlyMapping, formatQuantity } from "./forge/engines/supplyEngine";
+import { calculateBatchCost, formatCostReport } from "./forge/engines/costEngine";
+import { calculatePricing, getPricingScenarios } from "./forge/engines/pricingEngine";
 
 export default function App() {
   const [activeEngine, setActiveEngine] = useState("all");
@@ -44,6 +48,7 @@ export default function App() {
   const [locked, setLocked] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [printMode, setPrintMode] = useState<null | "operator" | "unit" | "pack" | "system" | "weapon">(null);
+  const [showSupplyMatrix, setShowSupplyMatrix] = useState(false);
   const [printItems, setPrintItems] = useState<DishItem[]>([]);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -70,6 +75,17 @@ export default function App() {
   const engine = activeEngine === "all" 
     ? { label: "MASTER BIBLE", color: "#FFB347", station: "ALL STATIONS", items: Object.values(ENGINES).flatMap(e => e.items) }
     : ENGINES[activeEngine];
+
+  // Helper to clear supply matrix view when changing engine
+  const handleEngineChange = (key: string) => {
+    setActiveEngine(key);
+    setShowSupplyMatrix(false);
+    setShowValidationStatus(false);
+    setSelectedItem(null);
+    setSelectedLayer(null);
+    setJemmaOutput("");
+    setMobileMenuOpen(false);
+  };
 
   const runJemma = async (mode: JemmaMode, item: DishItem | null = null) => {
     setJemmaLoading(true);
@@ -132,29 +148,86 @@ export default function App() {
     }, 500);
   };
 
+  const renderSafeValue = (value: unknown): React.ReactNode => {
+    if (value === null || value === undefined) return "—";
+
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      return String(value);
+    }
+
+    if (Array.isArray(value)) {
+      return (
+        <div className="space-y-1">
+          {value.map((item, index) => {
+            if (
+              item &&
+              typeof item === "object" &&
+              "name" in item &&
+              ("six" in item || "twenty" in item)
+            ) {
+              const ingredient = item as {
+                name?: string;
+                six?: number | string;
+                twenty?: number | string;
+                unit?: string;
+              };
+
+              return (
+                <div key={index} className="text-[13px] font-mono">
+                  <span className="font-bold text-text-primary">{ingredient.name ?? "Ingredient"}</span>
+                  <span className="text-text-mute mx-1">—</span>
+                  <span className="text-emerald-400">6: {ingredient.six ?? "—"}{ingredient.unit ?? ""}</span>
+                  <span className="text-text-mute mx-2">|</span>
+                  <span className="text-emerald-500 font-bold">20: {ingredient.twenty ?? "—"}{ingredient.unit ?? ""}</span>
+                </div>
+              );
+            }
+
+            return (
+              <div key={index} className="text-[13px] font-mono flex items-start gap-2">
+                <span className="text-text-mute shrink-0">•</span>
+                <span>{renderSafeValue(item)}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (typeof value === "object") {
+      return (
+        <div className="space-y-2 border-l border-border-ui/30 pl-3">
+          {Object.entries(value as Record<string, unknown>).map(([key, nestedValue]) => (
+            <div key={key}>
+              <div className="text-[10px] uppercase tracking-tighter text-text-mute font-bold mb-1">{key}</div>
+              <div className="pl-2">{renderSafeValue(nestedValue)}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return String(value);
+  };
+
   const renderSpecFields = (item: DishItem) => {
-    const skip = ["name", "allergens", "pass", "station", "larousse", "fellini", "executionCard", "chefNote", "failurePoints"];
+    const skip = ["name", "allergens", "pass", "passCriteria", "station", "larousse", "fellini", "executionCard", "chefNote", "failurePoints", "serviceNotes", "yieldBlock"];
     return Object.entries(item)
       .filter(([k]) => !skip.includes(k))
       .map(([k, v]) => {
-        let displayValue: any = v;
-        if (Array.isArray(v)) {
-          displayValue = v.join(" · ");
-        } else if (v !== null && typeof v === "object") {
-          displayValue = Object.entries(v)
-            .map(([subK, subV]) => `${subK}: ${subV}`)
-            .join(" · ");
-        }
-
         const isFinancial = ["price", "cost", "gp"].includes(k);
 
         return (
-          <div key={k} className="flex flex-col sm:flex-row sm:gap-4 mb-3 group">
+          <div key={k} className="flex flex-col sm:flex-row sm:gap-4 mb-4 group">
             <div className={`sm:w-32 shrink-0 text-[11px] font-mono uppercase tracking-wider pt-0.5 group-hover:text-text-soft transition-colors ${isFinancial ? 'text-emerald-500 font-black' : 'text-text-mute'}`}>
               {k}
             </div>
-            <div className={`text-[13px] leading-relaxed font-mono ${isFinancial ? 'text-emerald-400 font-black italic' : 'text-text-soft'}`}>
-              {displayValue}
+            <div className={`flex-1 ${isFinancial ? 'text-emerald-400 font-black italic font-mono' : ''}`}>
+              {renderSafeValue(v)}
             </div>
           </div>
         );
@@ -179,13 +252,13 @@ export default function App() {
               <div>
                 <div className="text-[11px] text-text-soft font-bold mb-1 opacity-60">SETUP:</div>
                 <div className="text-[13px] text-text-soft pl-4">
-                  {card.setup.map((s: string, i: number) => <div key={i}>• {s}</div>)}
+                  {card.setup.map((s: any, i: number) => <div key={i}>• {renderSafeValue(s)}</div>)}
                 </div>
               </div>
               <div>
                 <div className="text-[11px] text-text-soft font-bold mb-1 opacity-60">BUILD SEQUENCE:</div>
                 <div className="text-[13px] text-text-primary px-3 py-2 bg-bg/40 border-l border-orange-500/30">
-                  {card.build.map((s: string, i: number) => <div key={i} className="mb-1">{s}</div>)}
+                  {card.build.map((s: any, i: number) => <div key={i} className="mb-1">{renderSafeValue(s)}</div>)}
                 </div>
               </div>
             </div>
@@ -196,13 +269,13 @@ export default function App() {
               <div>
                 <div className="text-[11px] font-bold mb-1 text-rose-400">FAILURES:</div>
                 <div className="text-[13px] text-rose-300 pl-4">
-                  {card.failures.map((s: string, i: number) => <div key={i}>❌ {s}</div>)}
+                  {card.failures.map((s: any, i: number) => <div key={i}>❌ {renderSafeValue(s)}</div>)}
                 </div>
               </div>
               <div className="pt-2 border-t border-border-ui">
                 <div className="text-[11px] font-bold mb-1 text-text-soft">RESET TRIGGER:</div>
                 <div className="text-[13px] text-text-mute pl-4 italic">
-                  {card.reset.map((s: string, i: number) => <div key={i}>🔄 {s}</div>)}
+                  {card.reset.map((s: any, i: number) => <div key={i}>🔄 {renderSafeValue(s)}</div>)}
                 </div>
               </div>
             </div>
@@ -215,14 +288,14 @@ export default function App() {
   const renderLarousseLayer = (larousse: any) => {
     if (!larousse) return null;
 
-    const renderList = (title: string, items: string[]) => (
+    const renderList = (title: string, items: any[]) => (
       <div className="mb-3">
         <div className="text-[9px] text-text-mute tracking-[2px] mb-1.5 uppercase">
           {title}
         </div>
         {items.map((item, i) => (
           <div key={i} className="text-[13px] text-text-soft leading-relaxed mb-1">
-            • {item}
+            • {renderSafeValue(item)}
           </div>
         ))}
       </div>
@@ -251,30 +324,227 @@ export default function App() {
 
     const fields = [
       ["IDENTITY", fellini.identity],
+      ["CONTROL LAW", fellini.controlLaw],
+      ["HYDRATION LAW", fellini.stabiliserHydrationLaw],
       ["PRESSURE POINT", fellini.pressurePoint],
       ["WATCH POINT", fellini.watchPoint],
       ["PASS SIGNAL", fellini.passSignal],
       ["FAILURE SIGNAL", fellini.failureSignal],
       ["RECOVERY MOVE", fellini.recoveryMove],
-    ];
+    ].filter(([_, v]) => v);
 
     return (
-      <div className="bg-[#111315] border border-[#2A2F36] p-4 mt-3 fellini-layer">
-        <div className="text-[10px] tracking-[3px] text-[#FFB347] mb-2.5 font-bold uppercase">
-          🎬 FELLINI — LIVE CONTROL
+      <div className="bg-[#111315] border border-[#2A2F36] p-6 mt-3 fellini-layer rounded-lg shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFB347]/5 rotate-45 translate-x-16 -translate-y-16" />
+        
+        <div className="text-[10px] tracking-[4px] text-[#FFB347] mb-6 font-bold uppercase border-b border-[#FFB347]/20 pb-2 flex justify-between items-center">
+          <span>🎬 FELLINI — LIVE CONTROL</span>
+          <span className="text-[8px] bg-[#FFB347]/10 px-1.5 py-0.5 rounded text-[#FFB347]/60">v2.5.2</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
           {fields.map(([label, value]) => (
-            <div key={label}>
-              <div className="text-[9px] text-[#777] tracking-[1px] mb-1 uppercase font-bold">
+            <div key={label} className={label === 'CONTROL LAW' || label === 'HYDRATION LAW' ? 'sm:col-span-2' : ''}>
+              <div className="text-[9px] text-[#777] tracking-[2px] mb-2 uppercase font-bold">
                 {label}
               </div>
-              <div className={`text-[12px] leading-relaxed ${label === 'RECOVERY MOVE' ? 'text-orange-500 font-bold' : 'text-[#EAEAEA]'}`}>
-                {value}
+              <div className={`text-[13px] leading-relaxed ${label === 'RECOVERY MOVE' ? 'text-orange-500 font-bold' : label.includes('LAW') ? 'text-white italic' : 'text-[#EAEAEA]'}`}>
+                {renderSafeValue(value)}
               </div>
             </div>
           ))}
+
+          {fellini.validationPoints && (
+            <div className="sm:col-span-2 mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              {fellini.validationPoints.postPrep && (
+                <div className="bg-white/5 p-3 rounded border border-white/10">
+                  <div className="text-[8px] text-[#777] tracking-widest uppercase mb-1 font-bold">POST-PREP</div>
+                  <div className="text-[11px] text-emerald-400/80 leading-snug">{fellini.validationPoints.postPrep}</div>
+                </div>
+              )}
+              {fellini.validationPoints.preService && (
+                <div className="bg-white/5 p-3 rounded border border-white/10">
+                  <div className="text-[8px] text-[#777] tracking-widest uppercase mb-1 font-bold">PRE-SERVICE</div>
+                  <div className="text-[11px] text-emerald-400/80 leading-snug">{fellini.validationPoints.preService}</div>
+                </div>
+              )}
+              {fellini.validationPoints.atPass && (
+                <div className="bg-white/5 p-3 rounded border border-white/10">
+                  <div className="text-[8px] text-[#777] tracking-widest uppercase mb-1 font-bold">AT PASS</div>
+                  <div className="text-[11px] text-emerald-400/80 leading-snug">{fellini.validationPoints.atPass}</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {fellini.autoReject && (
+            <div className="sm:col-span-2 mt-4 p-4 border border-rose-500/30 bg-rose-500/5 rounded">
+              <div className="text-[9px] text-rose-500 tracking-[2px] mb-2 uppercase font-bold">AUTO REJECT PROTOCOL</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+                {fellini.autoReject.map((r: string, i: number) => (
+                  <div key={i} className="text-[11px] text-rose-400/70 flex gap-2">
+                    <span className="text-rose-600">⚠</span> {r}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {fellini.criticalAdditions && (
+            <div className="sm:col-span-2 mt-4 p-4 border border-emerald-500/30 bg-emerald-500/5 rounded">
+              <div className="text-[9px] text-emerald-500 tracking-[2px] mb-2 uppercase font-bold">CRITICAL ADDITIONS</div>
+              <div className="space-y-1.5">
+                {fellini.criticalAdditions.map((a: string, i: number) => (
+                  <div key={i} className="text-[11px] text-emerald-200/80 flex gap-2">
+                    <span className="text-emerald-500">▶</span> {a}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderServiceNotes = (notes: string[]) => {
+    if (!notes || notes.length === 0) return null;
+    return (
+      <div className="bg-blue-500/5 border border-blue-500/20 p-6 rounded-lg mt-6">
+        <div className="text-[10px] tracking-[0.3em] text-blue-500 uppercase mb-4 font-bold flex items-center gap-2">
+          <Terminal size={14} /> SERVICE NOTES
+        </div>
+        <div className="space-y-2">
+          {notes.map((note: any, i: number) => (
+            <div key={i} className="text-[13px] text-blue-300/80 flex gap-2">
+              <span className="text-blue-500">◈</span> {renderSafeValue(note)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSupplyMatrix = () => {
+    const iceCreamEngine = ENGINES["iceCream"];
+    const dessertEngine = ENGINES["dessert"];
+    
+    const allRecipes = [...(iceCreamEngine?.items || []), ...(dessertEngine?.items || [])];
+    const stock = generateIceCreamSupply(allRecipes);
+    const orderList = getSupplierFriendlyMapping(stock);
+    const costData = calculateBatchCost(stock);
+    const costReport = formatCostReport(costData);
+
+    const totalPortions = allRecipes.length * 20;
+    const costPerPortion = costData.totalCost / totalPortions;
+    const pricing = getPricingScenarios(costPerPortion);
+
+    return (
+      <div className="max-w-4xl mx-auto pb-20">
+        <div className="border-b-2 border-emerald-500 pb-6 mb-10">
+          <div className="text-[10px] tracking-[0.4em] text-text-mute uppercase mb-2">FORGE SUPPLY & PRICING ENGINE v1.0</div>
+          <h1 className="text-3xl font-black tracking-tighter text-emerald-500 flex items-center gap-4">
+            <Database size={32} />
+            SUPPLY MATRIX (BATCH 20 AGGREGATED)
+          </h1>
+        </div>
+
+        {/* Pricing Scenarios */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+          <div className="bg-panel border-2 border-emerald-500 p-6 rounded-lg shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[9px] font-black px-2 py-0.5 uppercase">PREMIUM</div>
+            <div className="text-[10px] text-text-mute uppercase tracking-widest mb-1">SELL PRICE</div>
+            <div className="text-4xl font-black text-emerald-400">£{pricing.premium.sellPrice.toFixed(2)}</div>
+            <div className="text-[11px] text-emerald-500/60 font-bold mt-2 uppercase tracking-tighter">
+              GP: {(pricing.premium.actualGP * 100).toFixed(1)}% | COST: £{costPerPortion.toFixed(2)}
+            </div>
+          </div>
+          <div className="bg-panel border border-emerald-500/30 p-6 rounded-lg shadow-lg relative overflow-hidden">
+             <div className="absolute top-0 right-0 bg-emerald-500/20 text-emerald-500 text-[9px] font-black px-2 py-0.5 uppercase">MARKET</div>
+            <div className="text-[10px] text-text-mute uppercase tracking-widest mb-1">SELL PRICE</div>
+            <div className="text-4xl font-black text-white">£{pricing.market.sellPrice.toFixed(2)}</div>
+            <div className="text-[11px] text-text-mute font-bold mt-2 uppercase tracking-tighter">
+              GP: {(pricing.market.actualGP * 100).toFixed(1)}% | COST: £{costPerPortion.toFixed(2)}
+            </div>
+          </div>
+          <div className="bg-panel border border-emerald-500/10 p-6 rounded-lg shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-emerald-500/5 text-emerald-500/40 text-[9px] font-black px-2 py-0.5 uppercase">VOLUME</div>
+            <div className="text-[10px] text-text-mute uppercase tracking-widest mb-1">SELL PRICE</div>
+            <div className="text-4xl font-black text-text-mute">£{pricing.volume.sellPrice.toFixed(2)}</div>
+            <div className="text-[11px] text-text-mute font-bold mt-2 uppercase tracking-tighter">
+              GP: {(pricing.volume.actualGP * 100).toFixed(1)}% | COST: £{costPerPortion.toFixed(2)}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="space-y-8">
+            <div className="bg-panel border border-border-ui p-8 rounded-lg shadow-xl relative overflow-hidden">
+              <div className="text-[11px] tracking-[0.3em] text-text-mute uppercase mb-6 border-b border-border-ui pb-3">AGGREGATED STOCK LIST</div>
+              <div className="space-y-4">
+                {Object.entries(stock).sort((a,b) => a[0].localeCompare(b[0])).map(([name, data]) => (
+                  <div key={name} className="flex justify-between items-center group">
+                    <span className="text-[14px] text-text-soft font-bold group-hover:text-white transition-colors">{name}</span>
+                    <span className="text-[14px] font-mono text-emerald-400">
+                      {formatQuantity(data.quantity, data.unit)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-panel border border-border-ui p-8 rounded-lg shadow-xl relative overflow-hidden">
+              <div className="text-[11px] tracking-[0.3em] text-rose-500/70 uppercase mb-6 border-b border-border-ui pb-3">COST BREAKDOWN</div>
+              <div className="space-y-4">
+                {costReport.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center group">
+                    <span className="text-[13px] text-text-mute group-hover:text-text-soft transition-colors">{item.name}</span>
+                    <span className="text-[13px] font-mono text-rose-400/80">{item.cost}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#111] border-2 border-emerald-500/30 p-8 rounded-lg shadow-2xl h-fit sticky top-4">
+            <div className="text-[11px] tracking-[0.3em] text-emerald-500 uppercase mb-6 border-b border-emerald-500/20 pb-3 flex justify-between items-center">
+              <span>CLEAN ORDER VERSION</span>
+              <span className="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded">SUPPLIER DIRECT</span>
+            </div>
+            <div className="space-y-4">
+              {orderList.map((item, idx) => (
+                <div key={idx} className="flex gap-4 items-start group">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/40 mt-2 shrink-0" />
+                  <div>
+                    <div className="text-[14px] font-black text-white group-hover:text-emerald-400 transition-colors">
+                      {item.supplierFormat.split(' — ')[0]}
+                    </div>
+                    <div className="text-[12px] text-emerald-400/60 font-mono italic">
+                      {item.supplierFormat.split(' — ')[1] || '---'}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 pt-6 border-t border-emerald-500/20 text-[11px] text-text-mute italic">
+              * Order quantities adjusted for standard commercial packaging.
+            </div>
+          </div>
+        </div>
+
+        <div className="p-8 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
+          <div className="text-[10px] tracking-[0.3em] text-emerald-400 uppercase mb-4 font-bold flex items-center gap-2">
+            <Zap size={14} /> NEXT PHASE: REVENUE ENGINE
+          </div>
+          <p className="text-[13px] text-emerald-200/60 leading-relaxed mb-4">
+            System unified. Production, Procurement, and Pricing engines locked. Ready to layer daily volume projections and full revenue forecasting.
+          </p>
+          <button 
+            className="px-4 py-2 bg-emerald-500 text-black text-[10px] font-black tracking-widest rounded hover:opacity-90 transition-all active:translate-y-0.5"
+            onClick={() => alert("Revenue Layer incoming...")}
+          >
+            ADD REVENUE LAYER
+          </button>
         </div>
       </div>
     );
@@ -349,6 +619,7 @@ export default function App() {
       case "starters": return <Salad size={16} />;
       case "sides": return <Utensils size={16} />;
       case "dessert": return <Cake size={16} />;
+      case "iceCream": return <IceCream size={16} />;
       case "dashboard": return <Terminal size={16} />;
       case "prep": return <Database size={16} />;
       case "sunday": return <Calendar size={16} />;
@@ -437,7 +708,26 @@ export default function App() {
         `}>
           <div className="border-b border-border-ui">
             <button
-              onClick={() => { setShowValidationStatus(true); setActiveEngine(""); setSelectedItem(null); setSelectedLayer(null); setJemmaOutput(""); setMobileMenuOpen(false); }}
+              onClick={() => { setShowSupplyMatrix(true); setShowValidationStatus(false); setActiveEngine(""); setSelectedItem(null); setSelectedLayer(null); setJemmaOutput(""); setMobileMenuOpen(false); }}
+              className={`
+                w-full text-left px-5 py-4 transition-all flex items-center justify-between group
+                ${showSupplyMatrix ? "bg-emerald-500/10 border-l-[3px] border-emerald-500" : "hover:bg-panel-alt/50 border-l-[3px] border-transparent"}
+              `}
+            >
+              <div>
+                <div className="text-[12px] font-black tracking-[0.2em] flex items-center gap-2 mb-1" style={{ color: showSupplyMatrix ? "#10b981" : "#8B949E" }}>
+                  <Database size={16} /> SUPPLY ENGINE
+                </div>
+                <div className="text-[10px] text-text-mute tracking-wider text-emerald-500/60 font-bold">
+                  PROCUREMENT AGGREGATOR
+                </div>
+              </div>
+            </button>
+          </div>
+
+          <div className="border-b border-border-ui">
+            <button
+              onClick={() => { setShowValidationStatus(true); setShowSupplyMatrix(false); setActiveEngine(""); setSelectedItem(null); setSelectedLayer(null); setJemmaOutput(""); setMobileMenuOpen(false); }}
               className={`
                 w-full text-left px-5 py-4 transition-all flex items-center justify-between group
                 ${showValidationStatus ? "bg-orange-500/10 border-l-[3px] border-orange-500" : "hover:bg-panel-alt/50 border-l-[3px] border-transparent"}
@@ -456,12 +746,12 @@ export default function App() {
 
           <div className="border-b border-border-ui">
             <button
-              onClick={() => { setShowValidationStatus(false); setActiveEngine("all"); setSelectedItem(null); setSelectedLayer(null); setJemmaOutput(""); setMobileMenuOpen(false); }}
+              onClick={() => handleEngineChange("all")}
               className={`
                 w-full text-left px-5 py-6 transition-all flex items-center justify-between group
-                ${activeEngine === "all" && !showValidationStatus ? "bg-orange-500/10" : "hover:bg-panel-alt/50"}
+                ${activeEngine === "all" && !showValidationStatus && !showSupplyMatrix ? "bg-orange-500/10" : "hover:bg-panel-alt/50"}
               `}
-              style={{ borderLeft: `3px solid ${activeEngine === "all" && !showValidationStatus ? "#FFB347" : "transparent"}` }}
+              style={{ borderLeft: `3px solid ${activeEngine === "all" && !showValidationStatus && !showSupplyMatrix ? "#FFB347" : "transparent"}` }}
             >
               <div>
                 <div className="text-[12px] font-black tracking-[0.2em] flex items-center gap-2 mb-1" style={{ color: activeEngine === "all" ? "#FFB347" : "#8B949E" }}>
@@ -503,7 +793,7 @@ export default function App() {
           {Object.entries(ENGINES).map(([key, eng]) => (
             <div key={key} className="border-b border-border-ui">
               <button
-                onClick={() => { setShowValidationStatus(false); setActiveEngine(key); setSelectedItem(null); setSelectedLayer(null); setJemmaOutput(""); setMobileMenuOpen(false); }}
+                onClick={() => handleEngineChange(key)}
                 className={`
                   w-full text-left px-5 py-4 transition-all flex items-center justify-between group
                   ${activeEngine === key ? "bg-panel-alt" : "hover:bg-panel-alt/50"}
@@ -573,7 +863,9 @@ export default function App() {
 
         {/* SPEC PANEL */}
         <section className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-bg/50">
-          {showValidationStatus ? (
+          {showSupplyMatrix ? (
+            renderSupplyMatrix()
+          ) : showValidationStatus ? (
             <ValidationStatusLayer items={Object.values(ENGINES).flatMap(e => e.items)} />
           ) : selectedLayer ? (
             renderOperationalLayer(selectedLayer)
@@ -729,6 +1021,18 @@ export default function App() {
                     <span>UNIT SPECIFICATIONS</span>
                     {selectedItem.category && <span className="text-orange-500/60">{selectedItem.category}</span>}
                   </div>
+                  {selectedItem.yieldBlock && (
+                    <div className="grid grid-cols-2 gap-4 mb-6 bg-emerald-500/5 p-4 border border-emerald-500/10 rounded">
+                      <div>
+                        <div className="text-[9px] text-emerald-500/70 uppercase tracking-[0.2em] mb-1 font-bold">Standard Yield (6)</div>
+                        <div className="text-[20px] font-black text-emerald-400">{selectedItem.yieldBlock.sixPortions}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-emerald-500/70 uppercase tracking-[0.2em] mb-1 font-bold">Scaling Yield (20)</div>
+                        <div className="text-[20px] font-black text-emerald-500">{selectedItem.yieldBlock.twentyPortions}</div>
+                      </div>
+                    </div>
+                  )}
                   <div className="grid gap-1">
                     {renderSpecFields(selectedItem)}
                   </div>
@@ -780,14 +1084,49 @@ export default function App() {
                       Pass Criteria
                     </div>
                     <div className="text-[13px] text-emerald-500 font-bold leading-relaxed tracking-tight uppercase">
-                      {selectedItem.pass}
+                      {selectedItem.passCriteria ? renderSafeValue(selectedItem.passCriteria) : (selectedItem.pass || "Not defined")}
                     </div>
+                  </div>
+
+                  {/* PRICING CARD */}
+                  <div className="bg-panel border border-emerald-500/30 p-6 sm:p-8 rounded-lg shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 bg-emerald-500/10 text-emerald-500 text-[9px] font-black px-2 py-0.5 uppercase tracking-widest">
+                      COMMERCIAL LAYER
+                    </div>
+                    <div className="text-[11px] tracking-[0.3em] text-text-mute uppercase mb-4 flex items-center gap-2">
+                       <Database size={12} className="text-emerald-500" />
+                       PRICING & MARGIN
+                    </div>
+                    {(() => {
+                      const itemStock = generateIceCreamSupply([selectedItem]);
+                      const itemCostData = calculateBatchCost(itemStock);
+                      const itemCostPerPortion = itemCostData.totalCost / 20;
+                      const itemPricing = calculatePricing({ costPerPortion: itemCostPerPortion, targetGP: 0.93 });
+                      
+                      return (
+                        <div className="grid grid-cols-2 gap-6">
+                          <div>
+                            <div className="text-[10px] text-text-mute uppercase mb-1">COST PER PORTION</div>
+                            <div className="text-[18px] font-black text-white">£{itemCostPerPortion.toFixed(2)}</div>
+                          </div>
+                          <div>
+                            <div className="text-[10px] text-text-mute uppercase mb-1">RECOMMENDED SELL</div>
+                            <div className="text-[18px] font-black text-emerald-400">£{itemPricing.sellPrice.toFixed(2)}</div>
+                          </div>
+                          <div className="col-span-2 pt-2 border-t border-border-ui flex justify-between items-center">
+                            <div className="text-[10px] text-text-mute uppercase tracking-widest">GROSS PROFIT (GP)</div>
+                            <div className="text-[14px] font-black text-emerald-500">{(itemPricing.actualGP * 100).toFixed(1)}%</div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
                 {selectedItem.fellini && renderFelliniLayer(selectedItem.fellini)}
                 {selectedItem.executionCard && renderExecutionCardLayer(selectedItem.executionCard)}
                 {selectedItem.larousse && renderLarousseLayer(selectedItem.larousse)}
+                {selectedItem.serviceNotes && renderServiceNotes(selectedItem.serviceNotes as string[])}
               </div>
             </motion.div>
           )}
