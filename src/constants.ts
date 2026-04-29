@@ -387,160 +387,202 @@ export const ENGINES: Record<string, Engine> = {
     items: [
       {
         id: "BURGER-001",
-        name: "Galyons Fire Burger",
-        portion: "230g Patty",
-        price: "£15.50",
-        cost: "£3.85",
-        gp: "75%",
-        ingredients: "Beef Patty (20% Fat) · Brioche · Cheddar · Pickles · Fire Sauce",
-        method: "1. Sear patty (High heat) - Maillard lock. 2. Cloche with cheese (60s). 3. Toast bun (Moisture barrier). 4. Layer: Bun Base -> Fire Sauce -> Pickles -> Patty/Cheese -> Fire Sauce -> Bun Top.",
-        allergens: ["gluten", "dairy", "mustard"],
-        pass: "Bun holds 30s without collapse · cheese fully melted · vibrant sauce line",
+        status: "ACTIVE",
+        name: "Galyons Beef Burger (230g)",
         station: "Grill",
-        larousse: {
-          principle: "The vertical emulsion of fat/acid. Moisture barrier is key.",
-          method: [
-            "Toast bun vigorously to create a moisture barrier.",
-            "Seal patty on high heat for Maillard crust.",
-            "Cloche for 60s with cheese to ensure even melt."
-          ],
-          quality: ["Juicy interior", "Crisp crust", "Acid balance"],
-          faults: ["Soggy bottom", "Raw core", "Burnt bun"],
-          correction: ["Extend resting time to 2 mins for juice redistribution."]
+        portion: "230g Patty",
+        ingredients: "Beef patty (230g / 20% fat) · Brioche bun · American cheese (2 slices) · Lettuce (20g) · Tomato (2 slices) · House burger sauce (30g)",
+        method: "1. Season patty just before cooking. 2. Sear high heat → 5 min first side. 3. Flip once (SINGLE FLIP LAW) → add cheese. 4. Cloche steam 60 sec. 5. Rest 3 min. 6. Toast bun, sauce base/top, stack vertical.",
+        allergens: ["gluten", "dairy"],
+        pass: "Cheese fully melted · Stack stable/vertical · No collapse · Audible bun toast",
+        executionCard: {
+          setup: ["High heat flat top / Grill", "Cloche", "Infrared thermometer", "Offset spatula"],
+          build: ["Toast bun", "Sauce base + top", "Lettuce base", "Tomato", "Patty/Cheese", "Seal top"],
+          timeLaw: "Cook: 10–11 min total | Rest: 3 min | Build: 30 sec",
+          failures: ["Multiple flips (juice loss)", "No rest (soggy/dry finish)", "Overstack (collapse)"],
+          reset: ["Clear station", "Scrape grill", "Check brioche par"]
         },
         fellini: {
-          identity: "High-volume, heat-forward burger.",
-          pressurePoint: "Bun collapse from sauce weight.",
-          watchPoint: "The 'Toast Law'.",
-          passSignal: "Stable stack · glistening meat",
-          failureSignal: "Soggy collapse",
-          recoveryMove: "Re-toast fresh bun if collapse occurs"
+          identity: "Protein Mass & Thermal Control System",
+          controlLaw: "THE SINGLE FLIP LAW: Burger is flipped once only to preserve Maillard crust and ensure maximum juice retention in the 20% fat matrix.",
+          validationPoints: {
+            postPrep: "Patty shape intact (no tears), seasoning applied just-in-time.",
+            preService: "Bun toasted to moisture-barrier stage, garnish chilled/ready.",
+            atPass: "Cheese melted to 'velvet' stage, vertical stack alignment stable."
+          },
+          autoReject: ["Burnt crust", "Cold centre (<55°C if medium)", "Broken vertical stack"],
+          verdict: "PASS"
+        },
+        larousse: {
+          principle: "The vertical emulsion of fat/acid. Moisture barrier is key to structural integrity.",
+          method: [
+            "Maillard reaction must be locked on first side before flip.",
+            "Resting phase (3 min) is non-negotiable for juice redistribution.",
+            "High-heat cloche steam ensure cheese adhesion without overcooking."
+          ],
+          quality: ["Juicy interior", "Clean snap on garnish", "Soft but structured bun"],
+          faults: ["Soggy bottom", "Raw centre", "Grease bleed from un-rested meat"],
+          correction: ["Extend resting time", "Check grill surface temp (target 220°C+)"]
         }
       },
       {
         id: "BURGER-002",
-        name: "Forge Double",
-        portion: "2x 115g Patties",
-        price: "£16.50",
-        cost: "£3.95",
-        gp: "76%",
-        ingredients: "2x Beef Smash Patties · American Cheese · Secret Sauce · Fried Onions · Potato Bun",
-        method: "1. Smash 10kg pressure. 2. Scrape crust. 3. Double cheese layers.",
-        allergens: ["gluten", "dairy"],
-        pass: "Lacy patty edges · molten cheese layers · soft bun hug",
+        status: "ACTIVE",
+        name: "Double Stack Burger (2x150g)",
         station: "Grill",
-        larousse: {
-          principle: "Maillard maximization. Plancha v Plancha recovery.",
-          method: [
-            "Smash with 10kg pressure on first contact.",
-            "Scrape with sharp tool to preserve crust.",
-            "Double cheese instantly on flip."
-          ],
-          quality: ["Lacy edges", "Deep brown crust", "Maximum cheese melt"],
-          faults: ["Grey meat (low heat)", "Dry core", "Poor smash (thick)"],
-          correction: ["Increase plancha temp to 260°C."]
+        portion: "2x 150g Patties",
+        ingredients: "2x Beef patties (150g each) · Brioche bun · American cheese (2 slices) · Pickles (20g) · Burger sauce (30g)",
+        method: "1. Cook patties simultaneously. 2. Flip once (SYNCHRONISATION LAW). 3. Cheese on both. 4. Stack immediately. 5. Compact stack, tight build.",
+        allergens: ["gluten", "dairy"],
+        pass: "Uniform melt · Balanced symmetry · Stable stack · Thermal integrity",
+        executionCard: {
+          setup: ["High heat flat top / Grill", "Cloche", "Offset spatula"],
+          build: ["Simultaneous patty sear", "Paired cheese melt", "Compact vertical stack"],
+          timeLaw: "Cook: 8–9 min | Build: 20 sec",
+          failures: ["Uneven cook (rejection)", "Delay (cold stack)"],
+          reset: ["Clear station", "Scrape grill"]
         },
         fellini: {
-          identity: "Maillard-maximized smash burger.",
-          pressurePoint: "Plancha temp recovery between batches.",
-          watchPoint: "Patty 'lace'.",
-          passSignal: "Irregular crisp edges",
-          failureSignal: "Boiled grey meat",
-          recoveryMove: "Lower batch count per plancha load"
+          identity: "Speed-of-service Double Protein System",
+          controlLaw: "THE SYNCHRONISATION LAW: Both patties must finish simultaneously to ensure unified thermal core and consistent cheese adhesion across the stack.",
+          validationPoints: {
+            postPrep: "Patties equal size/mass, seasoning ready.",
+            preService: "Grill surface temp verified, station clear.",
+            atPass: "Melt symmetry, stack stability, tight build alignment."
+          },
+          autoReject: ["Uneven patties", "Sliding stack", "Cold core in secondary patty"],
+          verdict: "PASS"
+        },
+        larousse: {
+          principle: "Coordinated thermal transformation of multiple protein units.",
+          method: [
+            "Patties must be loaded in synchronized pairs.",
+            "Cheese application must be simultaneous to lock heat.",
+            "The compact build sequence must occur within the 20s window."
+          ],
+          quality: ["Symetrical build", "Even melt", "Compact mouthfeel"],
+          faults: ["Staggered finish", "Loose stack", "Moisture loss from delayed build"],
+          correction: ["Standardize plancha load zones", "Check paired spatula workflow"]
         }
       },
       {
         id: "BURGER-003",
-        name: "Blue & Bacon",
-        portion: "230g Patty",
-        price: "£17.50",
-        cost: "£4.25",
-        gp: "76%",
-        ingredients: "Beef · Stilton · Streaky Bacon · Onion Jam · Brioche",
-        method: "1. Grill to medium-rare. 2. Melt Stilton under cloche. 3. Shatter-crisp bacon finish.",
-        allergens: ["gluten", "dairy"],
-        pass: "Pungent blue cheese scent · crisp bacon · deep dark onion jam",
-        station: "Grill",
-        larousse: {
-          principle: "Salinity balance (Stilton vs Jam).",
-          method: [
-            "Cook bacon until brittle for texture contrast.",
-            "Apply Stilton away from direct flame (cloche only).",
-            "Onion jam must be room temp to prevent cooling the meat."
-          ],
-          quality: ["Rich/Salty profile", "Deep sweetness", "Crunch"],
-          faults: ["Bitter burnt blue cheese", "Flabby bacon", "Jam bleed"],
-          correction: ["Ensure onion jam is reduced to a glaze consistency."]
+        status: "ACTIVE",
+        name: "Chipotle Buttermilk Chicken Burger",
+        station: "Fry / Grill",
+        portion: "180g Thigh",
+        ingredients: "Chicken thigh (180g buttermilk marinated) · Seasoned flour dredge · Brioche bun · Slaw (40g) · Chipotle mayo (30g)",
+        method: "1. Dredge chicken → fry at 180°C. 2. Cook until golden + internal temp safe. 3. Rest 1 min. 4. Sauce base, chicken, slaw top, lid.",
+        allergens: ["gluten", "dairy", "mustard"],
+        pass: "Audible crunch · No oil bleed · Golden coating · Vibrant slaw",
+        executionCard: {
+          setup: ["Deep fat fryer (180°C)", "Timer", "Internal thermometer", "Dredge station"],
+          build: ["Sauce base", "Chicken (rested)", "Slaw top", "Lid"],
+          timeLaw: "Fry: 6–7 min | Build: 30 sec",
+          failures: ["Soft crust (fail)", "Oil soak (fail)"],
+          reset: ["Check oil quality", "Clear crumbs from fry station"]
         },
         fellini: {
-          identity: "Umami-heavy premium burger.",
-          pressurePoint: "Blue cheese salt levels.",
-          watchPoint: "Bacon rigidity.",
-          passSignal: "Shatter-crisp bacon · molten blue patches",
-          failureSignal: "Greasy bacon · un-melted cheese",
-          recoveryMove: "Double-cloche cheese for speed"
+          identity: "Crunch-forward Protein System",
+          controlLaw: "THE CRUST LAW: Chicken must audibly crunch on bite. The buttermilk/flour interface must be dehydrated in the fryer to create a rigid, non-greasy shield around the moist thigh matrix.",
+          validationPoints: {
+            postPrep: "Coating even (no bald patches), dredge fully hydrated before fry.",
+            preService: "Oil temp verified 180°C, station clear.",
+            atPass: "Crunch intact, no oil bleed on paper/bun."
+          },
+          autoReject: ["Pale coating", "Greasy finish", "Soft/Soggy crust"],
+          verdict: "PASS"
+        },
+        larousse: {
+          principle: "Dehydration of surface starch for textural preservation.",
+          method: [
+            "Maintain 180°C to prevent oil ingress during the cook.",
+            "Resting phase (1 min) on wire rack is critical for structural setting.",
+            "Acid/Heat balance from slaw and chipotle mayo provides the palate reset."
+          ],
+          quality: ["Uniform golden colour", "Moist interior", "Clean snap"],
+          faults: ["Lead-heavy coating", "Undercooked core (near bone)", "Soggy slaw"],
+          correction: ["Monitor dredge thickness", "Verify fryer recovery time"]
         }
       },
       {
         id: "BURGER-004",
-        name: "Truffle Umami",
-        portion: "230g Patty",
-        price: "£18.50",
-        cost: "£4.50",
-        gp: "76%",
-        ingredients: "Beef · Bone Marrow Butter · Truffle Mayo · Crispy Shallots · Rocket",
-        method: "1. Finish steak with Bone Marrow Butter. 2. Layer truffle mayo base. 3. High-pile crispy shallots.",
-        allergens: ["gluten", "dairy"],
-        pass: "Peak umami aroma · golden shallot crown · glossy marrow finish",
-        station: "Grill",
-        larousse: {
-          principle: "The Lipid Bridge. Fat-on-fat enrichment.",
-          method: [
-            "Apply 10g bone marrow butter immediately post-grill.",
-            "Garnish with room-temp shallots to preserve crunch.",
-            "Truffle mayo applied cold to toasted bun base."
-          ],
-          quality: ["Rich mouthfeel", "Earthy aroma", "Crunchy shallots"],
-          faults: ["Soggy shallots", "Marrow butter split", "Bland profile"],
-          correction: ["Fresh shallots for every stack", "Cold mayo lock"]
+        status: "ACTIVE",
+        name: "BBQ Pulled Pork Burger",
+        station: "Prep / Grill",
+        portion: "180g Pulled Pork",
+        ingredients: "Pulled pork (180g) · Brioche bun · BBQ sauce (30g) · Apple slaw (40g)",
+        method: "1. Reheat pork gently (maintain moisture). 2. Sauce lightly with BBQ glaze. 3. Build immediately: Pork base, Apple slaw top. 4. Clean close.",
+        allergens: ["gluten", "mustard"],
+        pass: "Vibrant acid contrast · Moist pork texture · Clean stack · No sauce bleed",
+        executionCard: {
+          setup: ["Heat lamp / Induction", "Tongs", "Clean build surface"],
+          build: ["Toasted bun", "BBQ Pulled Pork", "Apple Slaw", "Bun lid"],
+          timeLaw: "Reheat: 5 min | Build: 20 sec",
+          failures: ["Dry pork (fail)", "No acid cut (heavy dish)"],
+          reset: ["Wipe build zone", "Refresh slaw garnish"]
         },
         fellini: {
-          identity: "Peak umami luxury burger.",
-          pressurePoint: "Shallot texture vs meat heat.",
-          watchPoint: "Marrow melt timing.",
-          passSignal: "Golden crown + glossy meat",
-          failureSignal: "Shallot wilt"
+          identity: "Soft Protein & Acid Cut System",
+          controlLaw: "THE BALANCE LAW: The high lipid content of the pulled pork MUST be cut by the immediate application of fresh acidity (apple slaw). Failure to apply the acid component results in a 'heavy' palate failure and system rejection.",
+          validationPoints: {
+            postPrep: "Pork moist/tender (not mushy), BBQ base balanced.",
+            preService: "Slaw freshly dressed (crisp), reheat temp verified.",
+            atPass: "Structural balance, acid contrast, clean bun finish."
+          },
+          autoReject: ["Dry texture", "Sauce overload (drowning pork)", "Absence of acid component"],
+          verdict: "PASS"
+        },
+        larousse: {
+          principle: "Lipid vs. Acid synergy. Textural softness requires a crisp counterpoint.",
+          method: [
+            "Reheating must be moist-heat only (steam or covered induction).",
+            "BBQ sauce is a seasoning, not a primary liquid volume.",
+            "Apple slaw must provide the structural 'crunch' layer."
+          ],
+          quality: ["Deep smoke profile", "Bright apple acidity", "Soft yielding protein"],
+          faults: ["Aggressive reheat (toughening)", "Soggy bun base", "Warm slaw"],
+          correction: ["Recover with fresh slaw", "Check steam-table moisture levels"]
         }
       },
       {
         id: "BURGER-005",
-        name: "Nashville Hot Chicken",
-        portion: "200g Breast",
-        price: "£16.00",
-        cost: "£3.50",
-        gp: "78%",
-        ingredients: "Fried Chicken · Nashville Glaze · Slaw · Jalapeños · Sweet Bun",
-        method: "1. Double-fry chicken (CO2 Batter). 2. Drench in Nashville Oil. 3. Cool slaw base for heat contrast.",
-        allergens: ["gluten", "dairy", "eggs"],
-        pass: "Audible crunch vs Liquid fire · bright red glaze · cold slaw contrast",
-        station: "Fry / Assembly",
-        larousse: {
-          principle: "The Heat Lag. Capsaicin vs Fat binder.",
-          method: [
-            "Nashville oil must be at 60°C for optimal chicken drench.",
-            "Slaw must be ice-cold to act as a thermal buffer.",
-            "Double-dip for maximum capsaicin load if medium heat requested."
-          ],
-          quality: ["Snap crunch", "Deep red hue", "Thermal contrast"],
-          faults: ["Pale coating", "Limp slaw", "Oily drench"],
-          correction: ["Recover oil temp", "Drain chicken properly"]
+        status: "ACTIVE",
+        name: "New York Burger (Pastrami)",
+        station: "Grill / Prep",
+        portion: "230g Patty + 60g Pastrami",
+        ingredients: "Beef patty (230g) · Sliced pastrami (60g) · Swiss cheese (2 slices) · Deli mustard (20g) · Pickles (20g) · Brioche bun",
+        method: "1. Cook beef patty as BURGER-001 protocol. 2. Heat pastrami separately on plancha/steam. 3. Melt Swiss cheese over beef. 4. Layer mustard, pickles, beef/cheese, pastrami. 5. Stack tight, no overbuild.",
+        allergens: ["gluten", "dairy", "mustard"],
+        pass: "Stable vertical stack · Swiss cheese fully melted · Hot pastrami · Vibrant mustard line",
+        executionCard: {
+          setup: ["High heat flat top", "Steam cloche", "Spatula", "Deli paper"],
+          build: ["Toasted brioche", "Mustard base", "Pickles", "Beef/Swiss", "Pastrami pile", "Lid"],
+          timeLaw: "Cook: 10 min | Build: 30 sec",
+          failures: ["Overstack collapse (fail)", "Cold pastrami (fail)"],
+          reset: ["Clean grill", "Check pastrami par"]
         },
         fellini: {
-          identity: "Audible crunch vs Liquid fire.",
-          pressurePoint: "Glaze saturation of crumb.",
-          watchPoint: "Slaw temperature.",
-          passSignal: "Glistening red + white contrast",
-          failureSignal: "Soggy red mess"
+          identity: "Beef + Pastrami Umami Stack System",
+          controlLaw: "THE STACK LAW: Layers must remain stable under the specific gravitational weight of the pastrami density. Improper layering or lack of Swiss cheese 'glue' will result in structural system failure.",
+          validationPoints: {
+            postPrep: "Beef/Pastrami components ready and weighed.",
+            preService: "Pastrami at thermal serving temp, station clear.",
+            atPass: "Stable vertical alignment, no slide, optimal heat throughout stack."
+          },
+          autoReject: ["Structural failure (lean/slide)", "Cold pastrami", "Imbalance of protein mass"],
+          verdict: "PASS"
+        },
+        larousse: {
+          principle: "The amalgamation of cured and fresh bovine proteins.",
+          method: [
+            "Pastrami must be flashed with steam to restore moisture before stacking.",
+            "Swiss cheese acts as the binding adhesive between the two protein layers.",
+            "Deli mustard provides the necessary acid bridge to cut the dual fat loading."
+          ],
+          quality: ["Rich multi-layer umami", "Clean vertical cut", "Warm/Soft textures"],
+          faults: ["Dry pastrami", "Un-melted Swiss", "Structural collapse"],
+          correction: ["Increase steam time for pastrami", "Use weighted cloche for melt"]
         }
       },
       {
