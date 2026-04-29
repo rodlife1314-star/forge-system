@@ -74,7 +74,7 @@ export interface DishItem {
   category?: string;
   chefNote?: string;
   failurePoints?: string[];
-  executionCard?: ExecutionCard;
+  executionCard?: ExecutionCard | boolean;
   cookTemp?: string;
   cookTime?: string;
   reheatMethod?: string;

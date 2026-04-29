@@ -57,7 +57,7 @@ const forceHexSafeStyles = (root: HTMLElement) => {
 
 export const exportToPDF = async (elementIdOrFilename: string, optionalFilename?: string) => {
   // Logic to determine ID and filename
-  let elementId = "print-capture-root";
+  let elementId = "print-area";
   let filename = "forge-export.pdf";
 
   if (optionalFilename) {

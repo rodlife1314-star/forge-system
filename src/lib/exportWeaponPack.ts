@@ -14,9 +14,9 @@ function waitForNextFrame(): Promise<void> {
 }
 
 function ensurePrintRoot(): HTMLElement {
-  const root = document.getElementById("print-capture-root");
+  const root = document.getElementById("print-area");
   if (!root) {
-    throw new Error("Element with id print-capture-root not found");
+    throw new Error("Element with id print-area not found");
   }
   return root;
 }

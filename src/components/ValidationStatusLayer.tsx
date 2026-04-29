@@ -51,7 +51,15 @@ export const ValidationStatusLayer: React.FC<ValidationStatusLayerProps> = ({ it
           <tbody className="divide-y divide-border-ui/50">
             {items.map((item, idx) => {
               const action = getNextAction(item);
-              const checkpoints = item.fellini?.validationPoint || [];
+              let checkpoints: string[] = [];
+              
+              if (item.fellini?.validationPoint) {
+                checkpoints = item.fellini.validationPoint;
+              } else if (item.fellini?.validationPoints) {
+                checkpoints = Object.keys(item.fellini.validationPoints).filter(
+                  key => item.fellini?.validationPoints?.[key as keyof typeof item.fellini.validationPoints]
+                );
+              }
               
               return (
                 <motion.tr 

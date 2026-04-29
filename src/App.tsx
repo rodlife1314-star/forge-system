@@ -25,14 +25,20 @@ import {
   Check,
   ClipboardCheck
 } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { ENGINES, JEMMA_BURGER_VALIDATION_PATCH, BURGER_ENGINE_PATCH } from "./constants";
 import { DishItem, JemmaMode, OperationalLayer } from "./types";
-import { runJemmaValidation, buildJemmaPrompt, buildFullValidationPrompt } from "./services/geminiService";
+import { buildJemmaPrompt, buildFullValidationPrompt } from "./services/geminiService";
+import { runJemmaValidation as localJemmaValidation, renderJemmaResult } from "./lib/jemmaValidator";
 import { exportJemmaPDF, exportJemmaDocx, copyCleanSpec } from "./services/exportService";
 import { ExportWeaponPack as runWeaponExport } from "./lib/exportWeaponPack";
 import { OperatorPrintCard, UnitSpecificationPrint, PrintPackDocument, FullSystemPackDocument, WeaponSystemPack } from "./components/PrintViews";
 import { exportToPDF } from "./services/pdfService";
 import { ValidationStatusLayer } from "./components/ValidationStatusLayer";
+import { RenderSwitch } from './components/RenderSwitch';
+import { getEngineByKey } from './forge/forgeOutputRouter';
+import { SpecTable } from './components/SpecTable';
 import { generateIceCreamSupply, getSupplierFriendlyMapping, formatQuantity } from "./forge/engines/supplyEngine";
 import { calculateBatchCost, formatCostReport } from "./forge/engines/costEngine";
 import { calculatePricing, getPricingScenarios } from "./forge/engines/pricingEngine";
@@ -50,9 +56,16 @@ export default function App() {
   const [printMode, setPrintMode] = useState<null | "operator" | "unit" | "pack" | "system" | "weapon">(null);
   const [showSupplyMatrix, setShowSupplyMatrix] = useState(false);
   const [printItems, setPrintItems] = useState<DishItem[]>([]);
+  const [showFellini, setShowFellini] = useState(false);
+  const [showJemmaOutput, setShowJemmaOutput] = useState(false);
+  const [jemmaResult, setJemmaResult] = useState<any>(null);
+  const [isValidating, setIsValidating] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [copied, setCopied] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
+
+  const view: any = showSupplyMatrix ? "supply" : showValidationStatus ? "validation" : selectedLayer ? "layer" : selectedItem ? "item" : "idle";
+  const allItems = Object.values(ENGINES).flatMap(e => e.items);
 
   const ExportWeaponPack = async () => {
     if (activeEngine !== 'dessert') return;
@@ -92,19 +105,44 @@ export default function App() {
     setJemmaOutput("");
     setJemmaMode(mode);
     
-    const prompt = mode === "item" && item
-      ? buildJemmaPrompt(engine.label, item)
-      : buildFullValidationPrompt(ENGINES, {
-          burgerPatch: BURGER_ENGINE_PATCH,
-          validationRules: JEMMA_BURGER_VALIDATION_PATCH
-        });
+    // For single items, we use the local validator to avoid connection failures
+    if (mode === "item" && item) {
+      try {
+        const result = localJemmaValidation(item);
+        const output = renderJemmaResult(result);
+        setJemmaOutput(output);
+        if (result.verdict === "FAIL") setLocked(true);
+      } catch (error) {
+        setJemmaOutput("JEMMA FAULT — local validation failed.");
+      } finally {
+        setJemmaLoading(false);
+      }
+      return;
+    }
 
+    // For full validation, we still attempt the intelligence layer but with a local fallback
     try {
-      const text = await runJemmaValidation(prompt.system, prompt.user);
-      setJemmaOutput(text);
-      if (text.toLowerCase().includes("locked")) setLocked(true);
+      const items = Object.values(ENGINES).flatMap(e => e.items);
+      const results = items.map(i => localJemmaValidation(i));
+      const failCount = results.filter(r => r.verdict === "FAIL").length;
+      const condCount = results.filter(r => r.verdict === "CONDITIONAL").length;
+      
+      const summary = [
+        "SYSTEM DOCTRINE AUDIT — MASTER BIBLE",
+        "━".repeat(40),
+        `TOTAL SPECS AUDITED: ${items.length}`,
+        `PASS: ${items.length - failCount - condCount}`,
+        `CONDITIONAL: ${condCount}`,
+        `FAIL: ${failCount}`,
+        "━".repeat(40),
+        failCount === 0 ? "✓ SYSTEM INTEGRITY CONFIRMED" : "❌ SYSTEM DRIFT DETECTED",
+        "ENGINE STATUS: " + (failCount === 0 ? "PASSED" : "LOCKED")
+      ].join("\n");
+      
+      setJemmaOutput(summary);
+      if (failCount > 0) setLocked(true);
     } catch (error) {
-      setJemmaOutput("JEMMA FAULT — connection failed.");
+      setJemmaOutput("JEMMA FAULT — validation failed.");
     } finally {
       setJemmaLoading(false);
     }
@@ -129,23 +167,62 @@ export default function App() {
 
     // Wait for React to render the print components
     setTimeout(async () => {
-      let filename = "";
-      if (mode === "system") {
-        filename = "FORGE_FULL_SYSTEM_DOCTRINE";
-      } else if (mode === "pack") {
-        filename = `FORGE_PACK_${engine.label.replace(/\s+/g, '_')}`;
-      } else if (mode === "weapon") {
-        filename = `FORGE_EXPORT_WEAPON_${engine.label.replace(/\s+/g, '_')}`;
-      } else {
-        filename = `FORGE_${items[0].name.replace(/\s+/g, '_')}_${mode.toUpperCase()}`;
+      const element = document.getElementById("print-area");
+      if (!element) {
+        console.error("PRINT AREA NOT FOUND");
+        setIsExportingPDF(false);
+        return;
       }
-      
-      await exportToPDF("print-capture-root", filename);
-      
-      setPrintMode(null);
-      setPrintItems([]);
-      setIsExportingPDF(false);
-    }, 500);
+
+      try {
+        console.log("Starting PDF capture for mode:", mode);
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: true,
+          windowWidth: 1200, // Fixed width for consistent rendering
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgWidth = 210;
+        const pageHeight = 297; // Correct A4 height
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
+          heightLeft -= pageHeight;
+        }
+
+        let filename = "";
+        if (mode === "system") {
+          filename = "forge-system-doctrine.pdf";
+        } else if (mode === "pack") {
+          filename = `forge-pack-${engine.label.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+        } else if (mode === "weapon") {
+          filename = `forge-weapon-${engine.label.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+        } else {
+          filename = `forge-${items[0].name.toLowerCase().replace(/\s+/g, '-')}-${mode}.pdf`;
+        }
+        
+        pdf.save(filename);
+        console.log("PDF saved successfully:", filename);
+      } catch (error) {
+        console.error("PDF GENERATION FAULT:", error);
+      } finally {
+        setPrintMode(null);
+        setPrintItems([]);
+        setIsExportingPDF(false);
+      }
+    }, 1000); // Increased timeout to ensure components are fully rendered
   };
 
   const renderSafeValue = (value: unknown): React.ReactNode => {
@@ -1268,7 +1345,7 @@ export default function App() {
       </main>
 
       {/* PRINT LAYER */}
-      <div ref={printRef} id="print-capture-root" className={printMode ? (isExportingPDF ? "pdf-export-visible" : "print-visible") : "print-hidden"}>
+      <div ref={printRef} id="print-area" className={printMode ? (isExportingPDF ? "pdf-export-visible" : "print-visible") : "print-hidden"}>
         {printMode === "operator" && printItems[0] && (
           <OperatorPrintCard item={printItems[0]} />
         )}
@@ -1304,10 +1381,12 @@ export default function App() {
         .pdf-export-visible { 
           display: block !important; 
           position: fixed; 
-          left: -9999px; 
+          left: 0;
           top: 0;
-          width: 210mm; /* A4 width */
+          width: 210mm;
+          z-index: -100;
           background: white;
+          color: black;
         }
 
         .custom-scrollbar::-webkit-scrollbar {

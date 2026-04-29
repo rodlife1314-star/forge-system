@@ -11,6 +11,22 @@ export const iceCreamRecipes = {
     {
       id: "vanilla-master-base",
       name: "Vanilla Bean Ice Cream",
+      engine: "ICE_CREAM",
+      section: "MASTER",
+      rootLayer: "Classic egg-yolk custard suspension.",
+      controlLaw: "82–84°C Custard Law: Nap Stage required for maximum shelf life.",
+      status: "ACTIVE",
+      executionCard: true,
+      holding: "Harden at -18°C / Scoop at -12°C",
+      service: "1 scoop per unit",
+      timeLaw: "Ageing: 12h / Churn: 20 min",
+      validationPoints: {
+        postPrep: "Chill to ≤4°C within 30 minutes",
+        preService: "Check for ice crystals",
+        atPass: "Clean melt / Vanilla speckle"
+      },
+      failureLaw: "Icy texture / Eggy taste",
+      autoReject: "Split fat / Grainy texture",
       type: "Custard Ice Cream",
       role: "MASTER_CALIBRATION_BASE",
       yieldBlock: {
@@ -85,6 +101,22 @@ export const iceCreamRecipes = {
     {
       id: "dark-chocolate-70-system",
       name: "Dark Chocolate Ice Cream 70%",
+      engine: "ICE_CREAM",
+      section: "CORE",
+      rootLayer: "High-fat cocoa solid hybrid system.",
+      controlLaw: "Hot Emulsion Lock: Shear blend hot base over dark chocolate immediately.",
+      status: "ACTIVE",
+      executionCard: true,
+      holding: "Harden at -18°C / Scoop at -12°C",
+      service: "1 scoop per unit",
+      timeLaw: "Ageing: 12h / Churn: 20 min",
+      validationPoints: {
+        postPrep: "Glossy elastic base",
+        preService: "High-shear blend pre-churn",
+        atPass: "Dense texture / Slow melt"
+      },
+      failureLaw: "Grainy cocoa / Gray finish",
+      autoReject: "Split base / Chalky texture",
       type: "Custard-Hybrid Ice Cream",
       role: "FAT_COCOA_SOLID_SYSTEM",
       yieldBlock: {
@@ -166,6 +198,22 @@ export const iceCreamRecipes = {
     {
       id: "sicilian-pistachio-gelato",
       name: "Sicilian Pistachio Gelato",
+      engine: "ICE_CREAM",
+      section: "ROTATIONAL",
+      rootLayer: "Nut-paste lipid-stabilized system.",
+      controlLaw: "Pistachio Temperature Law: Shear paste at 20°C into aged base.",
+      status: "ACTIVE",
+      executionCard: true,
+      holding: "Harden at -18°C / Scoop at -12°C",
+      service: "1 scoop per unit",
+      timeLaw: "Ageing: 12h / Churn: 20 min",
+      validationPoints: {
+        postPrep: "Stable emulsion / no oil slick",
+        preService: "Zero oil streaking",
+        atPass: "Scoop holds clean edge"
+      },
+      failureLaw: "Oil separation / Dull color",
+      autoReject: "Grainy LBG / Water bleed",
       type: "Gelato",
       role: "NUT_PASTE_HIGH_FAT_SYSTEM",
       yieldBlock: {
@@ -245,6 +293,22 @@ export const iceCreamRecipes = {
     {
       id: "strawberry-brix-sorbet",
       name: "Strawberry Sorbet",
+      engine: "ICE_CREAM",
+      section: "SORBET",
+      rootLayer: "Water-sugar-fruit suspension system.",
+      controlLaw: "Brix Law: 28–32° Brix Mandatory (adjust for fruit variability).",
+      status: "ACTIVE",
+      executionCard: true,
+      holding: "Harden at -18°C / Scoop at -12°C",
+      service: "1 scoop per unit",
+      timeLaw: "Ageing: 4h / Churn: 20 min",
+      validationPoints: {
+        postPrep: "Brix verified via refractometer",
+        preService: "Vibrant color check",
+        atPass: "Sharp fruit profile / No bleed"
+      },
+      failureLaw: "Icy texture / Slushy instability",
+      autoReject: "Brix < 28 or > 32",
       type: "Brix-Controlled Sorbet",
       role: "FRUIT_WATER_PHASE_SYSTEM",
       yieldBlock: {
@@ -320,6 +384,22 @@ export const iceCreamRecipes = {
     {
       id: "tiramisu-signature-system",
       name: "Tiramisu Ice Cream",
+      engine: "ICE_CREAM",
+      section: "SIGNATURE",
+      rootLayer: "Multilayered composite frozen system.",
+      controlLaw: "Layering Integrity Law: Ripple must remain visible; no full integration.",
+      status: "ACTIVE",
+      executionCard: true,
+      holding: "Harden at -18°C / Scoop at -12°C",
+      service: "1 scoop per unit",
+      timeLaw: "Ageing: 12h / Churn: 20 min",
+      validationPoints: {
+        postPrep: "Savoiardi lightly soaked only",
+        preService: "Ripple temp matches base",
+        atPass: "Distinct layers visible"
+      },
+      failureLaw: "Muddy texture / Soggy inclusions",
+      autoReject: "Split ripple / Overmixed",
       type: "Composite Ice Cream",
       role: "SIGNATURE_BRAND_SYSTEM",
       yieldBlock: {
@@ -408,6 +488,22 @@ export const iceCreamRecipes = {
     {
       id: "salted-caramel-wildcard",
       name: "Salted Caramel Ice Cream",
+      engine: "ICE_CREAM",
+      section: "ROTATIONAL",
+      rootLayer: "Amber-reduction lipid emulsion.",
+      controlLaw: "Caramel Temperature Law: 170–175°C Required (Hard Lock).",
+      status: "ACTIVE",
+      executionCard: true,
+      holding: "Harden at -18°C / Scoop at -12°C",
+      service: "1 scoop per unit",
+      timeLaw: "Ageing: 12h / Churn: 20 min",
+      validationPoints: {
+        postPrep: "Deglaze with warm milk only",
+        preService: "Check for crystal seeds",
+        atPass: "Salt balance check"
+      },
+      failureLaw: "Bitter finish / Grainy crystallization",
+      autoReject: "Burnt sugar / Oversalty",
       type: "Custard Ice Cream",
       role: "WILDCARD_ROTATIONAL_CONTROL",
       yieldBlock: {

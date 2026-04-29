@@ -237,7 +237,7 @@ export async function runJemmaValidation(systemPrompt: string, userPrompt: strin
     return response.text || "No response content.";
   } catch (error) {
     console.error("Jemma Validation Error:", error);
-    if (error instanceof Error && error.message.includes("API_KEY_INVALID")) {
+    if (error instanceof Error && (error.message.includes("API_KEY_INVALID") || error.message.includes("API key not found") || error.message.includes("403"))) {
       throw new Error("JEMMA FAULT — Gemini API Key is missing or invalid. Please check your environment.");
     }
     throw new Error(error instanceof Error ? error.message : "JEMMA FAULT — Intelligence connection failed.");
