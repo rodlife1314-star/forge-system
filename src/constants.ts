@@ -1,24 +1,41 @@
 import { Engine } from "./types";
 
-const doctrinePatch = (item: any) => ({
-  ...item,
-  status: item.status ?? "ACTIVE",
-  executionCard: item.executionCard ?? true,
-  rootLayer: item.rootLayer ?? "Root layer pending final chef validation.",
-  controlLaw: item.controlLaw ?? "No drift: execute only to locked spec.",
-  timeLaw: item.timeLaw ?? "Time law pending final chef validation.",
-  validationPoints: item.validationPoints ?? {
-    postPrep: "Post-prep validation pending.",
-    preService: "Pre-service validation pending.",
-    atPass: "At-pass validation pending."
-  },
-  failureLaw: item.failureLaw ?? "Failure law pending final chef validation.",
-  autoReject: item.autoReject ?? "Reject if unsafe, unstable, cold, collapsed, split, burnt, undercooked, or outside spec.",
-  printCard: item.printCard ?? true,
-  station: item.station ?? "GENERAL",
-  allergens: item.allergens ?? [],
-  pass: item.pass ?? "No pass criteria defined."
-});
+const doctrinePatch = (item: any) => {
+  if (!item) return item;
+  const name = String(item.name ?? item.title ?? "").trim();
+  const patched = {
+    ...item,
+    name: name || "UNKNOWN ITEM",
+    status: String(item.status || "ACTIVE").trim(),
+    executionCard: item.executionCard ?? true,
+    rootLayer: String(item.rootLayer || "Root layer pending final chef validation.").trim(),
+    controlLaw: String(item.controlLaw || "No drift: execute only to locked spec.").trim(),
+    timeLaw: String(item.timeLaw || "Time law pending final chef validation.").trim(),
+    validationPoints: item.validationPoints ?? {
+      postPrep: "Post-prep validation pending.",
+      preService: "Pre-service validation pending.",
+      atPass: "At-pass validation pending."
+    },
+    failureLaw: String(item.failureLaw || "Failure law pending final chef validation.").trim(),
+    autoReject: item.autoReject ?? "Reject if unsafe, unstable, cold, collapsed, split, burnt, undercooked, or outside spec.",
+    printCard: item.printCard ?? true,
+    station: String(item.station || "GENERAL").trim(),
+    allergens: item.allergens ?? [],
+    pass: String(item.pass || "No pass criteria defined.").trim()
+  };
+
+  if (patched.executionCard === true) {
+    patched.executionCard = {
+      setup: patched.ingredients || [],
+      build: patched.method || [],
+      timeLaw: patched.timeLaw || "AS PER SPEC",
+      failures: [patched.failureLaw].filter(Boolean),
+      reset: [patched.autoReject].filter(Boolean)
+    };
+  }
+
+  return patched;
+};
 
 import { iceCreamDoctrine } from "./forge/engines/iceCreamDoctrine";
 import { iceCreamRecipes } from "./forge/engines/iceCreamRecipes";
@@ -87,8 +104,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PIZZA-001",
         name: "Pizza Dough 65% / 44h",
-        engine: "PIZZA",
+        engine: "LUNA-001",
         section: "PREP",
+        forgev3: {
+          wmm: [
+            "Flour (00): 3.1kg",
+            "Water: 2.01kg (65%)",
+            "Salt: 77g",
+            "Yeast: 3g",
+            "Method: Mix water/yeast/flour → Salt last → 23°C FDT (THE FERMENTATION LAW) → Ball 260g → 44h Cold Ferment"
+          ],
+          yield: "20 Balls",
+          timeLaw: "23°C FDT | 44h Cold Set | 4h Temper before use",
+          passSignals: ["Abundant internal aeration (leopard skin bubble)", "Elastic snap-back recovery", "Neutral/clean dough scent"],
+          rejectSignals: ["Overproof stickiness (collapse)", "Sour lactic/acetic smell", "Dense/dead rim (underproof)"],
+          failureLaw: "THE FERMENTATION LAW breach; deviation from 23°C FDT causes yeast metabolic drift—either excessive CO2 production (tearing) or dormancy (leathery crumb).",
+          recoveryProtocol: "If underproof: Temper at 25°C for 60 mins. If overproof: REJECT.",
+          jemmaMapping: ["YEAST DRIFT", "STARCH GELATINIZATION FAILURE"],
+          memoryTag: "FDT 23.0 Precision"
+        },
         rootLayer: "48h fermentation system (65% hydration).",
         controlLaw: "THE FERMENTATION LAW — Time and temp define structure.",
         ingredients: [
@@ -120,8 +154,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PIZZA-002",
         name: "Tomato Base (San Marzano)",
-        engine: "PIZZA",
+        engine: "PREP",
         section: "PREP",
+        forgev3: {
+          wmm: [
+            "San Marzano tomatoes: 10kg",
+            "Sea salt: 100g",
+            "Fresh basil: 50g",
+            "Method: Hand crush only (THE ACID LAW) → Fold salt/basil → Chill 2h to stabilize pH"
+          ],
+          yield: "110 Portions (90g)",
+          timeLaw: "2h Stabilization | No cook | Max 48h shelf",
+          passSignals: ["Vibrant ruby-red particulate matrix", "Bright citric high-notes", "Zero water-pith separation"],
+          rejectSignals: ["Metallic/Tinny profile", "Gassy/Fermented bubbles", "Grey/Oxidized surface"],
+          failureLaw: "THE ACID LAW breach; machine blending ruptures tomato seeds, releasing bitter tannins and mechanical heat that degrades natural ascorbic acidity.",
+          recoveryProtocol: "If bitter: REJECT. Hand-crush only.",
+          jemmaMapping: ["OXIDATIVE DEGRADATION", "SEED RUPTURE BITTERNESS"],
+          memoryTag: "Hand-crush only"
+        },
         rootLayer: "Hand-crushed acid-balanced tomato matrix.",
         controlLaw: "THE ACID LAW — pH must remain bright, no sugar added.",
         ingredients: [
@@ -151,8 +201,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PIZZA-003",
         name: "Margherita",
-        engine: "PIZZA",
+        engine: "LUNA-001",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "260g Dough / 90g Sauce / 100g Cheese",
+            "Basil/EVOO",
+            "Method: Stretch to 12\" → Spiral sauce → Dot cheese (THE BALANCE LAW) → Flash bake 430°C"
+          ],
+          yield: "1 Portion",
+          timeLaw: "90-120s Bake @ 430°C | 30s build",
+          passSignals: ["Cornicione leopard spotting", "Melted central cheese fusion", "Dry base (no sog)"],
+          rejectSignals: ["Soggy 'souping' center", "Burnt floor bitterness", "Dense/flat rim"],
+          failureLaw: "THE BALANCE LAW breach; excessive sauce application prevents base heat-reach, leading to starch gelatinization (soggy middle).",
+          recoveryProtocol: "If soggy: REJECT. If pale: Flash for 20s.",
+          jemmaMapping: ["THERMAL LOCKING (SAUCE)", "MAILLARD RATIO ERROR"],
+          memoryTag: "90g Sauce Boundary"
+        },
         rootLayer: "Triple-element balance (dough/acid/fat).",
         controlLaw: "THE BALANCE LAW — 90g sauce / 100g cheese max.",
         ingredients: [
@@ -185,8 +250,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PIZZA-004",
         name: "Diavola",
-        engine: "PIZZA",
+        engine: "LUNA-001",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "260g Dough / 90g Sauce / 90g Cheese",
+            "Spicy Ventricina: 60g / Fresh chili",
+            "Method: Salami on top layer (THE CURL LAW) → High heat bake → Lipid render focus"
+          ],
+          yield: "1 Portion",
+          timeLaw: "90-120s Bake | Target fat-release bloom",
+          passSignals: ["Curled/Crisp salami edges", "Glowing orange oil dispersion", "Intense heat-spice aroma"],
+          rejectSignals: ["Pools of liquid grease", "Unrendered white pork fat", "Cold chili presence"],
+          failureLaw: "THE CURL LAW breach; burying meat under cheese prevents top-down radiative heat from rendering fat and crisping edges.",
+          recoveryProtocol: "If unrendered: Torch or return to oven for 15s top-heat.",
+          jemmaMapping: ["LIPID POOLING", "RADIATIVE BLOCKAGE"],
+          memoryTag: "Ventricina surface-exposure"
+        },
         rootLayer: "High-fat heat system.",
         controlLaw: "THE CURL LAW — Salami must crisp and curl at edges.",
         ingredients: [
@@ -218,8 +298,22 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PIZZA-005",
         name: "Quattro Formaggi",
-        engine: "PIZZA",
+        engine: "LUNA-001",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "260g Dough (Bianca) / 120g Multi-cheese mix",
+            "Method: Ricotta base → Melting order lock (THE ORDER LAW) → Flash bake (Cooler floor 410°C)"
+          ],
+          yield: "1 Portion",
+          timeLaw: "100-130s Bake | Floor temp 410°C target",
+          passSignals: ["Multi-toned cheese blisters", "Creamy ricotta islands", "Velvet mouthfeel (non-greasy)"],
+          rejectSignals: ["Uniform yellow-oil lake (split fats)", "Burnt blue cheese bitterness", "Cold cheese center"],
+          failureLaw: "THE ORDER LAW breach; applying high-fat soft cheeses too early leads to lipid rupture and oily separation before the crust sets.",
+          recoveryProtocol: "If oily: REJECT. If pale: Flash.",
+          jemmaMapping: ["EMULSION BREAK", "MELT-POINT ANARCHY"],
+          memoryTag: "Cheese layering hierarchy"
+        },
         rootLayer: "Heterogeneous cheese-mass system (Bianca).",
         controlLaw: "THE ORDER LAW — Cheeses applied in melting point order.",
         ingredients: [
@@ -251,8 +345,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PIZZA-006",
         name: "Nduja & Honey",
-        engine: "PIZZA",
+        engine: "LUNA-001",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "260g Dough / 90g Sauce / 90g Cheese",
+            "Nduja: 40g / Hot Honey: 15ml",
+            "Method: Spread Nduja dots → High heat bake → Spiral honey post-bake (THE DRIZZLE LAW)"
+          ],
+          yield: "1 Portion",
+          timeLaw: "90-120s Bake | Post-fire finishing protocol",
+          passSignals: ["Rendered Nduja pools", "Glossy honey spiral sheen", "Explosive spice-sugar contrast"],
+          rejectSignals: ["Soggy/cloy center", "Unmelted Nduja clumps", "Asymmetric honey distribution"],
+          failureLaw: "THE DRIZZLE LAW breach; applying honey pre-bake causes sugar caramelization/burning and moisture migration into the dough center.",
+          recoveryProtocol: "If soggy: REJECT. If burnt: REJECT.",
+          jemmaMapping: ["SUGAR CARBONIZATION", "STRUCTURAL MOISTURE WEAKNESS"],
+          memoryTag: "Honey: POST-FIRE ONLY"
+        },
         rootLayer: "Fat-spice-sugar balance system.",
         controlLaw: "THE DRIZZLE LAW — Spiral honey from centre only.",
         ingredients: [
@@ -327,8 +436,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "BURGER-001",
         name: "Galyons Beef Burger (230g)",
-        engine: "BURGER",
+        engine: "HELIOS",
         section: "MAINS",
+        forgev3: {
+          wmm: [
+            "Beef patty: 230g",
+            "Brioche bun: 1 unit",
+            "Mature cheddar: 2 slices",
+            "Garnish: Lettuce/Tomato/Sauce",
+            "Method: Heavy salt seasoning → Hard sear 4 min (THE SEAR LAW) → Flip/Cheese → 72°C internal → Bun toast mandatory"
+          ],
+          yield: "1 Portion",
+          timeLaw: "8 min Cook | 45s Build | Hold: Zero (Immediate service)",
+          passSignals: ["Crust depth > 1mm", "Melted cheese veil", "Bun is handle-warm and resilient"],
+          rejectSignals: ["Grey/Boiled meat surface", "Unmelted cheese edges", "Cold/Untoasted bun"],
+          failureLaw: "THE SEAR LAW breach; failure to achieve Maillard crust at >220°C allows albumin leakage and juice loss.",
+          recoveryProtocol: "If under-seared: Flash at 250°C for 30s. If raw: Return to HELIOS.",
+          jemmaMapping: ["MAILLARD FAILURE", "THERMAL UNDER-PENETRATION"],
+          memoryTag: "Grill surface temperature"
+        },
         rootLayer: "Foundation beef 230g stack.",
         controlLaw: "THE SEAR LAW — Maximum crust, minimum juice loss.",
         ingredients: [
@@ -363,8 +489,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "BURGER-002",
         name: "Double Stack Burger (2x150g)",
-        engine: "BURGER",
+        engine: "HELIOS",
         section: "MAINS",
+        forgev3: {
+          wmm: [
+            "Beef patties: 2x150g",
+            "Brioche bun: 1 unit",
+            "Mature cheddar: 2 slices",
+            "Pickles/Sauce",
+            "Method: Simultaneous cook (THE SYNCHRONISATION LAW) → Single flip → Cheese both → Stack immediately"
+          ],
+          yield: "1 Portion",
+          timeLaw: "8-9 min Cook | 20s Build | Synchronized finish mandatory",
+          passSignals: ["Symmetrical vertical stack", "Dual cheese melt fusion", "Stability under compression"],
+          rejectSignals: ["Sliding/Asymmetric stack", "Uneven patty doneness", "Excess oil drip from base"],
+          failureLaw: "THE SYNCHRONISATION LAW breach; staggered finishing times lead to thermal mismatch and selective patty cooling.",
+          recoveryProtocol: "If cold: REJECT. Stack cannot be safely separated post-melt.",
+          jemmaMapping: ["THERMAL ASYMMETRY", "STRUCTURAL INSTABILITY"],
+          memoryTag: "Patty flip timing"
+        },
         rootLayer: "Speed-of-service double patty system.",
         controlLaw: "THE SYNCHRONISATION LAW — Both patties must finish simultaneously.",
         ingredients: [
@@ -397,8 +540,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "BURGER-003",
         name: "Chipotle Buttermilk Chicken Burger",
-        engine: "BURGER",
+        engine: "AETHER",
         section: "MAINS",
+        forgev3: {
+          wmm: [
+            "Chicken thigh: 180g (Buttermilk)",
+            "Flour dredge: Seasoned",
+            "Brioche bun/Slaw/Chipotle mayo",
+            "Method: Dredge to order → Fry 180°C (THE CRUST LAW) → Golden target + safety core → 1 min rest"
+          ],
+          yield: "1 Portion",
+          timeLaw: "6-7 min Fry | 1 min Rest | Max 2 min hold post-fry",
+          passSignals: ["Audible fracture crackle on bite", "Vibrant golden coating (no dark spots)", "Breast/Thigh is moist and steaming"],
+          rejectSignals: ["Soft/Leathery skin", "Oil saturated coating", "Pale/Under-fried patches"],
+          failureLaw: "THE CRUST LAW breach; low oil temp or over-crowding the fryer leads to lipid saturation of the starch dredge.",
+          recoveryProtocol: "If soft: Return to 180°C for 60s. If dry: REJECT.",
+          jemmaMapping: ["LIPID SATURATION", "CRUST FAILURE"],
+          memoryTag: "Fryer load density"
+        },
         rootLayer: "Crunch-first chicken system with heat-acid balance.",
         controlLaw: "THE CRUST LAW — Chicken must audibly crunch on bite.",
         ingredients: [
@@ -430,8 +589,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "BURGER-004",
         name: "BBQ Pulled Pork Burger",
-        engine: "BURGER",
+        engine: "HELIOS",
         section: "MAINS",
+        forgev3: {
+          wmm: [
+            "Pulled pork: 180g",
+            "Brioche bun: 1 unit",
+            "BBQ sauce: 30g",
+            "Apple slaw: 40g",
+            "Method: Reheat pork gently (HELIOS) → Sauce lightly → Drain excess moisture (THE DRAIN LAW) → Build immediately on toasted bun"
+          ],
+          yield: "1 Portion",
+          timeLaw: "5 min Reheat | 20s Build | Hold: Zero",
+          passSignals: ["Glossy meat strands (not dripping)", "Dry bun base resilience", "Acid-bright slaw contrast"],
+          rejectSignals: ["Soggy bun collapse", "Dry/Fibrous texture", "Sauce-heavy visual pooling"],
+          failureLaw: "THE DRAIN LAW breach; failure to offset high-fat braising meat with adequate acidity and moisture drainage leads to bun saturation.",
+          recoveryProtocol: "If soggy: Replace bun base. If dry: Reheat with extra BBQ glaze.",
+          jemmaMapping: ["MOISTURE MIGRATION FAILURE", "SYRUP-FAT OVERLOAD"],
+          memoryTag: "Liquid-meat ratio"
+        },
         rootLayer: "Soft protein + acid cut system.",
         controlLaw: "THE BALANCE LAW — Fat must be cut by acidity (slaw mandatory).",
         ingredients: [
@@ -462,8 +638,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "BURGER-005",
         name: "New York Burger (Pastrami)",
-        engine: "BURGER",
+        engine: "HELIOS",
         section: "MAINS",
+        forgev3: {
+          wmm: [
+            "Beef patty: 230g",
+            "Pastrami: 60g",
+            "Swiss cheese: 2 slices",
+            "Mustard/Pickles",
+            "Method: Cook beef as BURGER-001 → Heat pastrami separately (THE STACK LAW) → Melt Swiss over stack → Build tight"
+          ],
+          yield: "1 Portion",
+          timeLaw: "10 min total cook | 30s build | Stability mandatory",
+          passSignals: ["Vertical center-of-gravity lock", "Steaming pastrami layer", "Symmetrical melt"],
+          rejectSignals: ["Leaning tower (overstack collapse)", "Cold/Waxy pastrami", "Unmelted Swiss edges"],
+          failureLaw: "THE STACK LAW breach; failure to stabilize the multi-protein stack causes sliding during transit to pass.",
+          recoveryProtocol: "If leaning: RESET STACK. If cold: Return to HELIOS.",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "ASYMMETRIC MELT"],
+          memoryTag: "Stack stability physics"
+        },
         rootLayer: "Beef + pastrami umami stack.",
         controlLaw: "THE STACK LAW — Layers must remain stable under weight.",
         ingredients: [
@@ -495,8 +688,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "BURGER-006",
         name: "The Galyons Vegan (Specialist)",
-        engine: "BURGER",
+        engine: "HELIOS",
         section: "MAINS",
+        forgev3: {
+          wmm: [
+            "Beyond/House Mix patty: 1 unit",
+            "Vegan Cheese: 2 slices",
+            "Kimchi: 20g (Drained)",
+            "Vegan Mayo/Sesame Bun",
+            "Method: Pan-sear (Dedicated surface) → Melt vegan mozzarella → Drain kimchi (THE DRAIN LAW) → Upright stack"
+          ],
+          yield: "1 Portion",
+          timeLaw: "8 min Cook | 30s Build | Cross-contamination zero-tolerance",
+          passSignals: ["Pink plant-interior juicy bite", "Liquid cheese melt (vegan-standard)", "Crunch-drain kimchi texture"],
+          rejectSignals: ["Soggy bun base (kimchi rot)", "Cold vegan cheese", "Rubbery over-seared protein"],
+          failureLaw: "THE DRAIN LAW breach; failure to drain fermented components causes rapid acidity-driven breakdown of the plant protein structure.",
+          recoveryProtocol: "If soggy: Replace bun base. If rubbery: REJECT (over-cooked).",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "LIPID SATURATION (VEGAN)"],
+          memoryTag: "Ferment-drain efficacy"
+        },
         rootLayer: "High-protein plant matrix stabilization.",
         controlLaw: "THE DRAIN LAW — Kimchi must be drained to prevent bun rot.",
         ingredients: [
@@ -580,8 +790,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "MAIN-001",
         name: "Aged Ribeye (300g)",
-        engine: "MAINS",
+        engine: "HELIOS",
         section: "SPECIALS",
+        forgev3: {
+          wmm: [
+            "300g Aged Ribeye: 1 unit",
+            "Maldon salt/Bone marrow butter",
+            "Method: Temper 30 mins → Grill high heat (HELIOS) → 52°C target (Med-Rare) → Rest 5 min (THE REST LAW)"
+          ],
+          yield: "1 Portion",
+          timeLaw: "8 min Cook | 5 min Rest | No service if rest < 5 min",
+          passSignals: ["Deep Maillard crust (mahogany)", "Zero blood pooling on plate", "Fat cap fully rendered/soft"],
+          rejectSignals: ["Grey/Steamed surface", "Cold target center", "Active juice bleed on cut"],
+          failureLaw: "THE REST LAW breach; insufficient capillary re-absorption of moisture leads to dramatic juice loss and dry internal fibers.",
+          recoveryProtocol: "If cold: Flash rest 60s in HELIOS. If under-rested: DELAY SERVICE.",
+          jemmaMapping: ["CAPILLARY LEAK", "MAILLARD UNDER-DEPTH"],
+          memoryTag: "CAP PRESSURE / REST TIME"
+        },
         rootLayer: "Fire-driven protein with precision rest.",
         controlLaw: "THE REST LAW — 5 min minimum rest mandatory.",
         ingredients: [
@@ -612,8 +837,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "MAIN-002",
         name: "Chicken Parmigiana",
-        engine: "MAINS",
+        engine: "AETHER",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "Chicken breast: 200g (Panko)",
+            "Tomato base: 60g",
+            "Mozzarella: 60g",
+            "Method: Hammer to 1cm → Flash fry (AETHER) → Sauce center (THE CRUMB LAW) → Broil 90s"
+          ],
+          yield: "1 Portion",
+          timeLaw: "4 min Fry | 90s Broil | Hold: Zero",
+          passSignals: ["Crisp breading perimeter", "Bubble-char mozzarella top", "Center-weighted sauce build"],
+          rejectSignals: ["Soggy perimeter (sauce bleed)", "Leathery over-broiled chicken", "Cold sauce center"],
+          failureLaw: "THE CRUMB LAW breach; contact between moisture-heavy sauce and the crispy breading perimeter causes rapid starch hydration.",
+          recoveryProtocol: "If soggy: REJECT. Component is visually and structurally compromised.",
+          jemmaMapping: ["STARCH HYDRATION", "THERMAL GRADIENT FAILURE"],
+          memoryTag: "Sauce boundary control"
+        },
         rootLayer: "Crisp + melt contrast dish.",
         controlLaw: "THE CRUMB LAW — No sauce contact on breading perimeter.",
         ingredients: [
@@ -645,8 +886,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "MAIN-003",
         name: "Pan-Seared Sea Bass",
-        engine: "MAINS",
+        engine: "HELIOS",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "Sea bass fillet: 140g",
+            "Bone marrow butter: 10g",
+            "Method: Dry skin (THE RENDER LAW) → High heat sear (HELIOS) → Spatula pressure 30s → Baste finish"
+          ],
+          yield: "1 Portion",
+          timeLaw: "3 min Skin / 1 min Flesh | Total 4 min | Immediate service",
+          passSignals: ["Glass-crush audible skin fracture", "Translucent/White flesh center", "Glossy butter coating"],
+          rejectSignals: ["Rubbery/Soft skin", "Grey/Over-cooked flesh", "Albumin bleed on surface"],
+          failureLaw: "THE RENDER LAW breach; failure to dehydrate the skin via dry-patting and constant pressure results in steam-locking the collagen.",
+          recoveryProtocol: "If soft: Return to pan skin-side down with weight. If dry: REJECT.",
+          jemmaMapping: ["COLLAGEN RENDER FAILURE", "THERMAL OVER-SHOOT"],
+          memoryTag: "Skin-side pressure"
+        },
         rootLayer: "Skin-crisp precision fish.",
         controlLaw: "THE RENDER LAW — Skin must be glass-like and fully rendered.",
         ingredients: [
@@ -677,8 +933,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "MAIN-004",
         name: "Ale Battered Fish & Chips",
-        engine: "MAINS",
+        engine: "AETHER",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "Haddock fillet: 180g",
+            "Ale batter (PREP-015): Chilled <4°C",
+            "Method: Dry fish → Flour dust → Cold batter dip (THE COLD LAW) → Fry 180°C (AETHER) for 6 min"
+          ],
+          yield: "1 Portion",
+          timeLaw: "6 min Fry | Max 2 min shelf life | Fryer temp 180°C lock",
+          passSignals: ["Shatter-crisp honeycombed batter", "Uniform golden aeration", "Moist/Steaming fish flakes"],
+          rejectSignals: ["Greasy/Sodden shell", "Batter detachment from flesh", "Cold core temperature"],
+          failureLaw: "THE COLD LAW breach; warm batter fails to trap CO2 upon heat contact, leading to a flat, dense, oil-saturated shell.",
+          recoveryProtocol: "If greasy: REJECT. Battery density is irreversible.",
+          jemmaMapping: ["CO2 RELEASE FAILURE", "LIPID SATURATION"],
+          memoryTag: "Batter thermal delta"
+        },
         rootLayer: "Fresh steam center in crisp starch shell.",
         controlLaw: "THE COLD LAW — Batter must be <4°C for high-temp expansion.",
         ingredients: [
@@ -710,8 +981,22 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "MAIN-005",
         name: "Beef Lasagne",
-        engine: "MAINS",
+        engine: "LUNA-003",
         section: "PASTA",
+        forgev3: {
+          wmm: [
+            "House Ragu/Béchamel/Pasta/Parmesan",
+            "Method: Layer cold → Oven 180°C (LUNA-003) for 15 min → 75°C core target → Rest 5 min (THE SET LAW)"
+          ],
+          yield: "1 Portion",
+          timeLaw: "15 min Oven | 5 min Rest | Stable shelf hold at 65°C",
+          passSignals: ["Visible distinct structured layers", "Glistening bechamel surface", "Zero structural slump on plate"],
+          rejectSignals: ["Layer collapse (souping)", "Dry/Curled pasta edges", "Cold tomato core"],
+          failureLaw: "THE SET LAW breach; serving before the 5 min rest window prevents the starches and fats from stabilizing into a vertical stack.",
+          recoveryProtocol: "If cold: Return to LUNA-003. If collapsed: REJECT.",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "THERMAL STABILIZATION FAILURE"],
+          memoryTag: "Post-heat rest window"
+        },
         rootLayer: "Structured pasta build.",
         controlLaw: "THE SET LAW — 5 min rest after oven is mandatory for layers.",
         ingredients: [
@@ -785,8 +1070,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "STARTER-001",
         name: "Calamari Fritti",
-        engine: "STARTERS",
+        engine: "AETHER",
         section: "HOT",
+        forgev3: {
+          wmm: [
+            "150g Squid rings/tentacles",
+            "Seasoned flour",
+            "30g Lemon aioli",
+            "Method: Dry squid (THE RECOVERY LAW) → Crust dust → Flash fry 180°C (AETHER) for 2 min → Instant salt"
+          ],
+          yield: "1 Portion",
+          timeLaw: "2 min Fry | Oil 180°C Recovery mandatory | Zero shelf life",
+          passSignals: ["Tender non-rubbery bite", "Pale golden aerated crust", "Shatter-crisp surface"],
+          rejectSignals: ["Rubbery texture (overcooked)", "Oil-soaked soggy coating", "Lead-grey undercooked color"],
+          failureLaw: "THE RECOVERY LAW breach; dropping product into <175°C oil prevents instant steam-expansion, causing the flour to absorb lipids rather than repel them.",
+          recoveryProtocol: "If soggy: REJECT. Component cannot be re-fried without rubberizing the squid.",
+          jemmaMapping: ["LIPID ABSORPTION", "THERMAL RECOVERY FAILURE"],
+          memoryTag: "180°C Flash point"
+        },
         rootLayer: "Flash-fried tender protein system.",
         controlLaw: "THE RECOVERY LAW — Oil must hit 180°C before every batch.",
         ingredients: [
@@ -818,8 +1119,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "STARTER-002",
         name: "Bruschetta Pomodoro",
-        engine: "STARTERS",
+        engine: "HELIOS",
         section: "COLD",
+        forgev3: {
+          wmm: [
+            "Sourdough slices: 2 units",
+            "Tomato mix: 100g",
+            "Garlic/Basil/Balsamic",
+            "Method: Char bread (HELIOS) → Garlic rub (THE CRUNCH LAW) → Build with marinated mix"
+          ],
+          yield: "1 Portion",
+          timeLaw: "2 min Char | 1 min Build | Max 5 min shelf life",
+          passSignals: ["Hard-charred structural crust", "Vibrant tomato-acid tang", "Aromatic raw garlic high-note"],
+          rejectSignals: ["Soggy bread collapse", "Watery tomato pooling", "Burnt garlic bitterness"],
+          failureLaw: "THE CRUNCH LAW breach; failure to achieve a deep Maillard char on the sourdough eliminates the moisture barrier, leading to rapid bread softening.",
+          recoveryProtocol: "If soggy: REJECT. Bread must be toasted to 'glass' state before topping.",
+          jemmaMapping: ["MOISTURE BARRIER FAILURE", "STARCH HYDRATION"],
+          memoryTag: "Char-depth moisture lock"
+        },
         rootLayer: "Simple texture contrast benchmark.",
         controlLaw: "THE CRUNCH LAW — Bread must be charred to provide moisture barrier.",
         ingredients: [
@@ -852,8 +1169,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "STARTER-003",
         name: "Buffalo Wings (Fire)",
-        engine: "STARTERS",
+        engine: "HELIOS",
         section: "HOT",
+        forgev3: {
+          wmm: [
+            "Chicken wings: 6 units",
+            "Fire glaze: 40g",
+            "Method: Grill wings (HELIOS) to core 75°C (THE BONE LAW) → Toss in glaze bowl → Flash high heat 1 min"
+          ],
+          yield: "1 Portion",
+          timeLaw: "8 min Grill | 1 min Flash | Core temp 75°C mandatory",
+          passSignals: ["Lacquered/Sticky skin sheen", "Searing heat-to-the-bone", "Clean meat release from bone"],
+          rejectSignals: ["Flabby/Wet skin", "Cold/Pink bone center", "Dry/Fibrous meat fibers"],
+          failureLaw: "THE BONE LAW breach; failure to reach 75°C at the bone marrow prevents collagen breakdown, resulting in a rubbery, 'bloody' joint attachment.",
+          recoveryProtocol: "If cold: Return to HELIOS for 2 min. If dry: REJECT.",
+          jemmaMapping: ["THERMAL PENETRATION FAILURE", "COLLAGEN STIFFNESS"],
+          memoryTag: "Bone-core thermal target"
+        },
         rootLayer: "Sticky charred protein system.",
         controlLaw: "THE BONE LAW — Internal bone temp must be searingly hot.",
         ingredients: [
@@ -885,8 +1217,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "STARTER-004",
         name: "Arancini (Mushroom)",
-        engine: "STARTERS",
+        engine: "AETHER",
         section: "HOT",
+        forgev3: {
+          wmm: [
+            "Risotto balls: 3x 50g",
+            "Panko/Truffle mayo",
+            "Method: Chilled risotto base → Double crumb (THE INTEGRITY LAW) → Fry 180°C (AETHER) for 4 min → Probe 75°C"
+          ],
+          yield: "3 units",
+          timeLaw: "4 min Fry | Max 5 min shelf life | Probe check mandatory",
+          passSignals: ["Shatter-crisp outer shell", "Molten/Lava risotto core", "Uniform golden breading"],
+          rejectSignals: ["Cold/Grainy rice center", "Shell burst (leakage)", "Oily/Soggy coating"],
+          failureLaw: "THE INTEGRITY LAW breach; gaps in the double-crust panko layer allow oil ingress and steam-rupture of the internal rice matrix.",
+          recoveryProtocol: "If cold: Return to AETHER for 60s. If burst: REJECT.",
+          jemmaMapping: ["BARRIER FAILURE", "THERMAL CORE LAG"],
+          memoryTag: "Crust-integrity seal"
+        },
         rootLayer: "Molten heart in structural shell.",
         controlLaw: "THE INTEGRITY LAW — Double-crumb must be gap-free.",
         ingredients: [
@@ -918,8 +1265,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "STARTER-005",
         name: "Burrata & Heritage Tomato",
-        engine: "STARTERS",
+        engine: "PREP",
         section: "COLD",
+        forgev3: {
+          wmm: [
+            "Burrata: 125g",
+            "Heritage tomatoes: 100g",
+            "Method: Temper cheese 30 min (THE TEMPER LAW) → Slice tomatoes at room temp → Basil oil/Salt finish"
+          ],
+          yield: "1 Portion",
+          timeLaw: "30 min Tempering | Max 10 min build shelf",
+          passSignals: ["Luscious stracciatella flow on cut", "Juicy/Tender tomato skin", "Clean floral basil aroma"],
+          rejectSignals: ["Ice-cold waxy core", "Mealy/Dry refrigerated tomatoes", "Split/Shedded burrata skin"],
+          failureLaw: "THE TEMPER LAW breach; cold burrata fat remains solidified, preventing the release of the creamy internal matrix upon consumer interaction.",
+          recoveryProtocol: "If cold: Gently warm container in hand. If split: REJECT.",
+          jemmaMapping: ["LIPID SOLIDIFICATION", "THERMAL SENSITIVITY"],
+          memoryTag: "Fat-flow temperature"
+        },
         rootLayer: "Temperature sensitive fat-acid system.",
         controlLaw: "THE TEMPER LAW — Burrata core must be 18-20°C (not fridge cold).",
         ingredients: [
@@ -951,8 +1313,23 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "STARTER-006",
         name: "Antipasti Misto",
-        engine: "STARTERS",
+        engine: "PREP",
         section: "COLD",
+        forgev3: {
+          wmm: [
+            "Prosciutto/Salami/Pickles",
+            "Warm Focaccia",
+            "Method: Sliced 0.5mm order (THE SLICE LAW) → Arrange with height → Serve with warm bread"
+          ],
+          yield: "1 Portion",
+          timeLaw: "3 min Build | Sliced to order | Warm bread finish",
+          passSignals: ["Translucent/Thin protein folds", "Vertical height/air between layers", "Glassy oil sheen on meat"],
+          rejectSignals: ["Thick/Chewy meat slabs", "Flat/Compacted density", "Oxidized grey meat edges"],
+          failureLaw: "THE SLICE LAW breach; slicing >0.5mm prevents the salt/fat from melting instantly on the palate, fundamentally altering the perceived texture.",
+          recoveryProtocol: "If thick: REJECT. Re-slice at 0.5mm calibration.",
+          jemmaMapping: ["TEXTURE DEFICIT", "LIPID-PALATE FAILURE"],
+          memoryTag: "0.5mm Micron-depth"
+        },
         rootLayer: "Curated cold assembly.",
         controlLaw: "THE SLICE LAW — Meats must be sliced 0.5mm for palate melt.",
         ingredients: [
@@ -1018,8 +1395,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SIDE-001",
         name: "Triple Cooked Chips",
-        engine: "SIDES",
+        engine: "AETHER",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "Maris Piper potatoes: 5kg",
+            "Salted water: 10L",
+            "High-heat oil",
+            "Method: Cut 15mm → Blanch till friable edges → Steam-dry (THE DRYING LAW) → 1st Fry 130°C → 2nd Fry 180°C to order"
+          ],
+          yield: "20 Portions",
+          timeLaw: "8-10 min Blanch | 3-4 min Final Fry | Serves <60s from fryer",
+          passSignals: ["Glass-like audible fracture", "Deep golden surface tension", "Internal steam release on break"],
+          rejectSignals: ["Limp/Soggy structure", "Pale/White patches", "Oil-soaked oily residue"],
+          failureLaw: "THE DRYING LAW breach; residual moisture in the starch network prevents the formation of the dehydrated 'glass' crust during the final fry.",
+          recoveryProtocol: "If soft: Return to 190°C for 60s. If oily: REJECT.",
+          jemmaMapping: ["STARCH DEHYDRATION FAILURE", "LIPID SATURATION"],
+          memoryTag: "Surface friability / Moisture exit"
+        },
         rootLayer: "Three-stage cooking process for crisp exterior + fluffy interior.",
         controlLaw: "THE DRYING LAW — Chips must be completely dry before final fry or they will not crisp.",
         ingredients: [
@@ -1051,8 +1444,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SIDE-002",
         name: "Parmesan & Truffle Fries",
-        engine: "SIDES",
+        engine: "AETHER",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "Skin-on fries: 200g",
+            "Truffle oil: 5ml",
+            "Grated parmesan: 15g",
+            "Truffle salt/Chives: 3g",
+            "Method: Fry 180°C → Drain 10s (THE GREASE LAW) → Toss with oil/salt → Top with cheese"
+          ],
+          yield: "1 Portion",
+          timeLaw: "3.5 min Fry | 10s Mandatory Drain | 20s build",
+          passSignals: ["Snow-like parmesan dusting (no clumps)", "Aggressive truffle aroma", "Steam-dry crispy fries"],
+          rejectSignals: ["Clumped cheese-oil sludge", "Soft base fries", "Faint aroma"],
+          failureLaw: "THE GREASE LAW breach; failure to drain surface oil causes the parmesan protein to melt and clump rather than sit as a fine powder.",
+          recoveryProtocol: "If clumped: REJECT. Component is visually and structurally dead.",
+          jemmaMapping: ["LIPID-PROTEIN CLUMPING", "THERMAL DEGRADATION"],
+          memoryTag: "Drain duration accuracy"
+        },
         rootLayer: "Skin-on fries with premium aromatic finishing system.",
         controlLaw: "THE GREASE LAW — Fries must be drained for 10s before tossing to prevent oil-soaked cheese clump.",
         ingredients: [
@@ -1085,8 +1495,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SIDE-003",
         name: "House Slaw",
-        engine: "SIDES",
+        engine: "PREP",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "White cabbage/Carrot/Red onion: 1.4kg",
+            "House mayo: 250g",
+            "Lemon juice: 30ml",
+            "Method: Ultra-fine slice → 30 min salt drain → Bind with mayo/acid → 4h rotation (THE OXIDATION LAW)"
+          ],
+          yield: "15 Portions",
+          timeLaw: "15 min Prep | 30 min Drain | 4h shelf life dressed",
+          passSignals: ["High-definition snap-crunch", "Zero liquid pooling in base", "Bright white/orange contrast"],
+          rejectSignals: ["Limp/Grey vegetables", "Watery mayo suspension", "Oxidized onion bleed"],
+          failureLaw: "THE OXIDATION LAW breach; enzyme activity in sliced brassicas causes rapid softening and color shift if held >4h dressed.",
+          recoveryProtocol: "If watery: Drain briefly and add 5% fresh mayo. If grey: REJECT.",
+          jemmaMapping: ["ENZYMATIC SOFTENING", "OSMOTIC COLLAPSE"],
+          memoryTag: "Dressed rotation window"
+        },
         rootLayer: "Acid-cut crunch system for rich proteins.",
         controlLaw: "THE OXIDATION LAW — Slaw must be prepped in 4h cycles to prevent cabbage discoloration.",
         ingredients: [
@@ -1119,8 +1545,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SIDE-004",
         name: "Truffle Mayo (Dip)",
-        engine: "SIDES",
+        engine: "PREP",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "House mayo: 500g",
+            "Truffle paste: 50g",
+            "Truffle oil: 10ml",
+            "Method: Gentle fold (THE STABILITY LAW) → Portion 30g → Lid/Label → Chill"
+          ],
+          yield: "18 Portions",
+          timeLaw: "5 min Prep | 3 day shelf life",
+          passSignals: ["Glossy grey-speckled emulsion", "Pungent truffle scent", "Zero oil separation"],
+          rejectSignals: ["Oil bleed on surface", "Discolored top skin", "Faint scent"],
+          failureLaw: "THE STABILITY LAW breach; over-working the mayo with high-speed whisking during the fold ruptures the emulsion-air matrix.",
+          recoveryProtocol: "If split: REJECT. Emulsion cannot be safely rebound with added oils.",
+          jemmaMapping: ["EMULSION RUPTURE", "LIPID BLEED"],
+          memoryTag: "Fold intensity level"
+        },
         rootLayer: "High-fat emulsion stabilizer system.",
         controlLaw: "THE STABILITY LAW — Mayonnaise must not split under heat exposure.",
         ingredients: [
@@ -1186,6 +1628,22 @@ export const ENGINES: Record<string, Engine> = {
         name: "FORGE Pizza Dough",
         engine: "PREP",
         section: "FOUNDATION",
+        forgev3: {
+          wmm: [
+            "Flour (00): 3.1kg",
+            "Water (20°C): 2.01kg",
+            "Salt: 77g / Yeast: 3g",
+            "Method: Water/Yeast → Flour → Salt → Mix to 23°C FDT (THE TEMPERATURE LAW) → 260g balls → 44h cold ferment"
+          ],
+          yield: "20 Balls",
+          timeLaw: "23°C FDT target | 48h Total Ferment (44h cold/4h temper)",
+          passSignals: ["23°C precision FDT", "Elastic recovery on stretch", "Uniform carbonation pockets"],
+          rejectSignals: ["Overproof stickiness", "Sour/Vinegar aroma", "Dense center (underproof)"],
+          failureLaw: "THE TEMPERATURE LAW breach; deviation from 23°C FDT results in uncontrolled enzyme activity—either thermal death or stagnant dormancy.",
+          recoveryProtocol: "If cold: Temper at 25°C. If hot: REJECT.",
+          jemmaMapping: ["THERMAL GRADIENT DRIFT", "YEAST METABOLIC COLLAPSE"],
+          memoryTag: "FDT 23.0 stability"
+        },
         rootLayer: "48h cold-ferment high-hydration (65%) system.",
         controlLaw: "THE TEMPERATURE LAW — Target 23°C FDT to regulate yeast activity.",
         ingredients: [
@@ -1219,6 +1677,21 @@ export const ENGINES: Record<string, Engine> = {
         name: "Bone Reduction (Gravy Base)",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Beef/Veal bones: 10kg",
+            "Mirepoix: 2kg / Red wine: 1L",
+            "Method: Roast dark mahogany → Deglaze → Extract 85-90°C (THE LIPID LAW) for 16h → Continuous skimming → Reduce 50%"
+          ],
+          yield: "8L Reduction",
+          timeLaw: "16h Extraction | Constant 85-90°C | No boil lock",
+          passSignals: ["Deep mahogany clarity", "Stable gelatinous gel at 4°C", "Glossy nappe texture"],
+          rejectSignals: ["Cloudy/Emulsified appearance", "Greasy top-layer residue", "Bitter scorched notes"],
+          failureLaw: "THE LIPID LAW breach; boiling during extraction causes grease particles to incorporate into the water phase, creating a permanent cloudy emulsion.",
+          recoveryProtocol: "If cloudy: REJECT. Component is visually fatally flawed.",
+          jemmaMapping: ["LIPID EMULSIFICATION", "THERMAL TURBULENCE"],
+          memoryTag: "85°C simmer limit"
+        },
         rootLayer: "16h collagen extraction foundation.",
         controlLaw: "THE LIPID LAW — Continuous skimming + NO boiling (85-90°C) to prevent clouding.",
         ingredients: [
@@ -1253,6 +1726,21 @@ export const ENGINES: Record<string, Engine> = {
         name: "House Burger Sauce",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Mayo: 1kg / Ketchup: 300g",
+            "American Mustard: 100g / Pickles: 100g",
+            "Method: Whisk bases → Fold in texturals (THE BALANCE LAW) → Rest 2h for marriage"
+          ],
+          yield: "1.5kg yield",
+          timeLaw: "10 min Prep | 2h Flavor maturation | 5 day shelf",
+          passSignals: ["Uniform pink/orange hue", "Visible but integrated pickle suspension", "Sharp acid-sugar balance"],
+          rejectSignals: ["Watery moisture separation", "Coarse/Large pickle chunks", "Dominant vinegar scent"],
+          failureLaw: "THE BALANCE LAW breach; failure to finely dice texturals leads to uneven distribution and structural instability in the emulsion.",
+          recoveryProtocol: "If split: Whisk in 5% fresh mayo. If unbalanced: Adjust mustard.",
+          jemmaMapping: ["TEXTURE DISTRIBUTION ERROR", "EMULSION INSTABILITY"],
+          memoryTag: "Acid-Fat PIERCE"
+        },
         rootLayer: "Emulsified fat-acid-sugar system.",
         controlLaw: "THE BALANCE LAW — Acidity from pickles must pierce the mayonnaise fat cap.",
         ingredients: [
@@ -1286,6 +1774,22 @@ export const ENGINES: Record<string, Engine> = {
         name: "Chipotle Lime Mayo",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Mayo: 1kg",
+            "Chipotle in adobo: 150g (Blended)",
+            "Lime: 50ml / Cumin: 5g",
+            "Method: Blend chipotle paste (THE SMOKE LAW) → Whisk into mayo → Stabilize with fresh lime"
+          ],
+          yield: "1.2kg yield",
+          timeLaw: "5 min Prep | 5 day shelf",
+          passSignals: ["Opaque terracotta hue", "Consistent smokey heat (Tier 2)", "Sharp lime top-note"],
+          rejectSignals: ["Grey/Muddied color", "Chipotle chunks (unblended)", "Flat acid profile"],
+          failureLaw: "THE SMOKE LAW breach; failure to pre-blend chipotle in adobo creates hot-spots and prevents uniform integration into the fat matrix.",
+          recoveryProtocol: "If chunky: Strain and re-blend. If flat: Increase lime 10%.",
+          jemmaMapping: ["PARTICULATE DRIFT", "ACID SUPPRESSION"],
+          memoryTag: "Smokey heat-depth"
+        },
         rootLayer: "High-heat smoke-acid emulsion.",
         controlLaw: "THE SMOKE LAW — Chipotle intensity must remain consistent (Tier 2 heat).",
         ingredients: [
@@ -1318,6 +1822,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Kitchen Tartare Sauce",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Mayo: 1kg / Capers: 150g / Cornichons: 150g",
+            "Method: Squeeze pickles/capers till DRY (THE DRAIN LAW) → Fold into mayo → Finish with fresh dill/zest"
+          ],
+          yield: "1.4kg yield",
+          timeLaw: "15 min Prep | 3 day shelf life",
+          passSignals: ["Thick/Scoopable structural mount", "High-definition herb green flecks", "Instant pickle-acid pop"],
+          rejectSignals: ["Watery thinning after 1h", "Oxidized brown herbs", "Limp pickle texture"],
+          failureLaw: "THE DRAIN LAW breach; residual brine in the capers/cornichons undergoes osmotic transition into the mayo, breaking the emulsion's viscosity.",
+          recoveryProtocol: "If watery: REJECT. (Moisture is already bound to fat).",
+          jemmaMapping: ["OSMOTIC THINNING", "EMULSION RUPTURE"],
+          memoryTag: "Brine extraction prior to fold"
+        },
         rootLayer: "Textured herb-acid suspension.",
         controlLaw: "THE DRAIN LAW — Capers and cornichons must be dry-squeezed to prevent sauce thinning.",
         ingredients: [
@@ -1351,6 +1869,21 @@ export const ENGINES: Record<string, Engine> = {
         name: "Master Slaw Dressing",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Cider vinegar: 500ml / Sugar: 200g",
+            "Mayo (optional): 500g / Spices",
+            "Method: Dissolve sugar in vinegar (THE SALT LAW) → Whisk in mayo/spices → Emulsify smooth"
+          ],
+          yield: "1.2L yield",
+          timeLaw: "5 min Prep | 10 day shelf life | Room temp stable",
+          passSignals: ["High-acid punch profile", "Ultra-smooth emulsion sheen", "Clear spice suspension"],
+          rejectSignals: ["Grainy sugar crystals at base", "Dull/flat profile", "Fermenting odor"],
+          failureLaw: "THE SALT LAW breach; applying dressing to cabbage >30 min before service causes osmotic collapse and liquid pooling.",
+          recoveryProtocol: "If split: Vigorous whisking. If crystalline: Warm to 30°C to dissolve.",
+          jemmaMapping: ["SOLUTE SATURATION ERROR", "OSMOTIC DISRUPTION"],
+          memoryTag: "Sugar dissolution target"
+        },
         rootLayer: "Acid-heavy seasoning matrix.",
         controlLaw: "THE SALT LAW — Apply dressing at pass only to prevent cabbage osmotic collapse.",
         ingredients: [
@@ -1384,6 +1917,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Minted Pea Purée",
         engine: "PREP",
         section: "SIDES",
+        forgev3: {
+          wmm: [
+            "Frozen petit pois: 2kg / Butter: 200g / Fresh mint: 50g",
+            "Method: Blanch 2 min (THE VIBRANCY LAW) → Ice quench → Blend with butter/mint → Fine pass (Chinois)"
+          ],
+          yield: "2.2kg yield",
+          timeLaw: "2 min Blanch | Immediate Ice Quench | 24h shelf life",
+          passSignals: ["Neon green chlorophyll saturation", "Silk-smooth textural flow", "Instant clean mint aroma"],
+          rejectSignals: ["Dull grey/olive hue (oxidation)", "Grainy/Skin-filled texture", "Weak/muddied flavor profile"],
+          failureLaw: "THE VIBRANCY LAW breach; failure to quench immediately in ice water allows residual heat to continue cooking chlorophyll, triggering the enzymatic transition to pheophytin (grey).",
+          recoveryProtocol: "If grey: REJECT. Color loss is chemically irreversible.",
+          jemmaMapping: ["CHLOROPHYLL DEGRADATION", "THERMAL OVER-EXTRACTION"],
+          memoryTag: "Ice-shock precision"
+        },
         rootLayer: "Vibrant chlorophyll-dense starch system.",
         controlLaw: "THE VIBRANCY LAW — Ice bath quench mandatory to lock green colour.",
         ingredients: [
@@ -1417,6 +1964,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Praline Crunch (Texture Lock)",
         engine: "PREP",
         section: "DESSERT",
+        forgev3: {
+          wmm: [
+            "Sugar: 1kg / Hazelnuts: 500g",
+            "Method: Dry caramelise to dark amber → Nuts in → Pour onto silicone → Cool → Break into 10g shards (THE MOISTURE LAW)"
+          ],
+          yield: "1.4kg yield",
+          timeLaw: "20 min Prep | Airtight store with silica | 48h use window",
+          passSignals: ["Glass-like audible crack on break", "Deep amber clarity", "Zero surface stickiness"],
+          rejectSignals: ["Sticky/Tacky surface (humidity gain)", "Soft bend (moisture ingress)", "Bitter burnt carbon notes"],
+          failureLaw: "THE MOISTURE LAW breach; exposure to ambient humidity triggers sugar hygroscopy, dissolving the caramel surface into a sticky film.",
+          recoveryProtocol: "If sticky: REJECT. Structural integrity is compromised.",
+          jemmaMapping: ["HYGROSCOPIC COLLAPSE", "CARAMEL RECRYSTALLIZATION"],
+          memoryTag: "Silica-controlled environment"
+        },
         rootLayer: "High-density caramel-nut matrix.",
         controlLaw: "THE MOISTURE LAW — Store with silica in airtight container; humidity = structural failure.",
         ingredients: [
@@ -1448,6 +2009,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Pickled Red Onions (2mm)",
         engine: "PREP",
         section: "GARNISH",
+        forgev3: {
+          wmm: [
+            "Red onions: 3kg / Red wine vinegar: 2L / Sugar: 500g",
+            "Method: Razor slice 2mm (THE SLICE LAW) → Boil brine → Pour HOT over onions → 24h steep"
+          ],
+          yield: "4kg yield",
+          timeLaw: "24h Steep | 2mm Precision Slice | 14 day shelf",
+          passSignals: ["Electric neon-pink appearance", "Translucent cellular structure", "Crunch-snap oral response"],
+          rejectSignals: ["Dull grey color depth", "Limp/Flaccid texture", "Spontaneous fermentation bubbles"],
+          failureLaw: "THE SLICE LAW breach; slicing >2mm prevents rapid thermal and acidic penetration of the onion's fibrous cell walls before they oxidize.",
+          recoveryProtocol: "If soft: REJECT. If dull: Refresh with 5% red wine vinegar.",
+          jemmaMapping: ["CELLULAR SATURATION FAILURE", "OXIDATIVE DARKENING"],
+          memoryTag: "2mm Razor precision"
+        },
         rootLayer: "Acid-driven cellular breakdown system.",
         controlLaw: "THE SLICE LAW — 2mm razor cut required for rapid acid penetration.",
         ingredients: [
@@ -1480,6 +2055,21 @@ export const ENGINES: Record<string, Engine> = {
         name: "Garlic & Marrow Butter",
         engine: "PREP",
         section: "BUTTER",
+        forgev3: {
+          wmm: [
+            "Butter: 1kg / Roasted Marrow: 1kg",
+            "Garlic/Parsley",
+            "Method: Roast marrow → Cool to 20°C (THE EMULSION LAW) → Whip butter → Fold → Set in 10g discs"
+          ],
+          yield: "2kg yield",
+          timeLaw: "30 min Prep | 20°C Target for fold | 7 day shelf",
+          passSignals: ["Pale gold aerated body", "Uniform garden-green herb flecks", "Zero lipid bleed at 20°C"],
+          rejectSignals: ["Visible oil separation (split)", "Cold marrow lumps", "Raw garlic bitterness"],
+          failureLaw: "THE EMULSION LAW breach; folding marrow above its 20°C lipid-rupture point causes the whipped butter structure to melt into a heavy, oily pool.",
+          recoveryProtocol: "If split: REJECT. If chunky: Warm slightly and re-fold. (Risk: Splitting).",
+          jemmaMapping: ["LIPID STRUCTURAL COLLAPSE", "EMULSION RUPTURE"],
+          memoryTag: "Marrow cooling target"
+        },
         rootLayer: "Aerated dairy-animal fat emulsion.",
         controlLaw: "THE EMULSION LAW — Marrow must be cooled to 20°C before whipping to prevent fat split.",
         ingredients: [
@@ -1513,6 +2103,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Chili-Lime Sugar",
         engine: "PREP",
         section: "GARNISH",
+        forgev3: {
+          wmm: [
+            "Sugar: 1kg / Chilli flakes: 20g / Lime zest: 10 units",
+            "Method: Dehydrate zest at 60°C (THE MOISTURE LAW) → Blitz with aromatics → Sift to fine grain"
+          ],
+          yield: "1.1kg yield",
+          timeLaw: "4h Dehydration | 15 min Prep | 30 day shelf with silica",
+          passSignals: ["Free-flowing fine granular texture", "Electric lime-oil scent", "Visible uniform chilli flecks"],
+          rejectSignals: ["Lumpy/Clumping sugar", "Faded aroma (volatile loss)", "Gritty/Uneven particle size"],
+          failureLaw: "THE MOISTURE LAW breach; residual moisture in the lime zest triggers local sugar dissolution, causing hard clumps and promoting microbial growth.",
+          recoveryProtocol: "If clumped: Re-dehydrate at 50°C and sifter again. If dull: REJECT.",
+          jemmaMapping: ["HYGROSCOPIC CLUMPING", "VOLATILE LOSS"],
+          memoryTag: "Zest dehydration lock"
+        },
         rootLayer: "Sugar-capsaicin-citrus matrix.",
         controlLaw: "THE MOISTURE LAW — Dehydrate zest fully to prevent clumping.",
         ingredients: [
@@ -1544,6 +2148,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Fermented Garlic Honey",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Raw Honey: 2kg / Garlic: 500g / ACV: 50ml",
+            "Method: Crush garlic (release allicin) → Submerge in honey (THE PHYLLIS LAW) → Burp daily 14 days → Target pH 4.2"
+          ],
+          yield: "2.4kg yield",
+          timeLaw: "14 day Fermentation | pH < 4.6 mandatory | 6 month shelf",
+          passSignals: ["Runny/low-viscosity honey matrix", "Translucent garlic cloves", "Complex mellow umami-sweetness"],
+          rejectSignals: ["Gas activity post-14 days", "pH > 4.6 (SAFETY FAIL)", "Opaque garlic (insufficient cure)"],
+          failureLaw: "THE PHYLLIS LAW breach; failure to maintain pH below 4.6 in an anaerobic environment allows Clostridium botulinum growth.",
+          recoveryProtocol: "If pH 4.7+: Add 10ml Apple Cider Vinegar increments and re-test. If foaming persists: REJECT.",
+          jemmaMapping: ["pH-CONTROLLED FERMENTATION", "BOTULINUM GUARD"],
+          memoryTag: "pH 4.2 Security lock"
+        },
         rootLayer: "Enzymatic glucose-allicin breakdown.",
         controlLaw: "THE PHYLLIS LAW — pH must be <4.6 (Add ACV if needed to prevent botulism).",
         ingredients: [
@@ -1576,6 +2194,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Truffle Honey (Ratio Lock)",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Honey: 1kg / Black truffle paste: 20g / Truffle oil: 10ml",
+            "Method: Warm honey to 30°C (THE RATIO LAW) → Whisk in paste/oil until suspended → Cool/Bottle"
+          ],
+          yield: "1.03kg yield",
+          timeLaw: "10 min Prep | 30°C Thermal limit | 3 month shelf stable",
+          passSignals: ["Stable suspension (no oil slick)", "Intense/Pungent aroma punch", "Thick slow-drip viscosity"],
+          rejectSignals: ["Artificial chemical scent dominance", "Visible oil pooling on top", "Grey/muddied color saturation"],
+          failureLaw: "THE RATIO LAW breach; failure to maintain ≥1% paste particulate density prevents valid volatile capture, leading to rapid aroma decay.",
+          recoveryProtocol: "If split: Warm to 25°C and vigorous manual whisk. If scentless: Add 5g paste.",
+          jemmaMapping: ["VOLATILE LOSS", "SUSPENSION COLLAPSE"],
+          memoryTag: "30°C Volatile lock"
+        },
         rootLayer: "High-viscosity volatile capture.",
         controlLaw: "THE RATIO LAW — 1% Truffle paste minimum for structural integrity.",
         ingredients: [
@@ -1607,6 +2239,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Smoked Bone Marrow Jus",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Bone Reduction (PREP-002): 2L / Roasted marrow: 200g",
+            "Method: Reduce base to 500ml syrup (THE GLOSS LAW) → Whisk in marrow/smoke-salt → Monté au beurre (cold butter) → Fine pass"
+          ],
+          yield: "650ml yield",
+          timeLaw: "2h Prep | 60°C Integration target | 3 day shelf life",
+          passSignals: ["High-mirror reflective surface", "Zero visible lipid droplets", "Nappe (structural spoon coating)"],
+          rejectSignals: ["Oil slick (split emulsion)", "Grainy/Lumpy marrow particles", "Salt-dominant flat profile"],
+          failureLaw: "THE GLOSS LAW breach; failure to achieve specific gravity (syrup phase) before marrow enrichment leads to lipid incompatibility and split.",
+          recoveryProtocol: "If split: High-RPM blend for 30s off-heat. If too thin: Further reduction.",
+          jemmaMapping: ["LIPID REJECTION", "REDUCTION DRIFT"],
+          memoryTag: "Maillard-fat mirror"
+        },
         rootLayer: "Fat-fortified reduction system.",
         controlLaw: "THE GLOSS LAW — Emulsify marrow at 60°C to secure the shine.",
         ingredients: [
@@ -1640,6 +2286,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Habanero Pineapple Glaze",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Pineapple juice: 2L / Habanero: 50g / Honey: 200g",
+            "Method: Reduce juice/chilli by 75% (THE HEAT LAW) → Blitz smooth → Add honey/lime → Viscosity check (slow drip)"
+          ],
+          yield: "600ml yield",
+          timeLaw: "45 min Prep | 75% reduction target | 10 day shelf life",
+          passSignals: ["Electric translucent orange hue", "Immediate heat-citrus high note", "Syrupy adhesive consistency"],
+          rejectSignals: ["Bitter/Chlorophyll skin notes", "Watery/loose consistency", "Burnt sugar acrid scent"],
+          failureLaw: "THE HEAT LAW breach; failure to sufficiently reduce the juice volume results in an imbalance where capsaicin overwhelms the fructose structure.",
+          recoveryProtocol: "If thin: Simmer on low heat with 10g honey. If too hot: Dilute with 10% pineapple juice.",
+          jemmaMapping: ["CAPSAICIN OVER-DOMINANCE", "REDUCTION DRIFT"],
+          memoryTag: "Sugar-heat equilibrium"
+        },
         rootLayer: "Sugar-capsaicin-enzyme matrix.",
         controlLaw: "THE HEAT LAW — Scoville heat must be balanced by fruit sugar density.",
         ingredients: [
@@ -1673,6 +2333,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Mascarpone Cream",
         engine: "PREP",
         section: "PASTRY",
+        forgev3: {
+          wmm: [
+            "Mascarpone: 750g / Icing sugar: 150g / Cream: 100ml / Lemon",
+            "Method: Whisk mascarpone/sugar until aerated → Stream in cream (THE MECHANICAL LAW) → STOP at stiff peak → Fold zest"
+          ],
+          yield: "1kg yield",
+          timeLaw: "5 min prep | <5°C working temp | STOP before graining",
+          passSignals: ["Stable pillowy peak", "Silk-gloss surface", "Bright citrus fragrance"],
+          rejectSignals: ["Grainy/Coagulated texture (overwork)", "Loose/Runny consistency", "Butter-fleck (lipid rupture)"],
+          failureLaw: "THE MECHANICAL LAW breach; induction of mechanical friction heat during over-whisking causes the fat globules to collide and form butter grains, destroying the emulsion.",
+          recoveryProtocol: "If loose: Add 50g cold mascarpone and fold. If grainy: REJECT.",
+          jemmaMapping: ["MECHANICAL THERMAL BREACH", "LIPID AGGLOMERATION"],
+          memoryTag: "Friction-heat stop-point"
+        },
         rootLayer: "Fat-stabilised dairy emulsion.",
         controlLaw: "THE MECHANICAL LAW — Do not over-whip; mechanical heat will break the emulsion.",
         ingredients: [
@@ -1702,8 +2376,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PREP-032",
         name: "Sticky Toffee Sauce",
-        engine: "PREP",
+        engine: "LUNA-002",
         section: "PASTRY",
+        forgev3: {
+          wmm: [
+            "Butter: 1kg",
+            "Dark brown sugar: 1kg",
+            "Double cream: 1L",
+            "Method: Melt butter/sugar → Boil to 104°C exactly (THE THERMAL LAW) → Deglaze with cream → Whisk glossy"
+          ],
+          yield: "3L Batch",
+          timeLaw: "15 min cook | Critical window: 104°C target",
+          passSignals: ["Glossy deep amber finish", "Absolute smooth nappe (no crystallization)", "Rich caramel scent"],
+          rejectSignals: ["Grainy texture (under-temp)", "Visible fat separation", "Burnt sugar smell"],
+          failureLaw: "Failure to reach 104°C prevents full sugar-fat integration. Over 106°C leads to bitter caramelization.",
+          recoveryProtocol: "If grainy: Reheat to 104°C and add 5% warm cream. If burnt: REJECT.",
+          jemmaMapping: ["THERMAL DRIFT", "EMULSION FAILURE"],
+          memoryTag: "Crystallization point / Thermal accuracy"
+        },
         rootLayer: "Butter-sugar-emulsion matrix.",
         controlLaw: "THE THERMAL LAW — Sauce must hit 104°C before deglazing with cream.",
         ingredients: [
@@ -1732,46 +2422,54 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PREP-016",
         name: "Crumble Mix",
-        type: "prep_component",
-        category: "structural_fat_system",
-        batchYield: "5kg yield · 50 portions",
-        portionTool: "100g scoop",
-        shelfLife: "5 days",
-        ingredients: "2kg Flour · 1.5kg Butter · 1kg Sugar · 500g Oats",
-        method: "ZERO DRIFT VERSION: Butter 1cm cubes (0-4°C) → Rub in dry → Stop at rubble stage → Chill",
+        engine: "HELIOS",
+        section: "STRUCTURAL",
+        forgev3: {
+          wmm: [
+            "Flour: 2kg",
+            "Butter (0-4°C): 1.5kg",
+            "Sugar: 1kg",
+            "Oats: 500g",
+            "Method: Cube butter (1cm) → Pinch rub (fingertips) → STOP at rubble stage → Tray spread ≤2cm → Bake 170°C (22m)"
+          ],
+          yield: "5kg (50 portions)",
+          timeLaw: "18–25 min Bake | Working window: <8°C internal temp",
+          passSignals: ["Audible crunch on fracture", "Golden brown irregular clusters", "Dry feel (no grease bleed)"],
+          rejectSignals: ["Uniform/Sand texture", "Oily/Greasy clusters", "Raw flour pockets"],
+          failureLaw: "Friction heat during rubbing causes fat melt → leads to starch saturation and loss of cluster identity.",
+          recoveryProtocol: "If fat melts: REJECT. Component is structurally compromised.",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "THERMAL MELT (ENCAPSULATION BREACH)"],
+          memoryTag: "Cluster size drift / Moisture bleed"
+        },
+        rootLayer: "Shortening / Contrast System (Dry-rub starch-fat).",
+        controlLaw: "FAT ENCAPSULATION LAW — Fat must encapsulate flour particles without melting to inhibit gluten formation and preserve discrete clusters.",
+        ingredients: [
+          "2kg Flour",
+          "1.5kg Butter (0-4°C)",
+          "1kg Sugar",
+          "500g Oats"
+        ],
+        method: [
+          "1. Cut butter into 1cm cubes (0–4°C)",
+          "2. Add butter to dry ingredients → pinch/rub using fingertips only",
+          "3. STOP at “rubble” stage (pea → hazelnut clusters)",
+          "4. DO NOT homogenise; preserve irregular clusters",
+          "5. Tray spread ≤2cm; Bake 170°C for 18–25 min"
+        ],
+        holding: "5 days dry / 2 days baked",
+        service: "100g scoop per portion; audible crunch finish",
+        timeLaw: "18–25 min Bake (Zero Drift)",
+        validationPoints: {
+          postPrep: "Texture: Rubble / irregular; No dust; Temp: ≤8°C",
+          preService: "No moisture clumping; No butter bleed",
+          atPass: "Crisp fracture; Audible crunch"
+        },
+        failureLaw: "Greasy/Oily (Fat melt) / Powder (Overworked) / Flour pockets",
+        autoReject: "Oily residue / Sand texture / Raw flour pockets",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["gluten", "dairy"],
-        station: "Prep",
-        pass: "Audible crunch · Golden brown clusters · No grease bleed · No moisture clumping",
-        fellini: {
-          identity: "Shortening / Contrast System",
-          controlLaw: "FAT ENCAPSULATION LAW: Fat must encapsulate flour particles without melting to inhibit gluten formation and preserve discrete clusters. Failure of encapsulation = → Gluten activation → Structural collapse → Loss of crumble identity",
-          pressurePoint: "THERMAL & FRICTION CONTROL: Butter temperature (0–6°C) and Max working temp (<8°C).",
-          autoReject: [
-            "Greasy/Oily residue → fat melt",
-            "Powdery/Sand texture → overworked",
-            "Flour pockets → incomplete encapsulation"
-          ],
-          validationPoints: {
-            postPrep: "Texture: Rubble / irregular; No dust; Temp: ≤8°C",
-            preService: "No moisture clumping; No butter bleed; Loose structure",
-            atPass: "Crisp fracture; No grease bleed; Audible crunch"
-          },
-          conversionAction: "Bake 170°C (fan) / 180°C (deck) | Spread ≤ 2cm | 18–25 min | Target: Golden brown + Crisp clusters",
-          verdict: "PASS — FULLY LOCKED (v2.5.2a)"
-        },
-        executionCard: {
-          setup: ["Butter: 1cm cubes (0–4°C)", "Combine dry ingredients first", "Chilling space ready"],
-          build: [
-            "1. Add butter → pinch/rub using fingertips only",
-            "2. STOP at “rubble” stage (pea → hazelnut clusters)",
-            "3. DO NOT homogenise",
-            "4. Tray spread ≤2cm (no compression)",
-            "5. Bake 170°C (fan) 18–25 min (Turn 1x mid-bake)"
-          ],
-          timeLaw: "18–25 min Bake (Zero Drift)",
-          failures: ["Greasy/Oily (Fat melt)", "Powder (Overworked)", "Flour pockets"],
-          reset: ["IMMEDIATE DISCARD — NO CORRECTION PERMITTED"]
-        },
         larousse: {
           principle: "The prevention of moisture bleed through anhydrous barrier creation.",
           method: [
@@ -1782,495 +2480,793 @@ export const ENGINES: Record<string, Engine> = {
           quality: ["Irregular clusters", "Dry feel", "Cold pre-bake"],
           faults: ["Smooth/uniform (overworked)", "Sticky (warming)", "Dense (compressed)"],
           correction: ["FORBIDDEN: Added butter to sandy mix (Technique Failure)"]
+        },
+        fellini: {
+          identity: "Shortening / Contrast System",
+          controlLaw: "FAT ENCAPSULATION LAW",
+          pressurePoint: "THERMAL & FRICTION CONTROL",
+          watchPoint: "The rubble.",
+          passSignal: "Audible crunch."
         }
       },
       {
         id: "PREP-017",
         name: "House Mayo",
-        batchYield: "5L yield · 250 portions",
-        portionTool: "20g squeeze",
-        shelfLife: "5 days (4°C)",
-        ingredients: "Egg yolks · Pomace oil · Dijon mustard · Lemon juice",
-        method: "1. Whisk yolks + mustard. 2. Slowly emulsify oil into yolks. 3. Finish with acid. 4. Season.",
+        engine: "PREP",
+        section: "BASES",
+        forgev3: {
+          wmm: [
+            "Egg yolks: 10 units",
+            "Pomace oil: 4L",
+            "Dijon mustard: 100g",
+            "Lemon juice: 50ml",
+            "Fine salt: 20g",
+            "Method: Whisk yolks/mustard → Slow micro-stream oil (prevent yolk saturation) → Finish with acid → Season → Chill"
+          ],
+          yield: "5L (250 portions)",
+          timeLaw: "10 min prep | Stability decrease >72h",
+          passSignals: ["Glossy mount that holds shape", "Pale yellow uniformity", "Sharp, clean acidic finish"],
+          rejectSignals: ["Visible oil droplets on surface", "Grainy/Curdled texture", "Separation at container edges"],
+          failureLaw: "EMULSION LOCK failure via excessive oil delivery speed or thermal rise (>8°C during prep).",
+          recoveryProtocol: "Take 100g fresh base (egg yolk/mustard) and slowly whisk in the split mix.",
+          jemmaMapping: ["EMULSION LOCK FAILURE", "PURITY BREACH (SPLIT)"],
+          memoryTag: "Oil delivery speed / Thermal stability"
+        },
+        rootLayer: "Lecithin-stabilised oil-in-water emulsion system.",
+        controlLaw: "EMULSION LOCK LAW — Oil must be added in a micro-stream to prevent yolk saturation and breakage.",
+        ingredients: [
+          "Egg yolks (fresh/pasteurised)",
+          "Pomace oil",
+          "Dijon mustard",
+          "Lemon juice",
+          "Fine salt"
+        ],
+        method: [
+          "1. Whisk yolks and mustard until pale",
+          "2. Slowly emulsify oil into yolks in a thin stream",
+          "3. Maintain thick consistency throughout",
+          "4. Finish with lemon juice to set the bind",
+          "5. Season and chill immediately"
+        ],
+        holding: "5 days chilled (4°C)",
+        service: "20g squeeze or as base for variants",
+        timeLaw: "Prep time: 10 min",
+        validationPoints: {
+          postPrep: "Stable glossy mount",
+          preService: "Chilled ≤ 5°C",
+          atPass: "Thick nappe consistency"
+        },
+        failureLaw: "Split emulsion / Oily surface / Too thin",
+        autoReject: "Visible oil droplets / Curdled texture",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["eggs", "mustard"],
-        failureSigns: ["Split emulsion", "Too thin", "Bland"],
-        correction: ["RECOVERY LAW: Start new base and whisk in split mix"],
-        pass: "Thick · glossy · pale yellow · stable",
-        station: "Prep",
-        menuLayers: {
-          core: "Egg Yolk Emulsion",
-          bulk: "Oil suspension",
-          wet: "Liquid Matrix",
-          acid: "Lemon Juice",
-          finish: "Salt"
-        },
-        specLayers: {
-          functional: "Lecithin-stabilised oil-in-water emulsion.",
-          control: "EMULSION LOCK v1: Oil Law + Split Law + Recovery Law.",
-          output: "Stable, glossy base emulsion."
-        },
         larousse: {
           principle: "EMULSION LOCK v1: ROOT LAYER: Oil-in-water emulsion → stable fat-water suspension.",
           method: [
-            "OIL LAW: Add oil in a thin stream. Do not rush. No aggressive whisking after formation.",
-            "TEMPERATURE LAW: Keep all ingredients ≤ 5°C. No exposure to heat.",
-            "SPLIT LAW: Watch for grainy texture or oil droplets.",
-            "RECOVERY LAW: If split, take fresh base (egg yolk/mayo) and slowly incorporate split mix.",
-            "SERVICE LAW: Keep chilled. Stir before service."
+            "OIL LAW: Add oil in a thin stream. Do not rush.",
+            "TEMPERATURE LAW: Keep all ingredients ≤ 5°C.",
+            "RECOVERY LAW: If split, take fresh base and slowly incorporate split mix."
           ],
           quality: ["Rich mouthfeel", "Clean acidity", "Stable structure"],
-          faults: [
-            "AUTO REJECT: Split / oily sheen",
-            "AUTO REJECT: Curdled appearance",
-            "AUTO REJECT: Raw egg taste (imbalance)"
-          ],
-          correction: ["Apply RECOVERY LAW immediately. Do not over-whisk."]
+          faults: ["Split / oily sheen", "Curdled appearance", "Raw egg taste"]
         }
       },
       {
         id: "PREP-018",
         name: "Chipotle Mayo",
-        batchYield: "2L yield",
-        portionTool: "30g ramekin",
-        shelfLife: "5 days (4°C)",
-        ingredients: "House mayo (1000g) · Chipotle paste (100g) · Lime juice (20ml)",
-        method: "Fold chipotle and lime into house mayo base.",
-        allergens: ["eggs", "mustard"],
-        pass: "Glossy · smoky aroma · hold peak",
-        station: "Prep",
-        menuLayers: {
-          core: "Mayonnaise Base",
-          bulk: "30g portion",
-          wet: "Emulsion Matrix",
-          acid: "Lime Juice",
-          finish: "Chipotle Flecks"
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "House mayo: 1000g",
+            "Chipotle paste: 100g",
+            "Lime juice: 20ml",
+            "Method: Weigh out House Mayo base → Fold in chipotle paste gently (RATIO LOCK) → Add lime juice"
+          ],
+          yield: "1.1kg yield",
+          timeLaw: "5 min prep",
+          passSignals: ["Stable smoky emulsion", "Uniform brick-red color", "Holds peak"],
+          rejectSignals: ["Oil-slicked surface", "Faded smoky aroma", "Separation"],
+          failureLaw: "RATIO LOCK breach; aggressive folding causes emulsion collapse.",
+          recoveryProtocol: "If split: whisk in 10% fresh mayo base.",
+          jemmaMapping: ["EMULSION DRIFT"],
+          memoryTag: "Smoky aroma intensity"
         },
-        specLayers: {
-          functional: "Capsaicin suspension in fat matrix.",
-          control: "EMULSION LOCK v1: Ratio Law + Temp Law.",
-          output: "Stable smoky emulsion."
-        }
+        rootLayer: "Capsaicin-lipid emulsion system.",
+        controlLaw: "RATIO LOCK LAW — Chipotle paste must be folded (not whisked) to preserve the base emulsion stability.",
+        ingredients: [
+          "House mayo (1000g)",
+          "Chipotle paste (100g)",
+          "Lime juice (20ml)"
+        ],
+        method: [
+          "1. Weigh out House Mayo base",
+          "2. Fold in chipotle paste until uniform",
+          "3. Add lime juice for acidity balance",
+          "4. Chill to set"
+        ],
+        holding: "5 days chilled (4°C)",
+        service: "30g ramekin; smoky finish",
+        timeLaw: "Prep time: 5 min",
+        validationPoints: {
+          postPrep: "Stable smoky emulsion",
+          preService: "Held at 4°C",
+          atPass: "Glossy · smoky aroma · hold peak"
+        },
+        failureLaw: "Separation / Too spicy / Too thin",
+        autoReject: "Oil-slicked surface / Faded smoky aroma",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
+        allergens: ["eggs", "mustard"]
       },
       {
         id: "PREP-019",
         name: "Sriracha Mayo",
-        batchYield: "2L yield",
-        portionTool: "30g ramekin",
-        shelfLife: "5 days (4°C)",
-        ingredients: "House mayo (1000g) · Sriracha (120g) · Lemon (10ml)",
-        method: "Whisk sriracha into mayo until uniform orange.",
-        allergens: ["eggs", "mustard"],
-        pass: "Uniform colour · sharp kick · glossy hold",
-        station: "Prep",
-        menuLayers: {
-          core: "Mayonnaise Base",
-          bulk: "30g portion",
-          wet: "Emulsion Matrix",
-          acid: "Sriracha Acidity",
-          finish: "None"
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "House mayo: 1000g",
+            "Sriracha: 120g",
+            "Lemon juice: 10ml",
+            "Method: Combine mayo and sriracha → Whisk until uniform orange (COLOR LOCK) → Add lemon finish"
+          ],
+          yield: "1.1kg yield",
+          timeLaw: "5 min prep",
+          passSignals: ["Uniform orange glow", "Glossy peak", "Sharp kick"],
+          rejectSignals: ["Visible oil bleed", "Streaks of sriracha", "Uneven mixing"],
+          failureLaw: "COLOR LOCK breach; improper distribution of capsaicin-oil suspension.",
+          recoveryProtocol: "Re-whisk until perfectly uniform color achieved.",
+          jemmaMapping: ["COLOR DRIFT"],
+          memoryTag: "Heat uniformity"
         },
-        specLayers: {
-          functional: "Chilli oil suspension.",
-          control: "EMULSION LOCK v1: Ratio Law.",
-          output: "High-heat glossy emulsion."
-        }
+        rootLayer: "Chilli-oil fat suspension.",
+        controlLaw: "COLOR LOCK LAW — Whisk until perfectly uniform orange; any streaks = improper distribution.",
+        ingredients: [
+          "House mayo (1000g)",
+          "Sriracha (120g)",
+          "Lemon juice (10ml)"
+        ],
+        method: [
+          "1. Combine mayo and sriracha",
+          "2. Whisk until uniform colour achieved",
+          "3. Add lemon finish",
+          "4. Store in squeeze bottles"
+        ],
+        holding: "5 days chilled (4°C)",
+        service: "30g ramekin; uniform orange look",
+        timeLaw: "Prep time: 5 min",
+        validationPoints: {
+          postPrep: "Uniform color verified",
+          preService: "Glossy hold",
+          atPass: "Sharp kick · glossy peak"
+        },
+        failureLaw: "Streaky color / Split base / Low heat",
+        autoReject: "Visible oil bleed / Uneven mixing",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
+        allergens: ["eggs", "mustard"]
       },
       {
         id: "PREP-020",
         name: "Lemon Aioli",
-        batchYield: "2L yield · 100 portions",
-        portionTool: "30g ramekin",
-        shelfLife: "3 days (4°C)",
-        ingredients: "House mayo (1000g) · Roasted garlic (50g) · Lemon zest (2) · Black pepper",
-        method: "1. Mash roasted garlic. 2. Fold into mayo. 3. Add zest and pepper. 4. Chill.",
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "House mayo: 1000g",
+            "Roasted garlic (mash): 50g",
+            "Lemon zest: 2 units",
+            "Black pepper: To taste",
+            "Method: Mash garlic to smooth paste (SEQUENCE LAW) → Fold paste into mayo base gently → Add zest/pepper"
+          ],
+          yield: "1.1kg yield",
+          timeLaw: "10 min prep",
+          passSignals: ["Smooth garlic integration", "Bright citrus scent", "Creamy finish"],
+          rejectSignals: ["Grey tint (oxidation)", "Visible oil droplets", "Bitter zest"],
+          failureLaw: "SEQUENCE LAW breach; adding un-mashed garlic causes structural pockets and fat-bleed.",
+          recoveryProtocol: "If grainy: pass through fine sieve. If grey: REJECT (oxidation).",
+          jemmaMapping: ["OXIDATION EVENT", "STRUCTURAL DRIFT"],
+          memoryTag: "Garlic roast depth"
+        },
+        rootLayer: "Aromatic fat-suspension emulsion.",
+        controlLaw: "SEQUENCE LAW — Garlic must be mashed to paste before folding to prevent structural pockets of fat-bleed.",
+        ingredients: [
+          "House mayo (1000g)",
+          "Roasted garlic (50g)",
+          "Lemon zest (2 units)",
+          "Black pepper"
+        ],
+        method: [
+          "1. Mash roasted garlic until perfectly smooth paste",
+          "2. Fold garlic paste into mayo base gently",
+          "3. Add lemon zest and cracked black pepper",
+          "4. Chill to allow aromatics to infuse"
+        ],
+        holding: "3 days chilled (4°C)",
+        service: "30g ramekin; punchy garlic finish",
+        timeLaw: "Prep time: 10 min",
+        validationPoints: {
+          postPrep: "Smooth garlic integration",
+          preService: "Aromatic citrus scent",
+          atPass: "Creamy · punchy garlic · citrus finish"
+        },
+        failureLaw: "Garlic oxidation (grey) / Zest bitterness / Separation",
+        autoReject: "Grey tint (oxidation) / Visible oil droplets",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["eggs", "mustard"],
-        failureSigns: ["Garlic oxidation (grey)", "Zest bitterness", "Separation"],
-        correction: ["RECOVERY LAW: Fold into fresh mayo base"],
-        pass: "Creamy · punchy garlic · citrus finish",
-        station: "Prep",
-        menuLayers: {
-          core: "House Mayo Base",
-          bulk: "30g portion",
-          wet: "Flavoured Emulsion",
-          acid: "Lemon Zest",
-          finish: "Black Pepper"
-        },
-        specLayers: {
-          functional: "Aromatic suspension.",
-          control: "EMULSION LOCK v1: Sequence Law (mash first).",
-          output: "Garlic-forward stable cream."
-        },
         larousse: {
-          principle: "EMULSION LOCK v1: ROOT LAYER: Stable oil-in-water suspension. Garlic adds aromatic depth without breaking bind.",
+          principle: "EMULSION LOCK v1: Stable oil-in-water suspension. Garlic adds aromatic depth without breaking bind.",
           method: [
             "Roast garlic until soft and cool completely before folding.",
             "SEQUENCE LAW: Fold gently to avoid oil bleed from roasted garlic fat.",
             "TEMPERATURE LAW: Keep chilled ≤ 5°C."
           ],
           quality: ["Smooth texture", "Sweet garlic notes", "Bright citrus"],
-          faults: [
-            "AUTO REJECT: Grey appearance (oxidation)",
-            "AUTO REJECT: Oil dots on surface",
-            "AUTO REJECT: Bitter zest"
-          ],
-          correction: ["Apply RECOVERY LAW: 50g fresh mayo restart."]
+          faults: ["Grey appearance (oxidation)", "Oil dots on surface", "Bitter zest"]
         }
       },
       {
         id: "PREP-021",
         name: "Truffle Mayo",
-        batchYield: "2L yield · 100 portions",
-        portionTool: "30g ramekin",
-        shelfLife: "5 days (4°C)",
-        ingredients: "House mayo (1000g) · Truffle oil (20ml) · Truffle paste (30g)",
-        method: "1. Whisk truffle paste into mayo. 2. Slowly fold in truffle oil. 3. Chill.",
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "House mayo: 1000g",
+            "Truffle oil: 20ml",
+            "Truffle paste: 30g",
+            "Method: Whisk truffle paste into mayo until uniform → Slowly fold in truffle oil (OIL LIMIT LAW) → Store airtight"
+          ],
+          yield: "1.05kg yield",
+          timeLaw: "5 min prep",
+          passSignals: ["Vertical glossy peak", "Strong truffle aroma", "Visible flecks"],
+          rejectSignals: ["Oil slick on surface", "No aroma release", "Loss of peak"],
+          failureLaw: "OIL LIMIT LAW breach; excessive truffle oil breaks the base emulsion bind.",
+          recoveryProtocol: "Whisk in fresh mayo base in 100g increments until bind returns.",
+          jemmaMapping: ["VOLATILE LOSS", "EMULSION FAILURE"],
+          memoryTag: "Aroma retention time"
+        },
+        rootLayer: "Luxury volatile oil emulsion system.",
+        controlLaw: "OIL LIMIT LAW — Truffle oil must not exceed 2% total mass to prevent emulsion breakage and palate fatigue.",
+        ingredients: [
+          "House mayo (1000g)",
+          "Truffle oil (20ml)",
+          "Truffle paste (30g)"
+        ],
+        method: [
+          "1. Whisk truffle paste into mayo base until uniform",
+          "2. Slowly fold in truffle oil to preserve the bind",
+          "3. Chill in airtight container to trap volatiles"
+        ],
+        holding: "5 days chilled (4°C)",
+        service: "30g ramekin; vertical glossy peak",
+        timeLaw: "Prep time: 5 min",
+        validationPoints: {
+          postPrep: "Earthy aroma check",
+          preService: "Visible truffle flecks",
+          atPass: "Glossy · strong truffle aroma · earthy finish"
+        },
+        failureLaw: "Aroma loss / Oil separation / Artificial scent",
+        autoReject: "Oil slick on surface / No aroma release",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["eggs", "mustard"],
-        failureSigns: ["Aroma loss", "Oil separation", "Overpowering"],
-        correction: ["RECOVERY LAW: Re-bind into fresh mayo base"],
-        pass: "Glossy · strong truffle aroma · earthy finish",
-        station: "Prep",
-        menuLayers: {
-          core: "House Mayo Base",
-          bulk: "30g portion",
-          wet: "Luxury Emulsion",
-          acid: "None",
-          finish: "Truffle scent"
-        },
-        specLayers: {
-          functional: "Volatile oil suspension.",
-          control: "EMULSION LOCK v1: Ratio Law (Oil limit) + Temp Law.",
-          output: "Fragrant stable emulsion."
-        },
         larousse: {
           principle: "EMULSION LOCK v1: Truffle oils are highly volatile and sensitive to heat.",
           method: [
-            "OIL LAW: Maintain emulsion bind despite high external fat (truffle oil) addition.",
+            "Maintain emulsion bind despite high external fat addition.",
             "TEMPERATURE LAW: Hold ≤ 5°C to preserve aroma and bind.",
             "SERVICE LAW: Keep airtight until service."
           ],
           quality: ["Earthy aroma", "Rich texture", "Uniform colour"],
-          faults: [
-            "AUTO REJECT: Artificial smell",
-            "AUTO REJECT: Oil slick on surface",
-            "AUTO REJECT: No aroma"
-          ],
-          correction: ["Apply RECOVERY LAW if split."]
+          faults: ["Artificial smell", "Oil slick on surface", "No aroma"]
         }
       },
       {
         id: "PREP-022",
         name: "Bone Reduction (Batch)",
-        batchYield: "10L yield",
-        shelfLife: "5 days (4°C) / 30 days (Frozen)",
-        ingredients: "Beef bones (roasted) · Mirepoix · Tomato paste · Red wine · Water",
-        method: "1. Roast bones until deep brown. 2. Caramelise mirepoix + tomato paste. 3. Deglaze with wine. 4. Simmer 12-24h. 5. Strain + reduce by 50%.",
+        engine: "LUNA-001",
+        section: "BASES",
+        forgev3: {
+          wmm: [
+            "Beef bones (roasted): 10kg",
+            "Mirepoix: 2kg",
+            "Tomato paste: 200g",
+            "Red wine: 1L",
+            "Water: To cover",
+            "Method: Roast bones (220°C) → Caramelise mirepoix/tomato paste → Deglaze wine (syrup) → Simmer 12-24h (92°C) → Strain → Reduce 50%"
+          ],
+          yield: "10L Batch",
+          timeLaw: "12-24h Simmer | Failure threshold: >26h (bitterness extraction)",
+          passSignals: ["Stable gelatinous body when cold", "Deep mahogany/translucent clarity", "Rich roasted aroma"],
+          rejectSignals: ["Cloudy/greasy appearance", "Bitter or burnt notes", "Watery consistency at 4°C"],
+          failureLaw: "Temperature >94°C (boiling) causes fat emulsification and permanent clouding.",
+          recoveryProtocol: "If watery: further reduce. If cloudy: attempt secondary clarification. If bitter: REJECT.",
+          jemmaMapping: ["REDUCTION DRIFT", "EXTRACTION FAILURE (OVER-TEMP)"],
+          memoryTag: "Gelatin density / Bitterness threshold"
+        },
+        rootLayer: "Collagen extraction + Maillard concentration system.",
+        controlLaw: "LOW SIMMER LAW — Temperature must not exceed 92°C; boiling causes fat emulsification and permanent cloudiness.",
+        ingredients: [
+          "Beef bones (roasted)",
+          "Mirepoix",
+          "Tomato paste",
+          "Red wine",
+          "Water"
+        ],
+        method: [
+          "1. Roast bones at 220°C until deep mahogany",
+          "2. Caramelise mirepoix and tomato paste",
+          "3. Deglaze with red wine; reduce to syrup",
+          "4. Add bones and water; simmer 12-24h at 90°C",
+          "5. Strain through fine chinois; reduce by 50%"
+        ],
+        holding: "5 days chilled / 30 days frozen",
+        service: "Base for all luxury sauces",
+        timeLaw: "Simmer: 12-24h / Reduce: 4h",
+        validationPoints: {
+          postPrep: "Viscous body when cold",
+          preService: "Deep mahogany colour",
+          atPass: "Rich aroma · translucent clarity"
+        },
+        failureLaw: "Thin/watery body / Bitter notes / Cloudy finish",
+        autoReject: "Burnt/bitter notes / Greasy emulsion",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["none"],
-        failureSigns: ["Thin/watery", "Bitter/burnt", "Cloudy"],
-        correction: ["Reduce further", "Discard if bitter"],
-        pass: "Deep mahogany · rich aroma · viscous when cold",
-        station: "Prep",
-        menuLayers: {
-          core: "Roasted Bone Collagen",
-          bulk: "Reduction Liquid",
-          wet: "Base Extract",
-          acid: "Red Wine Reduction",
-          finish: "Mirepoix Sweetness"
-        },
-        specLayers: {
-          functional: "Collagen extraction + Maillard concentration.",
-          control: "CONTROL LAW: Time + Temperature. Low simmer (90°C) only.",
-          output: "50% reduction by volume."
-        },
         larousse: {
           principle: "ROOT LAYER: Collagen extraction and deep flavour concentration for sauce architecture.",
           method: [
             "Roast bones at 220°C until dark but not black.",
-            "Do not boil aggressively; high heat causes fat emulsification and cloudiness.",
+            "Do not boil aggressively; high heat causes fat emulsification.",
             "Strain through a fine chinoise/muslin."
           ],
           quality: ["Deep colour", "Rich aroma", "Gelatinous body when chilled"],
-          faults: [
-            "AUTO REJECT: Thin, watery body",
-            "AUTO REJECT: Bitter or burnt notes (from scorched mirepoix)"
-          ]
+          faults: ["Thin, watery body", "Bitter or burnt notes"]
         }
       },
       {
         id: "PREP-023",
         name: "Galyons Gravy (Finish)",
-        batchYield: "5L yield",
-        portionTool: "50ml ladle",
-        shelfLife: "3 days (4°C)",
-        ingredients: "Bone Reduction (Base) · Roux (Butter/Flour) · Pan drippings · Salt/Pepper",
-        method: "1. Bring base to simmer. 2. Whisk in roux slowly. 3. Add drippings for depth. 4. Reduction finish until nappe.",
+        engine: "LUNA-003",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Bone Reduction (Base): 4L",
+            "Roux (Butter/Flour): 400g",
+            "Pan drippings: 200ml",
+            "Salt/Pepper: To taste",
+            "Method: Boil reduction → Whisk in roux → Reduce to simmer → Add pan drippings → Reduce to nappe → Butter whisk finish"
+          ],
+          yield: "5L Batch",
+          timeLaw: "30 min finish | Must hold at 75°C+",
+          passSignals: ["Deep mahogany mirror gloss", "Stable nappe (coats spoon)", "Intense savory umami profile"],
+          rejectSignals: ["Skin formation", "Visible fat split (greasy)", "Floury/Raw starch aftertaste"],
+          failureLaw: "Under-cooking roux or failing to whisk during incorporation leads to starch clumping.",
+          recoveryProtocol: "If lumpy: pass through fine sieve. If greasy: blend at high RPM.",
+          jemmaMapping: ["STARCH CLUMPING", "REDUCTION DRIFT"],
+          memoryTag: "Gloss stability / Salt concentration"
+        },
+        rootLayer: "Starch-thickened reduction liquid system.",
+        controlLaw: "GRAVY LAW — Always hot (75°C+), always glossy, and nappe consistency; added at the absolute pass to maintain heat.",
+        ingredients: [
+          "Bone Reduction (Base)",
+          "Roux (Butter/Flour)",
+          "Pan drippings",
+          "Maldon salt",
+          "Black pepper"
+        ],
+        method: [
+          "1. Bring Bone Reduction base to a rolling simmer",
+          "2. Slowly whisk in roux to avoid lump formation",
+          "3. Incorporate pan drippings for deep animal-fat complexity",
+          "4. Reduce until nappe consistency (coats back of spoon)",
+          "5. Finish with butter whisk for high-gloss surface"
+        ],
+        holding: "3 days chilled / 4h held hot (75°C)",
+        service: "50ml ladle; glossy mirror finish",
+        timeLaw: "Simmer/Reduce: 30 min",
+        validationPoints: {
+          postPrep: "Lump-free texture",
+          preService: "Glossy surface (no fat split)",
+          atPass: "Stable nappe · deep mahogany gloss"
+        },
+        failureLaw: "Lumps / Greasy surface split / Over-thickened (clumping)",
+        autoReject: "Skin formation / visible fat separation / Burnt base notes",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["gluten", "dairy"],
-        failureSigns: ["Lumps", "Greasy surface", "Salty"],
-        correction: ["Strain through sieve", "Blend to re-emulsify fat", "Balance with unsalted stock"],
-        pass: "Glossy · deep brown · coats back of spoon",
-        station: "Prep / Hot Hold",
-        menuLayers: {
-          core: "Bone Reduction Extract",
-          bulk: "Starch-thickened liquid",
-          wet: "Glossy Matrix",
-          acid: "None (salt/umami balance)",
-          finish: "Butter Gloss"
-        },
-        specLayers: {
-          functional: "Stable, glossy, service-ready sauce.",
-          control: "GRAVY LAW: Always hot. Always glossy. Added at pass.",
-          output: "Nappe consistency (coats spoon)."
-        },
         larousse: {
           principle: "ROOT LAYER: Stable, glossy, service-ready sauce built from reduction and controlled thickening.",
           method: [
-            "REDUCTION LAW: Never reduce aggressively. High heat causes side-wall scorching.",
-            "RECOVERY LAW: If fat separation occurs, remove from heat and blend aggressively.",
+            "REDUCTION LAW: Never reduce aggressively.",
+            "RECOVERY LAW: If fat separation occurs, blend aggressively.",
             "Do not over-thicken; gravy must pour, not clump."
           ],
           quality: ["Stable hold", "Glossy finish", "Coats back of spoon"],
-          faults: [
-            "AUTO REJECT: Greasy surface",
-            "AUTO REJECT: Lumps or gluey texture",
-            "AUTO REJECT: Skin formation"
-          ]
+          faults: ["Greasy surface", "Lumps or gluey texture", "Skin formation"]
         }
       },
       {
         id: "PREP-024",
         name: "Pulled Pork",
-        batchYield: "10kg yield · 60 portions",
-        portionTool: "150g weigh-out",
-        shelfLife: "3 days (4°C)",
-        ingredients: "Pork shoulder · Dry rub · Apple juice",
-        method: "1. Apply rub 24h before. 2. Slow roast 140°C for 8h. 3. Shred while warm. 4. Mix with natural juices.",
+        engine: "HELIOS",
+        section: "PROTEIN",
+        forgev3: {
+          wmm: [
+            "Pork shoulder (boneless): 10kg",
+            "Signature House Rub: 500g",
+            "Apple juice: 1L",
+            "Cider vinegar: 200ml",
+            "Method: Apply rub 24h prior (Dry Brine) → Slow roast (140°C) for 8h until internal 94°C → Hand-shred warm → Hydrate with juices/apple juice"
+          ],
+          yield: "10kg (60 portions)",
+          timeLaw: "8 hours @ 140°C | failure threshold: Internal <92°C or >98°C",
+          passSignals: ["Succulent finish", "Hand-shred texture", "Internal temp 94°C reached"],
+          rejectSignals: ["Tough un-shreddable core", "Greasy residue pooling", "Dry strands"],
+          failureLaw: "LOW & SLOW LAW breach; insufficient collagen breakdown if temp doesn't hit 94°C.",
+          recoveryProtocol: "If tough: return to HELIOS for 60 min. If dry: hydrate with extra apple juice/vinegar spray.",
+          jemmaMapping: ["THERMAL FAILURE", "COLLAGEN STASIS"],
+          memoryTag: "Internal temp peak / Shred elasticity"
+        },
+        rootLayer: "Collagen-to-gelatin thermal breakdown system.",
+        controlLaw: "LOW & SLOW LAW — Internal temperature must reach 94°C to fully dissolve intramuscular collagen into succulent gelatin.",
+        ingredients: [
+          "Pork shoulder (boneless)",
+          "Signature House Rub",
+          "Apple juice",
+          "Cider vinegar"
+        ],
+        method: [
+          "1. Apply house rub 24h prior to roasting (Dry Brine)",
+          "2. Slow roast at 140°C for 8h until 'fork tender'",
+          "3. Hand-shred while warm to preserve natural juices",
+          "4. Incorporate pan juices and hit with apple juice for moisture"
+        ],
+        holding: "3 days chilled / 4h hot hold",
+        service: "150g weigh-out for burgers/turtles",
+        timeLaw: "Roast: 8 hours @ 140°C",
+        validationPoints: {
+          postPrep: "Internal temp 94°C check",
+          preService: "Moisture levels (no dry strands)",
+          atPass: "Succulent finish · hand-shred texture"
+        },
+        failureLaw: "Dry strands (over-shredded) / Unrendered fat / Sour smell",
+        autoReject: "Tough/un-shreddable core / Greasy residue pooling",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["none"],
-        failureSigns: ["Dry strands", "Unrendered fat", "Sour smell"],
-        correction: ["Add apple juice/BBQ sauce", "Roast longer", "Discard if sour"],
-        pass: "Tender · moist · easily shredded · smoky aroma",
-        station: "Prep",
-        menuLayers: {
-          core: "Slow-roasted Pork Shoulder",
-          bulk: "150g serving",
-          wet: "Natural Pork Juices",
-          acid: "Apple Juice hydration",
-          finish: "Dry Rub spices"
-        },
-        specLayers: {
-          functional: "Collagen breakdown into gelatin.",
-          control: "Time + Temp (8h/140°C) + Shredding timing.",
-          output: "Succulent shredded meat."
-        },
         larousse: {
           principle: "Low and slow cooking breaks down collagen into gelatin, providing moisture and mouthfeel.",
           method: ["Apply rub 24h before", "Keep covered to retain steam", "Shred by hand"],
           quality: ["Succulent meat", "Deep bark colour", "Rich flavour"],
-          faults: ["Tough meat", "Greasy finish", "Bland centre"],
-          correction: ["Increase cook time", "Drain excess fat", "Toss with more rub"]
+          faults: ["Tough meat", "Greasy finish", "Bland centre"]
         }
       },
       {
         id: "PREP-025",
         name: "Peppercorn Sauce",
-        batchYield: "2L yield",
-        portionTool: "50ml ladle",
-        shelfLife: "3 days (4°C)",
-        ingredients: "Bone Reduction (Base) · Double Cream · Green Peppercorns · Brandy",
-        method: "1. Reduce brandy. 2. Add base reduction. 3. Finish with cream and peppercorns. 4. Simmer to nappe.",
+        engine: "LUNA-003",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Bone Reduction (Base): 2L",
+            "Double Cream: 500ml",
+            "Green Peppercorns: 100g",
+            "Brandy: 100ml",
+            "Shallots: 50g",
+            "Method: Reduce brandy 80% → Add bone reduction/simmer → Add cream/reduce to nappe (NAPPE LAW) → Finish with peppercorns"
+          ],
+          yield: "2L yield",
+          timeLaw: "20 min prep | Service hold at 65°C",
+          passSignals: ["Glossy surface", "Uniform peppercorn suspension", "Stable nappe"],
+          rejectSignals: ["Visible oil bleed", "Peppercorns puddled at base", "Split fat"],
+          failureLaw: "NAPPE LAW breach; attempting fat enrichment before structural reduction.",
+          recoveryProtocol: "If split: whisk in cold cream hit off-heat.",
+          jemmaMapping: ["EMULSION FAILURE", "REDUCTION DRIFT"],
+          memoryTag: "Peppercorn suspension stability"
+        },
+        rootLayer: "Fat-Starch reduction emulsion system.",
+        controlLaw: "NAPPE LAW — Sauce must achieve structural nappe before fat enrichment to prevent split-emulsion failure.",
+        ingredients: [
+          "Bone Reduction (Base)",
+          "Double Cream",
+          "Green Peppercorns (brined)",
+          "Brandy (Cognac)",
+          "Shallots"
+        ],
+        method: [
+          "1. Reduce brandy by 80% with shallots",
+          "2. Add bone reduction base and simmer",
+          "3. Add cream and reduction until thick enough to coat spoon",
+          "4. Finish with whole green peppercorns; season with salt",
+          "5. Hold at 65°C to maintain stability"
+        ],
+        holding: "3 days chilled / 4h service (65°C)",
+        service: "50ml ladle; sharp peppercorn kick",
+        timeLaw: "Prep: 20 min",
+        validationPoints: {
+          postPrep: "Stable emulsion at 65°C",
+          preService: "Uniform peppercorn suspension",
+          atPass: "Glossy surface · clear peppercorn aroma"
+        },
+        failureLaw: "Split fat / Grainy texture / Peppercorns puddled at base",
+        autoReject: "Visible oil bleed / Skin formation / Burnt base",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy"],
-        pass: "Thick hold · sharp pepper heat · glossy cream finish",
-        station: "Prep / Hot Hold",
         fellini: {
           identity: "Fat-Starch Emulsion",
+          controlLaw: "Sauce must hit nappe stage before fat enrichment.",
           pressurePoint: "Reduction of peppercorn infusion.",
-          controlLaw: "Sauce must hit nappe stage before fat enrichment. Emulsion must be held at 60-70°C.",
           watchPoint: "Fat bleed at high temp.",
-          passSignals: [
-            "glossy surface",
-            "holds nappe on spoon",
-            "uniform peppercorn suspension",
-            "deep peppercorn aroma"
-          ],
-          failSignals: [
-            "split fat",
-            "grainy texture",
-            "peppercorns puddled at base",
-            "too thin"
-          ],
-          autoReject: [
-            "split fat",
-            "skin formation",
-            "burnt base"
-          ],
-          verdict: "PASS: Glossy, nappe, stable.",
-          validationPoint: ["postPrep", "preService", "atPass"],
-          recoveryMove: "Whisk in cold liquid hit."
-        },
-        menuLayers: {
-          core: "Bone Reduction Base",
-          bulk: "Cream Matrix",
-          wet: "Peppercorn Emulsion",
-          acid: "Brandy reduction",
-          finish: "Whole Green Peppercorns"
-        },
-        specLayers: {
-          functional: "Fat-reduction hybrid sauce.",
-          control: "SAUCE LAW: Never reduce aggressively. Cream stability.",
-          output: "50ml service."
+          passSignal: "Glossy surface."
         }
       },
       {
         id: "PREP-026",
         name: "Blue Cheese Sauce",
-        batchYield: "2L yield",
-        portionTool: "50ml ladle",
-        shelfLife: "3 days (4°C)",
-        ingredients: "Double Cream · Gorgonzola · Shallots · White Wine",
-        method: "1. Sweat shallots. 2. Deglaze with wine. 3. Add cream. 4. Whisk in blue cheese gently until melted.",
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Double Cream: 1.5L",
+            "Gorgonzola Dolce: 500g",
+            "Shallots: 50g",
+            "White Wine: 100ml",
+            "Method: Sweat shallots → Deglaze wine (syrup) → Add cream/reduce slightly → OFF-HEAT: Whisk Gorgonzola until silky (OFF-HEAT LAW)"
+          ],
+          yield: "2L yield",
+          timeLaw: "15 min prep | Service hold at 60°C",
+          passSignals: ["Silky ivory texture", "Visible blue flecks", "Pungent aroma"],
+          rejectSignals: ["Grainy texture", "Split fat bleed", "Grey oxidation"],
+          failureLaw: "Protein graining via excessive heat (>70°C) during cheese integration.",
+          recoveryProtocol: "If grainy: non-recoverable (protein denatured). If thin: whisk in extra cheese.",
+          jemmaMapping: ["PROTEIN GRAINING", "THERMAL BREACH"],
+          memoryTag: "Cheese integration temperature"
+        },
+        rootLayer: "Cultured fat emulsion system.",
+        controlLaw: "OFF-HEAT INTEGRATION LAW — Cheese must be folded into hot base off-heat (max 70°C) to prevent protein graining and loss of velvet texture.",
+        ingredients: [
+          "Double Cream",
+          "Gorgonzola Dolce",
+          "Shallots (fine brunoise)",
+          "White Wine"
+        ],
+        method: [
+          "1. Sweat shallots until translucent; no color",
+          "2. Deglaze with white wine; reduce to syrup",
+          "3. Add cream and reduce slightly",
+          "4. Remove from heat; whisk in Gorgonzola until silky",
+          "5. Pass through chinois if required; keep warm (60°C)"
+        ],
+        holding: "3 days chilled / 4h service (60°C)",
+        service: "50ml warm serve; pungent blue aroma",
+        timeLaw: "Prep: 15 min",
+        validationPoints: {
+          postPrep: "Silky ivory texture",
+          preService: "Aroma check (pungency)",
+          atPass: "Visible blue flecks · smooth base"
+        },
+        failureLaw: "Grainy cheese protein / Liquid split / Grey oxidation",
+        autoReject: "Grainy texture / Split fat bleed / Bitter aftertaste",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy"],
-        pass: "Creamy ivory · pungent blue cheese aroma · thick holds shape",
-        station: "Prep / Hot Hold",
         fellini: {
           identity: "Cultured Fat Emulsion",
+          controlLaw: "Cheese must be folded into hot base off-heat.",
           pressurePoint: "Cheese integration at low heat.",
-          controlLaw: "Cheese must be folded into hot base off-heat to prevent graining.",
           watchPoint: "Grain from over-heating.",
-          passSignals: [
-            "visible blue cheese flecks",
-            "smooth creamy base",
-            "sharp pungent aroma",
-            "deep ivory colour"
-          ],
-          failSignals: [
-            "grainy cheese protein",
-            "liquid/milk split",
-            "grey oxidation",
-            "bitter finish"
-          ],
-          autoReject: [
-            "grainy",
-            "split",
-            "grey/dull"
-          ],
-          verdict: "PASS: Creamy, flecked, sharp.",
-          validationPoint: ["postPrep", "preService", "atPass"],
-          recoveryMove: "Strain and add fresh base whisk."
-        },
-        menuLayers: {
-          core: "Gorgonzola Cheese",
-          bulk: "Cream Matrix",
-          wet: "Dairy Emulsion",
-          acid: "White Wine",
-          finish: "Melting pockets"
-        },
-        specLayers: {
-          functional: "Melted cheese suspension.",
-          control: "EMULSION LOCK: Do not boil after cheese addition.",
-          output: "50ml warm serve."
+          passSignal: "Silky ivory cream."
         }
       },
       {
         id: "PREP-027",
         name: "Fish Bisque Sauce",
-        batchYield: "2L yield",
-        portionTool: "40ml ladle",
-        shelfLife: "2 days (4°C)",
-        ingredients: "Prawn shells · Mirepoix · Tomato paste · Brandy · Fish stock · Cream",
-        method: "1. Roast shells hard. 2. Flamme with brandy. 3. Simmer with stock. 4. Reduce + strain. 5. Finish with cream.",
+        engine: "LUNA-003",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Prawn shells: 1kg",
+            "Mirepoix: 200g",
+            "Tomato paste: 50g",
+            "Brandy: 50ml",
+            "Fish stock: 2L",
+            "Double cream: 500ml",
+            "Method: Roast shells (200°C) → Flamme brandy → Deglaze stock/simmer 45m → Strain (hard press) → Reduce 50%/Add cream → MONTE AU BEURRE at 60°C"
+          ],
+          yield: "2L yield",
+          timeLaw: "Simmer 45m / Reduce 20m | Hold at 60°C",
+          passSignals: ["Vibrant coral colour", "Velvety/Glossy finish", "Absolute nappe"],
+          rejectSignals: ["Oil bleed", "Broken emulsion", "Burnt shell aroma"],
+          failureLaw: "Shell boiling after butter enrichment causes emulsion breakage.",
+          recoveryProtocol: "If split: whisk in cold cream hit off-heat. If bitter: REJECT.",
+          jemmaMapping: ["EMULSION FAILURE", "CAROTENOID OXIDATION"],
+          memoryTag: "Shell roast intensity"
+        },
+        rootLayer: "Shellfish-Fat carotenoid emulsion system.",
+        controlLaw: "MONTE AU BEURRE LAW — Butter must be whisked in cold cubes into a 60°C base to secure the velvet coral emulsion.",
+        ingredients: [
+          "Prawn shells (roasted)",
+          "Mirepoix",
+          "Tomato paste",
+          "Brandy (Cognac)",
+          "Fish stock",
+          "Double cream"
+        ],
+        method: [
+          "1. Roast prawn shells hard at 200°C until fragrant and bright red",
+          "2. Flamme with brandy; deglaze with fish stock",
+          "3. Simmer for 45 min; strain through chinois (HARD press)",
+          "4. Reduce liquid by 50%; add cream and reduce to nappe",
+          "5. Finish with cold butter cubes whisked in off-heat"
+        ],
+        holding: "2 days chilled / 4h service (60°C)",
+        service: "40ml velvet pour; coral finish",
+        timeLaw: "Simmer: 45 min / Reduce: 20 min",
+        validationPoints: {
+          postPrep: "Vibrant coral colour",
+          preService: "Intense seafood aroma",
+          atPass: "Glossy · velvety · nappe coating"
+        },
+        failureLaw: "Oily surface bleed / Grainy protein / Bitter shell notes",
+        autoReject: "Oil bleed / Burnt shell aroma / Broken emulsion",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["fish", "crustaceans", "dairy"],
-        pass: "Vibrant orange · intense seafood aroma · velvet texture",
-        station: "Prep / Hot Hold",
         fellini: {
           identity: "Shellfish-Fat Emulsion",
+          controlLaw: "Butter must be whisked in cubes at 60°C.",
           pressurePoint: "Butter enrichment (Monté au Beurre).",
-          controlLaw: "Butter must be whisked in cubes at 60°C to secure the emulsion.",
           watchPoint: "Breakage from boiling.",
-          passSignals: [
-            "deep coral colour",
-            "glossy finish",
-            "clean shellfish aroma",
-            "nappe consistency"
-          ],
-          failSignals: [
-            "oily surface",
-            "grainy protein particles",
-            "bitter/burnt notes",
-            "separation at edges"
-          ],
-          autoReject: [
-            "oil bleed",
-            "burnt colour",
-            "broken emulsion"
-          ],
-          verdict: "PASS: Coral, glossy, nappe.",
-          validationPoint: ["postPrep", "preService", "atPass"],
-          recoveryMove: "Whisk in cold cream hit off-heat."
-        },
-        menuLayers: {
-          core: "Shellfish reduction",
-          bulk: "Cream reduction",
-          wet: "Bisque Matrix",
-          acid: "Brandy / Tomato",
-          finish: "Smooth pass"
-        },
-        specLayers: {
-          functional: "Carotenoid fat extraction from shells.",
-          control: "REDUCTION LAW: Controlled simmer. High shell-to-liquid ratio.",
-          output: "40ml velvet pour."
+          passSignal: "Coral velvet."
         }
       },
       {
         id: "PREP-028",
         name: "House Vinaigrette",
-        batchYield: "2L yield",
-        portionTool: "30ml squeeze",
-        shelfLife: "14 days (4°C)",
-        ingredients: "Extra virgin olive oil · White wine vinegar · Dijon mustard · Honey · Shallots",
-        method: "1. Whisk vinegar, mustard, honey. 2. Slowly whisk in oil. 3. Fold in fine shallots.",
-        allergens: ["mustard"],
-        pass: "Stable emulsion · sharp tang · glossy coating",
-        station: "Prep",
-        menuLayers: {
-          core: "Fat-Acid Emulsion",
-          bulk: "Oil suspension",
-          wet: "Dressing Matrix",
-          acid: "White Wine Vinegar",
-          finish: "Shallots"
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "EVOO: 1.5L",
+            "White wine vinegar: 500ml",
+            "Dijon mustard: 100g",
+            "Honey: 50ml",
+            "Shallots: 50g",
+            "Method: Whisk vinegar/mustard/honey → Slowly whisk in oil (3:1 RATIO LOCK) → Fold in fine shallots"
+          ],
+          yield: "2L yield",
+          timeLaw: "10 min prep | Shelf 14 days",
+          passSignals: ["Glassy coating on leaf", "Sharp acid balance", "Stable suspension"],
+          rejectSignals: ["Total separation", "Oxidized shallots", "Greasy mouthfeel"],
+          failureLaw: "RATIO LOCK breach; insufficient emulsifier for fat volume.",
+          recoveryProtocol: "Add extra Dijon and re-whisk aggressively.",
+          jemmaMapping: ["SUSPENSION FAILURE"],
+          memoryTag: "Shallot oxidation speed"
         },
-        specLayers: {
-          functional: "Stable Temporary Emulsion.",
-          control: "RATIO LOCK (3:1) + DRESS-TO-ORDER.",
-          output: "Balanced plate-sharpener."
-        }
+        rootLayer: "Temporary oil-acid shelf-stable suspension.",
+        controlLaw: "RATIO LOCK LAW — 3:1 Oil-to-Acid ratio must be strictly maintained for palate balance.",
+        ingredients: [
+          "Extra virgin olive oil",
+          "White wine vinegar",
+          "Dijon mustard",
+          "Honey (clear)",
+          "Shallots (fine brunoise)"
+        ],
+        method: [
+          "1. Whisk vinegar, mustard, and honey until homogenized",
+          "2. Slowly whisk in olive oil to create a stable temporary emulsion",
+          "3. Fold in fine shallots",
+          "4. Store at room temp or 4°C (Whisk before use)"
+        ],
+        holding: "14 days chilled",
+        service: "30ml squeeze per salad; glassy coating",
+        timeLaw: "Prep: 10 min",
+        validationPoints: {
+          postPrep: "Stable emulsion (pre-separation)",
+          preService: "Sharp acid tang balance",
+          atPass: "Uniform coating · glossy leaf sheen"
+        },
+        failureLaw: "Total separation (lack of mustard) / Too acidic / Greasy",
+        autoReject: "Oxidized shallots / Oil-only coating",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
+        allergens: ["mustard"]
       },
       {
         id: "PREP-029",
         name: "Marie Rose Sauce",
-        batchYield: "2L yield",
-        portionTool: "50g ramekin",
-        shelfLife: "5 days (4°C)",
-        ingredients: "House Mayo · Tomato Ketchup · Worcestershire Sauce · Tabasco · Lemon juice · Paprika",
-        method: "1. Whisk all components into mayo base. 2. Balance with lemon.",
-        allergens: ["eggs", "mustard", "fish (Worcestershire)"],
-        pass: "Pale pink · creamy · spicy-sweet-acid balance",
-        station: "Prep",
-        menuLayers: {
-          core: "House Mayo Base",
-          bulk: "Emulsion Matrix",
-          wet: "Prawn Coating",
-          acid: "Lemon + Tomato Acidity",
-          finish: "Cayenne dust"
+        engine: "PREP",
+        section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "House mayo: 1000g",
+            "Ketchup: 200g",
+            "Worcestershire: 20ml",
+            "Tabasco: 5ml",
+            "Lemon juice: 10ml",
+            "Paprika: 5g",
+            "Method: Combine mayo/ketchup (base consistency) → Balance with acid/spice → Chill to set"
+          ],
+          yield: "1.2kg yield",
+          timeLaw: "5 min prep",
+          passSignals: ["Pale pink velvet finish", "Spicy-sweet-acid triad balance", "Stable mount"],
+          rejectSignals: ["Oily surface bleed", "Grey tint (oxidation)", "Sugar dominance"],
+          failureLaw: "ACID BALANCE LAW breach; failure to offset ketchup carbohydrates with adequate citric acid.",
+          recoveryProtocol: "Adjust with 10ml lemon juice increments until balanced.",
+          jemmaMapping: ["PH DRIFT", "EMULSION INSTABILITY"],
+          memoryTag: "Acid-sugar ratio"
         },
-        specLayers: {
-          functional: "High-acid stable emulsion.",
-          control: "RATIO LOCK (Acid vs Fat).",
-          output: "Glossy seafood binder."
-        }
+        rootLayer: "High-acid stable cold emulsion system.",
+        controlLaw: "ACID BALANCE LAW — Sauce must be finished with fresh lemon to offset the sweetness of ketchup and balance prawn fats.",
+        ingredients: [
+          "House Mayo",
+          "Tomato Ketchup",
+          "Worcestershire Sauce",
+          "Tabasco",
+          "Lemon juice",
+          "Smoked Paprika"
+        ],
+        method: [
+          "1. Use House Mayo as base",
+          "2. Whisk in ketchup and spices until pale pink",
+          "3. Balance with Worcestershire, Tabasco and lemon",
+          "4. Chill to set flavor"
+        ],
+        holding: "5 days chilled (4°C)",
+        service: "50g ramekin; pale pink velvet",
+        timeLaw: "Prep: 5 min",
+        validationPoints: {
+          postPrep: "Uniform pale pink colour",
+          preService: "Spicy-sweet-acid balance check",
+          atPass: "Glossy · creamy · sharp finish"
+        },
+        failureLaw: "Sweetness dominance / Split mayonnaise / Grey tint",
+        autoReject: "Oily surface / Clumpy texture / Dull color",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
+        allergens: ["eggs", "mustard", "fish (Worcestershire)"]
       },
       {
         id: "PREP-030",
         name: "Asian Slaw",
         engine: "PREP",
         section: "GARNISH",
+        forgev3: {
+          wmm: [
+            "White cabbage: 2kg (fine shred)",
+            "Carrots: 1kg (julienne)",
+            "Mange tout: 500g (slivered)",
+            "Soy-Ginger Dressing: 300ml",
+            "Method: Fine shred vegetables to 1.5mm → Drain on perforated tray (THE DRAIN LAW) → Dress to order ONLY"
+          ],
+          yield: "3.5kg (35 portions)",
+          timeLaw: "Draft: 30s | Build: 15s | Dress to order only",
+          passSignals: ["Vibrant color transparency", "Crisp audible fracture when bitten", "Zero liquid pooling at base"],
+          rejectSignals: ["Soggy/Wilted cabbage", "Oxidized (brown) carrot edges", "Liquor pooling in bowl"],
+          failureLaw: "OSMOTIC FLOODING: Dressing before service pulls cellular moisture out, causing collapse and dilution.",
+          recoveryProtocol: "If wilted: REJECT. If watery: Drain immediately and re-dress with 10% fresh dressing.",
+          jemmaMapping: ["OSMOTIC COLLAPSE", "PURITY BREACH (WATERING)"],
+          memoryTag: "Vegetable drain time / Dressing ratio"
+        },
         rootLayer: "Fresh vegetable-acid-salt system.",
         controlLaw: "THE DRAIN LAW — Vegetables must be drained for 30 seconds before dressing to prevent osmotic flooding.",
         ingredients: [
@@ -2301,8 +3297,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PREP-033",
         name: "Roasted Bone Marrow (Service)",
-        engine: "PREP",
+        engine: "HELIOS",
         section: "PROTEIN",
+        forgev3: {
+          wmm: [
+            "Center-cut beef bones: 10 units",
+            "Fine salt: 20g",
+            "Fresh parsley: 5g",
+            "Method: Roast bones (200°C) for 15-20 min → Monitor internal lipid state → Finish with salt/parsley"
+          ],
+          yield: "10 Portions",
+          timeLaw: "20 min cook | Must hit 65°C core | Serve immediately",
+          passSignals: ["Center is molten and translucent", "Lipid remains cohesive (not fully liquid oil)", "Bone surface is handle-hot"],
+          rejectSignals: ["Grey/Cold center", "Total lipid collapse into yellow oil", "Burnt bone edges"],
+          failureLaw: "THE GEL LAW breach; failure to reach 65°C core leaves marrow waxy. Exceeding 75°C core causes structural collapse.",
+          recoveryProtocol: "If under-done: return to HELIOS for 3 min. If collapsed: REJECT.",
+          jemmaMapping: ["LIPID COLLAPSE", "THERMAL UNDER-EXTRACTION"],
+          memoryTag: "Core temperature accuracy"
+        },
         rootLayer: "High-density animal lipid system.",
         controlLaw: "THE GEL LAW — Marrow must reach 65°C core to achieve full lipid release without collapse.",
         ingredients: [
@@ -2334,6 +3346,25 @@ export const ENGINES: Record<string, Engine> = {
         name: "Salsa Verde",
         engine: "PREP",
         section: "SAUCES",
+        forgev3: {
+          wmm: [
+            "Flat-leaf parsley: 300g",
+            "Mint: 100g",
+            "Capers: 50g",
+            "Anchovies: 30g",
+            "EVOO: 500ml",
+            "Lemon juice: 50ml",
+            "Method: Hand-chop herbs (THE OXIDATION LAW) → Whisk in oil/acid → Fold in crushed capers/anchovies"
+          ],
+          yield: "1L yield",
+          timeLaw: "15 min prep | Best use within 6 hours",
+          passSignals: ["Vibrant electric green color", "Coarse non-uniform texture (hand-cut)", "Aromatic herb scent"],
+          rejectSignals: ["Dull grey/black tint", "Uniform puree texture (machine cut)", "Excess oil pooling"],
+          failureLaw: "OXIDATION LAW breach; mechanical bruising (blender) ruptures cells and causes enzymatic browning.",
+          recoveryProtocol: "If grey: REJECT. If split: Stir gently before service.",
+          jemmaMapping: ["ENZYMATIC BROWNING", "CELLULAR BRUISING"],
+          memoryTag: "Herb integrity / Oxidation speed"
+        },
         rootLayer: "Herb-acid-oil suspension.",
         controlLaw: "THE OXIDATION LAW — Use hand-chopping for herbs to prevent bruising and grey-shift.",
         ingredients: [
@@ -2366,8 +3397,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "PREP-035",
         name: "Garlic Confit",
-        engine: "PREP",
+        engine: "LUNA-002",
         section: "INFUSIONS",
+        forgev3: {
+          wmm: [
+            "Garlic cloves (peeled): 500g",
+            "Pomace oil: 1L",
+            "Thyme/Rosemary: 1 sprig each",
+            "Method: Submerge garlic in oil → LUNA cook at 85°C for 2h (THE BOTULISM LAW) → Chill immediately in ice bath"
+          ],
+          yield: "1.5L yield",
+          timeLaw: "2h cook | Maximum life 7 days @ <4°C",
+          passSignals: ["Cloves are translucent and butter-soft", "Oil is clear amber", "Mellow sweet flavor"],
+          rejectSignals: ["Dark brown/Burnt cloves", "Cloudy oil suspension", "Fermentation bubbles"],
+          failureLaw: "THE BOTULISM LAW breach; failure to chill rapidly or holding >4°C allows anaerobic bacterial growth.",
+          recoveryProtocol: "If burnt: REJECT. If held at room temp >2h: REJECT.",
+          jemmaMapping: ["BIOLOGICAL BREACH", "OVER-CARAMELIZATION"],
+          memoryTag: "Thermal stability / Chilly speed"
+        },
         rootLayer: "Low-temp lipid-aromatic infusion.",
         controlLaw: "THE BOTULISM LAW — Keep refrigerated at <4°C; maximum life 7 days.",
         ingredients: [
@@ -2399,6 +3446,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Burrata (Tempering Protocol)",
         engine: "PREP",
         section: "CHEESES",
+        forgev3: {
+          wmm: [
+            "Burrata (125g unit): 1 unit",
+            "Method: Remove from chiller 30 min before (THE TEMPER LAW) → Check core softness → Plate at 18-20°C"
+          ],
+          yield: "1 Portion",
+          timeLaw: "30 min tempering | 18-20°C target | 1h ambient max",
+          passSignals: ["Skin is elastic and soft", "Core is molten/liquid stracciatella", "Ambient surface temp"],
+          rejectSignals: ["Cold/Waxy center", "Skin rupture on touch", "Sour/Fermented liquid smell"],
+          failureLaw: "THE TEMPER LAW breach; cold serving temperature prevents the internal panna/curd matrix from reaching its structural flow point, resulting in a waxy, unpleasant mouthfeel.",
+          recoveryProtocol: "If cold: Cupped palm warmth for 60s. If split/sour: REJECT.",
+          jemmaMapping: ["LIPID FLOW FAILURE", "THERMAL STASIS"],
+          memoryTag: "Stracciatella release temp"
+        },
         rootLayer: "Dual-texture dairy system.",
         controlLaw: "THE TEMPER LAW — Burrata MUST be held at 18-20°C for 30 min before service to unlock the stracciatella core.",
         ingredients: [
@@ -2430,6 +3491,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "House Focaccia (Bake Protocol)",
         engine: "PREP",
         section: "BAKERY",
+        forgev3: {
+          wmm: [
+            "Flour: 2kg / Water: 1.6kg / Yeast: 40g / Oil: 200ml",
+            "Method: Bulk ferment 2h → Tray stretch → 1h proof → DIMPLE HARD (THE DIMPLE LAW) → Bake 220°C (25m)"
+          ],
+          yield: "2 Trays (20 portions)",
+          timeLaw: "25 min Bake at 220°C | 2h + 1h Proofing cycle",
+          passSignals: ["Golden topographical surface", "Audible base crunch", "High-moisture open crumb"],
+          rejectSignals: ["Flat/Dense non-aerated crumb", "Pale top / Soggy base", "Raw flour center"],
+          failureLaw: "THE DIMPLE LAW breach; shallow dimpling prevents oil from reaching the tray floor, resulting in 'bread-on-metal' sticking and lack of internal steam-pockets.",
+          recoveryProtocol: "If pale: Return to 220°C for 5-8 min. If flat: REJECT (fermentation fail).",
+          jemmaMapping: ["FERMENTATION STALL", "CRUST INTEGRITY FAILURE"],
+          memoryTag: "Hydro-thermal dimple depth"
+        },
         rootLayer: "High-hydration open-crumb system.",
         controlLaw: "THE DIMPLE LAW — Finger dimpling must reach floor of tray to create oil pockets.",
         ingredients: [
@@ -2464,6 +3539,20 @@ export const ENGINES: Record<string, Engine> = {
         name: "Pickled Gherkins (Drain Law)",
         engine: "PREP",
         section: "GARNISH",
+        forgev3: {
+          wmm: [
+            "Pickled gherkins: 1kg",
+            "Method: Slice 3mm (THE DRAIN LAW) → Store in brine → Drain 30s on perforated tray prior to assembly"
+          ],
+          yield: "50-60 portions",
+          timeLaw: "30s mandatory drain | 30 day shelf life",
+          passSignals: ["Crisp snap on bite", "Dry-to-touch surface after drain", "Uniform 3mm depth"],
+          rejectSignals: ["Limp/Soggy texture", "Residual brine pool in assembly bowl", "Discolored highlights"],
+          failureLaw: "THE DRAIN LAW breach; residual acetic brine triggers rapid starch dissolution in the bun/bread, leading to structural 'soggy' failure.",
+          recoveryProtocol: "If wet: Re-drain on fresh dry cloth. If soft/mushy: REJECT.",
+          jemmaMapping: ["OSMOTIC BUN DEGRADATION", "MOISTURE MIGRATION"],
+          memoryTag: "Structural brine-lock"
+        },
         rootLayer: "Acid-stabilised vegetable garnish.",
         controlLaw: "THE DRAIN LAW — Slices must be drained on a perforated tray for 30s before assembly.",
         ingredients: [
@@ -2636,8 +3725,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-001",
         name: "Roast Leg of Lamb",
-        engine: "SUNDAY",
+        engine: "HELIOS",
         section: "CORE",
+        forgev3: {
+          wmm: [
+            "Leg of Lamb (bone-in): 3kg",
+            "Garlic: 20g",
+            "Rosemary: 10g",
+            "Sea salt: 50g",
+            "Method: Score fat/stud with aromatics → Roast 200°C (20 min) → Drop to 160°C → Cook to internal 55°C → REST 20 min (THE MINT LAW)"
+          ],
+          yield: "6-8 Portions",
+          timeLaw: "2h Cook / 20m Rest | Failure: Internal >62°C (Grey shift)",
+          passSignals: ["Uniform pink core", "Herb-scented crispy fat cap", "Zero clear juice leakage on plate"],
+          rejectSignals: ["Grey/Dry muscle fibers", "Cold center", "Dull/Fatty unrendered skin"],
+          failureLaw: "THE MINT LAW breach; carving before resting causes rapid fluid loss and structural toughening.",
+          recoveryProtocol: "If under-temp: Return to HELIOS for 10 min. If over-temp: Slice thin and drench in hot Galyons Gravy.",
+          jemmaMapping: ["THERMAL OVER-EXTRACTION", "FLUID EXPULSION"],
+          memoryTag: "Resting duration / Core temp accuracy"
+        },
         rootLayer: "Herb-infused whole muscle roast.",
         controlLaw: "THE MINT LAW — Must be rested for 20 minutes before carving to prevent juice bleed on plate.",
         ingredients: [
@@ -2669,26 +3775,53 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-002",
         name: "Roast Beef",
-        portion: "3-4 slices",
-        protein: "Beef Sirloin or Topside",
-        trim: "Yorkshire pudding · Roast potatoes · Roots · Greens",
-        cookTemp: "Target 52°C core (Pink)",
-        cook: "High heat sear → Low heat roast → Rest 30 min",
+        engine: "HELIOS",
+        section: "CORE",
+        forgev3: {
+          wmm: [
+            "Beef (Sirloin/Topside): 5kg",
+            "Fine salt: 100g",
+            "Method: High heat sear (Maillard) → Low roast (THE CORE TECH LAW) → Remove at 52°C → DEEP REST 30m"
+          ],
+          yield: "10-12 Portions",
+          timeLaw: "30 min Deep Rest | Failure: Internal >56°C before rest",
+          passSignals: ["Perfect edge-to-edge pink", "Savoury dark crust", "Moist, succulent fiber"],
+          rejectSignals: ["Grey band >5mm from edge", "Blood pooling on plate (rest failure)", "Ragged texture"],
+          failureLaw: "THE CORE TECH LAW breach; skipping the 30m carry-over rest results in fibre tension and juice loss.",
+          recoveryProtocol: "If cold: Flash slices for 15s in hot reduction. If grey: Slice ultra-thin (1mm) for texture.",
+          jemmaMapping: ["CARRY-OVER DRIFT", "MAILLARD STALL"],
+          memoryTag: "Resting temperature peak"
+        },
+        rootLayer: "Large muscle dry-roasting system (Sirloin/Topside).",
+        controlLaw: "THE CORE TECH LAW — 52°C target core + 30m carry-over deep rest.",
+        ingredients: [
+          "Beef Sirloin or Topside",
+          "Yorkshire pudding",
+          "Roast potatoes",
+          "Seasonal Roots",
+          "Greens",
+          "Galyons Gravy"
+        ],
+        method: [
+          "High heat sear to develop Maillard crust",
+          "Low heat roast until 52°C core",
+          "Remove and deep rest for 30 min",
+          "Slice thin against the grain"
+        ],
+        holding: "30 min warm rest (covered)",
+        service: "3-4 thin slices per plate; vertical build",
+        timeLaw: "30m Deep Rest",
+        validationPoints: {
+          postPrep: "52°C core reached",
+          preService: "30m resting window complete",
+          atPass: "Clean rims · pink beef · audible potato crunch"
+        },
+        failureLaw: "Grey beef / Dry meat / Ragged slicing",
+        autoReject: "No blood pool on plate / Cold center",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["gluten", "dairy", "eggs"],
-        pass: "Clean rims · pink beef · audible potato crunch",
-        station: "Sunday Roast",
-        menuLayers: {
-          core: "Pink Roasted Beef",
-          bulk: "Roast Potatoes + Yorkshire Pudding",
-          wet: "Galyons Gravy (Finish)",
-          acid: "Horseradish / Roots",
-          finish: "Pan Juices"
-        },
-        specLayers: {
-          functional: "Large muscle dry-roasting.",
-          control: "Core Tech Law (52°C) + 30m Deep Rest.",
-          output: "Uniform pink slices."
-        },
         larousse: {
           principle: "Maillard reaction on the surface must be achieved without toughening the interior muscle fibres.",
           method: ["Salt 24h prior", "Monitor core temp closely", "Slice thin for texture"],
@@ -2705,26 +3838,53 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-003",
         name: "Half Roast Chicken",
-        portion: "One half bird",
-        protein: "Brined Chicken",
-        trim: "Yorkshire pudding · Roast potatoes · Roots · Greens",
-        cookTemp: "74°C core",
-        cook: "Steam/Roast combination → High heat skin finish",
+        engine: "HELIOS",
+        section: "CORE",
+        forgev3: {
+          wmm: [
+            "Half Brined Chicken: 1 unit",
+            "Butter: 30g",
+            "Method: Roast/Steam combo (THE SKIN SNAP LAW) → High heat finish → Rest breast-down → Target 74°C leg joint"
+          ],
+          yield: "1 Portion",
+          timeLaw: "Cook to 74°C internal | Skin loses snap after 20 min hold",
+          passSignals: ["Audible skin snap", "Zero blood in leg joint", "Translucent juice flow"],
+          rejectSignals: ["Rubbery/Soggy skin", "Red/Pink joint bone", "Dry stringy breast"],
+          failureLaw: "SKIN SNAP LAW breach; holding in high-humidity environment or low roasting temps leads to fat saturation of skin.",
+          recoveryProtocol: "If skin soft: 2 min flash at 240°C. If bloody: Return to HELIOS until join is clear.",
+          jemmaMapping: ["LIPID SATURATION (SKIN)", "BIOLOGICAL BREACH"],
+          memoryTag: "Skin dehydration level"
+        },
+        rootLayer: "Brine-protected moisture + skin render system.",
+        controlLaw: "SKIN SNAP LAW — Dry skin finish + 74°C safety core requirement.",
+        ingredients: [
+          "Half Brined Chicken",
+          "Yorkshire pudding",
+          "Roast potatoes",
+          "Seasonal Roots",
+          "Buttered Greens",
+          "Galyons Gravy"
+        ],
+        method: [
+          "Steam/Roast combination cook",
+          "High heat skin finish to render fat",
+          "Rest breast-down to preserve moisture",
+          "Check leg joint for zero-blood"
+        ],
+        holding: "20 min max before skin degradation",
+        service: "One half bird; vertical build",
+        timeLaw: "Cook to 74°C core",
+        validationPoints: {
+          postPrep: "Brine window met",
+          preService: "Skin dry for roast",
+          atPass: "Crisp golden skin · juicy breast meat · vertical build"
+        },
+        failureLaw: "Dry breast / Soggy skin / Blood in joint",
+        autoReject: "Soft skin / Under 74°C core",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["gluten", "dairy", "eggs"],
-        pass: "Crisp golden skin · juicy breast meat · vertical build",
-        station: "Sunday Roast",
-        menuLayers: {
-          core: "Half Brined Chicken",
-          bulk: "Roast Potatoes + Yorkshire Pudding",
-          wet: "Galyons Gravy (Finish)",
-          acid: "Seasonal Roots",
-          finish: "Buttered Greens"
-        },
-        specLayers: {
-          functional: "Brine-protected moisture + skin render.",
-          control: "Skin Snap Law (Dry skin finish) + 74°C safety core.",
-          output: "Vertical bird build."
-        },
         larousse: {
           principle: "The skin protects the flesh from drying; high surface heat renders the subcutaneous fat.",
           method: ["Dry skin thoroughly", "Roast at high temp", "Rest breast-down"],
@@ -2741,26 +3901,52 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-004",
         name: "Vegetarian Sunday Roast",
-        portion: "Individual unit",
-        protein: "Nut Roast or Mushroom Wellington",
-        trim: "Yorkshire pudding · Roast potatoes · Roots · Veg gravy",
-        cookTemp: "75°C core",
-        cook: "Bake to order → Glaze roots → Finish with veg gravy",
+        engine: "HELIOS",
+        section: "CORE",
+        forgev3: {
+          wmm: [
+            "Nut Roast / Mushroom Wellington: 1 unit",
+            "Method: Bake to order (HEAT RETENTION LAW) → Glaze components separately → Finish with veg gravy"
+          ],
+          yield: "1 Portion",
+          timeLaw: "Must hit 75°C core | Hold max 30 min",
+          passSignals: ["Crisp pastry shell (if Wellington)", "Dense steaming core", "Rich dark glaze"],
+          rejectSignals: ["Cold core center", "Soggy pastry base", "Dry/Crumbly fall-apart texture"],
+          failureLaw: "HEAT RETENTION LAW breach; mass density prevents thermal penetration if initial oven temp is too low.",
+          recoveryProtocol: "If cold: Microwave core 30s then flash in HELIOS for 2 min.",
+          jemmaMapping: ["THERMAL PENETRATION FAILURE"],
+          memoryTag: "Core density heat-soak"
+        },
+        rootLayer: "Umami-dense protein replacement (Nut Roast/Wellington).",
+        controlLaw: "HEAT RETENTION LAW — Massive center must maintain 75°C to preserve structure and mouthfeel.",
+        ingredients: [
+          "Nut Roast or Mushroom Wellington",
+          "Yorkshire pudding",
+          "Roast potatoes",
+          "Seasonal Roots",
+          "Vegetarian Gravy",
+          "Fresh Herb Oil"
+        ],
+        method: [
+          "Bake to order in high heat environment",
+          "Glaze roots separately",
+          "Finish with hot vegetarian gravy",
+          "Top with fresh herb oil"
+        ],
+        holding: "Hold warm; do not exceed 30 min",
+        service: "Individual unit; abundant veggie vertical build",
+        timeLaw: "Cook to 75°C core",
+        validationPoints: {
+          postPrep: "Wellington crispness verified",
+          preService: "Core temp 75°C",
+          atPass: "Equal authority to meat plates · vibrant colour · rich gravy"
+        },
+        failureLaw: "Cold center / Dry texture / Soggy pastry",
+        autoReject: "Cold core / Grey visual",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["gluten", "dairy", "eggs", "nuts"],
-        pass: "Equal authority to meat plates · vibrant colour · rich gravy",
-        station: "Sunday Roast",
-        menuLayers: {
-          core: "Nut Roast / Wellington",
-          bulk: "Roast Potatoes + Yorkshire Pudding",
-          wet: "Vegetarian Gravy",
-          acid: "Seasonal Roots",
-          finish: "Fresh Herb Oil"
-        },
-        specLayers: {
-          functional: "Umami-dense protein replacement.",
-          control: "Heat Retention Law + Pastry Crisp Law (if Wellington).",
-          output: "Abundant veggie vertical build."
-        },
         larousse: {
           principle: "Vegetarian replacements must provide structural integrity and savoury depth (umami).",
           method: ["Roast vegetables separately", "Use caramelised onion base for gravy", "Ensure heat retention"],
@@ -2777,11 +3963,51 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-005",
         name: "Duck Fat Roast Potatoes",
-        portion: "4-5 per portion",
-        cook: "Par-boil → Steam dry → Rough up → Roast in hot fat",
+        engine: "HELIOS",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Maris Piper potatoes: 5kg",
+            "Duck fat: 1L",
+            "Sea salt: 50g",
+            "Method: Par-boil from cold (STARCH ROUGHING LAW) → Drain/Steam-dry till white & fluffy → Shake aggressively → Roast in smoking-hot fat (220°C)"
+          ],
+          yield: "20 Portions",
+          timeLaw: "45-60 min Roast | Must serve within 15 min of bake completion",
+          passSignals: ["Audible fracture on crust", "Deep golden glass-like finish", "Internal fluffiness (no waxy core)"],
+          rejectSignals: ["Pale/Soggy skin", "Visible oil pooling on base", "Hard/Waxy internal core"],
+          failureLaw: "STARCH ROUGHING LAW breach; failure to steam-dry or rough up surface prevent fat-starch binding and crunch formation.",
+          recoveryProtocol: "If pale: Return to 240°C HELIOS for 5 min. If oily: Drain on wire rack immediately.",
+          jemmaMapping: ["STARCH-FAT BIND FAILURE", "THERMAL STALL (CRUST)"],
+          memoryTag: "Roughing intensity / Steam-dry duration"
+        },
+        rootLayer: "Surface-area starch-fat reaction system.",
+        controlLaw: "STARCH ROUGHING LAW — Par-boil until edges friable; rough up aggressively to maximize surface area for fat-binding.",
+        ingredients: [
+          "Maris Piper potatoes",
+          "Duck fat",
+          "Sea salt"
+        ],
+        method: [
+          "Par-boil from cold water",
+          "Drain and steam-dry thoroughly (CRITICAL)",
+          "Shake to rough up surface starch",
+          "Roast in smoking-hot fat at 220°C"
+        ],
+        holding: "15 min max before loss of crunch",
+        service: "4-5 units per portion; high-side arrangement",
+        timeLaw: "Roast 45-60 min",
+        validationPoints: {
+          postPrep: "Steam-dry verified",
+          preService: "Fat smoking hot",
+          atPass: "Deep golden · audible crust · fluffy centre"
+        },
+        failureLaw: "Oily / Soggy / Pale / Flat colour",
+        autoReject: "No audible crunch / Oily residue",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["none"],
-        pass: "Deep golden · audible crust · fluffy centre",
-        station: "Veg Station",
         larousse: {
           principle: "Surface area is key; rough edges increase the number of locations for fat-starch reaction.",
           method: ["Cool fully before roasting", "Ensure fat is smoking hot", "Season while hot"],
@@ -2798,11 +4024,49 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-006",
         name: "Giant Yorkshire Pudding",
-        portion: "1 large unit",
-        cook: "Whisk batter → Rest → Pour into hot fat → Bake 200°C",
+        engine: "HELIOS",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Equal volume: Flour / Eggs / Milk",
+            "Beef dripping or veg oil: 200ml",
+            "Method: Whisk smooth → Rest 12h cold → Smoking hot fat in tray (THERMAL SHOCK LAW) → Pour cold batter → Bake 200°C (DO NOT OPEN DOOR)"
+          ],
+          yield: "12 Giant units",
+          timeLaw: "20-25 min Bake | Collapse window: >15 min hold",
+          passSignals: ["Defiance of gravity (high rise)", "Crisp golden shell with translucent oil sheen", "Hollow stable structure"],
+          rejectSignals: ["Flat/Doughy collapse", "Oily/Greasy base soak", "Pale/Soft side walls"],
+          failureLaw: "THERMAL SHOCK LAW breach; opening door or using warm batter prevents the rapid steam-driven expansion required for lift.",
+          recoveryProtocol: "If soft: Flash in high-heat pass. If flat: REJECT (structural failure).",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "THERMAL SHOCK FAILURE"],
+          memoryTag: "Resting cycle / Heat recovery speed"
+        },
+        rootLayer: "Steam-driven gluten-expansion system.",
+        controlLaw: "THERMAL SHOCK LAW — Batter MUST be cold; fat MUST be smoking hot; oven door MUST NOT open.",
+        ingredients: [
+          "Equal volume: Flour / Eggs / Milk",
+          "Beef dripping or veg oil"
+        ],
+        method: [
+          "Whisk batter till smooth → Rest 12h cold",
+          "Preheat oil until smoking in tray",
+          "Pour cold batter into hot oil",
+          "Bake 200°C without opening door"
+        ],
+        holding: "10-15 min max before collapse risk",
+        service: "1 large unit; highest point of the build",
+        timeLaw: "Bake 20-25 min",
+        validationPoints: {
+          postPrep: "Batter rested 12h",
+          preService: "Oil smoking hot",
+          atPass: "High rise · crisp shell · soft centre"
+        },
+        failureLaw: "Collapse / Pale / Doughy centre",
+        autoReject: "No rise / Oily / Underdone",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["gluten", "dairy", "eggs"],
-        pass: "High rise · crisp shell · soft centre · no collapse",
-        station: "Oven",
         larousse: {
           principle: "Steam-driven rise requires immediate heat transfer and a gluten network strong enough to hold gas.",
           method: ["Equal parts by volume", "Do not open door", "Cold batter / hot oil"],
@@ -2819,11 +4083,52 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-007",
         name: "Cauliflower Cheese",
-        portion: "Side bowl or plate",
-        cook: "Blanch cauli → Coat in Béchamel → Add cheese → Bake",
+        engine: "LUNA-002",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Cauliflower florets: 2kg",
+            "Mornay Sauce: 1.5L",
+            "Cheddar/Parmesan: 300g",
+            "Method: Blanch cauli → Steam-dry (MOISTURE BARRIER LAW) → Coat in Mornay → Top with cheese → Glaze at 200°C"
+          ],
+          yield: "10 Portions",
+          timeLaw: "10 min glaze | 30 min hold max",
+          passSignals: ["Hard bubbly brown glaze", "Zero liquid separation in base", "Tender-crisp florets"],
+          rejectSignals: ["Water pooling at base (split)", "Rubbery cauliflower stems", "Pale/Greasy sauce"],
+          failureLaw: "MOISTURE BARRIER LAW breach; residual blanching water leeches into Mornay system causing emulsion breakage.",
+          recoveryProtocol: "If watery: REJECT. If pale: Torch or flash at 240°C.",
+          jemmaMapping: ["EMULSION BREAK (WATER-LEECH)", "GLAZE FAILURE"],
+          memoryTag: "Drain efficiency / Steam-dry check"
+        },
+        rootLayer: "Mornay-fat vegetable-structural system.",
+        controlLaw: "MOISTURE BARRIER LAW — Cauliflower must be drained and steam-dried before saucing; any water leech = split sauce (Hard Reject).",
+        ingredients: [
+          "Cauliflower florets",
+          "Béchamel / Mornay sauce",
+          "Mature Cheddar and Parmesan",
+          "Mustard / Nutmeg"
+        ],
+        method: [
+          "Blanch cauli until tender-crisp",
+          "Drain → steam-dry thoroughly",
+          "Coat in rich Mornay sauce",
+          "Top with cheese mix → Bake at 200°C for hard glaze"
+        ],
+        holding: "30 min hot hold (covered)",
+        service: "Side bowl or plate; glossy bubbling finish",
+        timeLaw: "Bake 8-12 min",
+        validationPoints: {
+          postPrep: "Zero-water cauli",
+          preService: "Sauce adherence checked",
+          atPass: "Golden top · glossy bubbling interior"
+        },
+        failureLaw: "Split sauce / Watery base / Tough cauli",
+        autoReject: "Water puddle in bowl / Separation",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy", "mustard", "gluten"],
-        pass: "Golden top · glossy bubbling interior · hot through",
-        station: "Veg Station",
         larousse: {
           principle: "The Mornay sauce provides the fat bridge between the cruciferous vegetable and the palate.",
           method: ["Do not overcook cauli", "Season sauce with mustard/nutmeg", "Glaze hard"],
@@ -2840,11 +4145,52 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-008",
         name: "Honey Roast Carrots & Parsnips",
-        portion: "Mixed portion",
-        cook: "Prep even batons → Roast until edges colour → Glaze with honey",
+        engine: "HELIOS",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Carrots/Parsnips: 2kg",
+            "Honey: 100ml",
+            "Method: Roast batons dry at 190°C (THE GLAZE LAW) → Add honey final 5 mins → Toss to coat"
+          ],
+          yield: "10 Portions",
+          timeLaw: "30 min Roast | Honey addition: last 5-8 min window",
+          passSignals: ["Reflective amber glaze (not carbonized)", "Tender bite with slight resistance", "Uniform caramelization on edges"],
+          rejectSignals: ["Black/Bitter honey patches (burnt)", "Limp/Soggy texture", "Pale/Dull appearance"],
+          failureLaw: "THE GLAZE LAW breach; early honey addition leads to sugar carbonization before root structural softening.",
+          recoveryProtocol: "If dry: Toss with 20ml warm water/honey mix. If burnt: REJECT.",
+          jemmaMapping: ["SUGAR CARBONIZATION", "GLAZE FAILURE"],
+          memoryTag: "Honey addition timing accuracy"
+        },
+        rootLayer: "Sugar-glaze vegetable-starch system.",
+        controlLaw: "THE GLAZE LAW — Glazing involves the reduction of sugar-water into a film; honey must be added late to prevent carbonization.",
+        ingredients: [
+          "Carrots (batons)",
+          "Parsnips (batons)",
+          "Honey",
+          "Vegetable oil",
+          "Salt"
+        ],
+        method: [
+          "Prep even batons for uniform cooking",
+          "Roast dry at 190°C until edges colour",
+          "Add honey in final 5-8 mins of cooking",
+          "Toss to coat in reflective glaze"
+        ],
+        holding: "20 min max hot hold (covered)",
+        service: "Mixed portion; vertical arrangement",
+        timeLaw: "Roast 25-30 min",
+        validationPoints: {
+          postPrep: "Uniform baton sizing",
+          preService: "Edges caramelised",
+          atPass: "Tender bite · light glaze · reflective finish"
+        },
+        failureLaw: "Burnt honey / Soggy roots / Pale batch",
+        autoReject: "Charred honey bitter notes / Watery glaze",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["none"],
-        pass: "Tender bite · light glaze · edge caramelisation",
-        station: "Veg Station",
         larousse: {
           principle: "Glazing involves the reduction of sugar-water into a film that reflects light and concentrates sweetness.",
           method: ["Roast roots dry first", "Add honey late to avoid burning", "Salt balance"],
@@ -2861,11 +4207,51 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-009",
         name: "Peas",
-        portion: "Side serving",
-        cook: "Blanch → Refresh → Reheat with butter/seasoning to order",
+        engine: "LUNA-003",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Garden peas: 1kg",
+            "Salted butter: 50g",
+            "Sea salt: 5g",
+            "Method: Blanch rapidly to order (THERMAL POP LAW) → Drain fully (No water) → Toss with butter/salt"
+          ],
+          yield: "10 Portions",
+          timeLaw: "60s Blanch | Hold <5 min",
+          passSignals: ["Electric green vibrancy", "Explosive sweet pop", "Zero surface water"],
+          rejectSignals: ["Dull grey/khaki tint", "Shrivelled skin", "Wet plate bleed"],
+          failureLaw: "THERMAL POP LAW breach; over-cooking ruptures cell walls leading to starch degradation and color loss.",
+          recoveryProtocol: "If grey: REJECT. Must be cooked fresh to order.",
+          jemmaMapping: ["CHLOROPHYLL DEGRADATION"],
+          memoryTag: "Vibrancy retention time"
+        },
+        rootLayer: "Rapid-heat chlorophyll preservation system.",
+        controlLaw: "THERMAL POP LAW — Peas must be heated rapidly to preserve cellular sugar; do not boil (Hard Reject).",
+        ingredients: [
+          "Garden peas (frozen/fresh)",
+          "Salted butter",
+          "Sea salt"
+        ],
+        method: [
+          "Blanch rapidly to order",
+          "Drain thoroughly (mandatory)",
+          "Reheat in pan with butter and seasoning",
+          "Ensure bright green vibrancy"
+        ],
+        holding: "5 min max hot hold",
+        service: "Side serving; bright sweet pop",
+        timeLaw: "Blanch 1 min",
+        validationPoints: {
+          postPrep: "Zero-water drainage",
+          preService: "Bright green check",
+          atPass: "Vibrant sweet pop · no excess liquor"
+        },
+        failureLaw: "Grey colour / Shrivelled / Watery plate",
+        autoReject: "Mushy texture / Grey tint",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy"],
-        pass: "Bright green · hot · seasoned · no excess water",
-        station: "Veg Station",
         larousse: {
           principle: "Simple vegetables expose sloppy handling; rapid heating preserves cellular integrity.",
           method: ["Do not overcook", "Drain thoroughly", "Use sea salt"],
@@ -2882,11 +4268,50 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-010",
         name: "Green Beans",
-        portion: "Side serving",
-        cook: "Top & Tail → Blanch → Refresh → Sauté in butter",
+        engine: "LUNA-003",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Fine green beans: 1kg",
+            "Salted butter: 50g",
+            "Method: Blanch in saline boil (THE SNAP LAW) → Ice shock immediately → Flash sauté in butter to finish"
+          ],
+          yield: "10 Portions",
+          timeLaw: "2-3 min Blanch | Finish in <60s",
+          passSignals: ["Vivid green 'snap' upon fracture", "Glossy buttery sheen", "Architectural integrity (straight)"],
+          rejectSignals: ["Limp/Flabby texture", "Dull grey tint", "Butter pooling at base"],
+          failureLaw: "THE SNAP LAW breach; failure to ice-shock allows carry-over cooking to destroy structural hemicellulose.",
+          recoveryProtocol: "If limp: REJECT. Component is structurally dead.",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "CHLOROPHYLL DRIFT"],
+          memoryTag: "Ice-shock efficiency"
+        },
+        rootLayer: "Architectural snap preservation system.",
+        controlLaw: "THE SNAP LAW — Beans must maintain 'structural snap'; over-cooking = total loss of architectural intent.",
+        ingredients: [
+          "Fine green beans",
+          "Salted butter",
+          "Sea salt"
+        ],
+        method: [
+          "Top & Tail with precision",
+          "Blanch in heavily salted water",
+          "Ice shock immediately to set colour",
+          "Flash sauté in butter to finish"
+        ],
+        holding: "5-8 min window",
+        service: "Side serving; buttery sheen",
+        timeLaw: "Blanch 2-3 min",
+        validationPoints: {
+          postPrep: "Ice shock complete",
+          preService: "Vivid green colour",
+          atPass: "Snap and gloss · seasoned"
+        },
+        failureLaw: "Flabby texture / Greying colour",
+        autoReject: "Mushy batch / Dull grey tint",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy"],
-        pass: "Bright green · seasoned · slight bite · no collapse",
-        station: "Veg Station",
         larousse: {
           principle: "Al dente texture is preferred to maintain the bean's architectural snap.",
           method: ["Use heavily salted water", "Ice shock immediately", "Flash to order"],
@@ -2903,11 +4328,50 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-011",
         name: "Broccoli",
-        portion: "Florets or Stems",
-        cook: "Cut even florets → Blanch → Refresh → Finish in pan",
+        engine: "LUNA-003",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Broccoli florets: 1kg",
+            "Butter: 50g",
+            "Method: Blanch in rolling boil → REVERSE DRAIN (upside-down) → Toss with butter/salt"
+          ],
+          yield: "10 Portions",
+          timeLaw: "3-4 min Blanch | Must be served immediately",
+          passSignals: ["Vibrant green florets", "Tender but firm stem", "Dry floret tips"],
+          rejectSignals: ["Water logging in florets", "Grey shadow in head", "Mushy texture"],
+          failureLaw: "REVERSE DRAIN LAW breach; trapping blanching water in florets dilutes flavour and creates soggy texture.",
+          recoveryProtocol: "If watery: Drain aggressively on cloth. If grey: REJECT.",
+          jemmaMapping: ["WATER LOGGING", "THERMAL OVER-EXTENDING"],
+          memoryTag: "Drain position accuracy"
+        },
+        rootLayer: "Stem-density thermal management system.",
+        controlLaw: "REVERSE DRAIN LAW — Broccoli must be drained upside-down to prevent water logging in floret tips.",
+        ingredients: [
+          "Broccoli florets/stems",
+          "Butter",
+          "Sea salt"
+        ],
+        method: [
+          "Cut even florets; split thick stems",
+          "Blanch in salted rolling boil",
+          "Ice shock and drain upside down (CRITICAL)",
+          "Finish in hot pan with butter"
+        ],
+        holding: "5-10 min hot hold",
+        service: "Florets or Stems portion",
+        timeLaw: "Blanch 2-3 min",
+        validationPoints: {
+          postPrep: "Uniform sizing",
+          preService: "Dry florets",
+          atPass: "Bright colour · tender with bite"
+        },
+        failureLaw: "Water-logged florets / Yellowing / Mushy",
+        autoReject: "Yellow tint / Broken heads",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy"],
-        pass: "Bright colour · tender with bite · neatly presented",
-        station: "Veg Station",
         larousse: {
           principle: "Stem density determines cook time; uniform sizing is mandatory for even texture.",
           method: ["Split thick stems", "Season floret tips", "Drain upside down"],
@@ -2924,11 +4388,51 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-012",
         name: "Savoy Cabbage",
-        portion: "Shredded portion",
-        cook: "Slice even → Blanch → Sauté with butter/pepper",
+        engine: "LUNA-003",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Savoy cabbage leaves: 2kg",
+            "Salted butter: 100g",
+            "Black pepper: 10g",
+            "Method: Remove outer ribs → Shred evenly → Blanch briefly (SULPHUR BLOCK LAW) → Ice shock → Sauté to order with butter/heavy pepper"
+          ],
+          yield: "20 Portions",
+          timeLaw: "60s Blanch | 60s Sauté | Hold <5 min",
+          passSignals: ["Emerald green edges", "Soft ruffle texture", "Mild sweet flavor (no sulphur)"],
+          rejectSignals: ["Dull grey color", "Strong sulphuric aroma", "Mushy/Watery texture"],
+          failureLaw: "SULPHUR BLOCK LAW breach; over-cooking or failure to ice-shock triggers anaerobic sulphur development and bitterness.",
+          recoveryProtocol: "If grey: REJECT. If watery: Drain on cloth and re-sauté with fresh butter.",
+          jemmaMapping: ["SULPHUR EVENT", "CHLOROPHYLL DRIFT"],
+          memoryTag: "Blanch timing precision"
+        },
+        rootLayer: "Emerald-leaf texture assembly.",
+        controlLaw: "SULPHUR BLOCK LAW — Brief blanching + rapid cooling prevents development of sulphur notes; cabbage must remain sweet.",
+        ingredients: [
+          "Savoy cabbage leaves",
+          "Salted butter",
+          "Black pepper"
+        ],
+        method: [
+          "Remove tough outer ribs → Shred evenly",
+          "Blanch briefly in boiling water",
+          "Ice shock and drain",
+          "Sauté to order with butter and heavy pepper"
+        ],
+        holding: "5 min max hot hold",
+        service: "Shredded portion; emerald edges",
+        timeLaw: "Blanch 1 min / Sauté 1 min",
+        validationPoints: {
+          postPrep: "Ribs removed",
+          preService: "Cold set active green",
+          atPass: "Tender · seasoned · lightly glossy"
+        },
+        failureLaw: "Grey colour / Bitter notes / Mushy",
+        autoReject: "Sulphuric aroma / Grey tint",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["dairy"],
-        pass: "Tender · seasoned · lightly glossy · no heavy liquor",
-        station: "Veg Station",
         larousse: {
           principle: "Brassica vegetables develop sulphur compounds when overcooked; brief sautéing prevents this.",
           method: ["Remove tough outer ribs", "Butter emulsion finish", "Fresh black pepper"],
@@ -2945,23 +4449,55 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "SUNDAY-013",
         name: "Braised Red Cabbage",
-        portion: "Side serving",
-        cook: "Slow braise with apple/vinegar/spice until glossy",
+        engine: "LUNA-001",
+        section: "VEG",
+        forgev3: {
+          wmm: [
+            "Red cabbage: 5kg",
+            "Bramley apple: 1kg (grated)",
+            "Cider vinegar: 500ml",
+            "Dark brown sugar: 300g",
+            "Mulled spices: 20g",
+            "Method: Shred cabbage → Add vinegar T-minus-0 (ANTHOCYANIN LOCK) → Slow braise 3h → Reduce liquor to syrup glaze"
+          ],
+          yield: "50 Portions",
+          timeLaw: "2-3h Braise | Reduction window: until liquor is syrup",
+          passSignals: ["Vibrant glowing purple (not blue)", "Deep reflective gloss", "Melt-in-mouth texture"],
+          rejectSignals: ["Blue-grey oxidation tint", "Watery liquor pooling", "Tough/Stringy ribs"],
+          failureLaw: "ANTHOCYANIN LOCK breach; delay in acid addition (vinegar) allows alkaline shift and permanent blue-grey oxidation.",
+          recoveryProtocol: "If blue: Add 50ml cider vinegar and reduce further. If watery: Continue reduction to syrup.",
+          jemmaMapping: ["PH DRIFT (ALKALINE SHIFT)", "REDUCTION FAILURE"],
+          memoryTag: "Initial acid timing / Viscosity target"
+        },
+        rootLayer: "Anthocyanin-protected slow-reduction system.",
+        controlLaw: "ANTHOCYANIN LOCK — Ph must be lowered via acetic acid (vinegar) at T-minus-0 to lock vibrant purple hue and prevent blue-grey oxidation.",
+        ingredients: [
+          "Red cabbage (shredded)",
+          "Bramley apple",
+          "Cider vinegar",
+          "Dark brown sugar",
+          "Mulled spices (clove/cinnamon)"
+        ],
+        method: [
+          "PH CONTROL: Add vinegar immediately to locked red hue",
+          "Slow braise until cabbage is melt-in-mouth tender",
+          "Reduce liquor to syrup for correct glaze viscosity",
+          "Balance sugar/acid regularly during braise"
+        ],
+        holding: "5 days chilled / 4h warm hold",
+        service: "Side serving; vertical glowing gloss",
+        timeLaw: "Braise 2-3 hours",
+        validationPoints: {
+          postPrep: "Vibrant purple (not blue)",
+          preService: "Syrup viscosity check",
+          atPass: "Deep colour · glossy finish · spice depth"
+        },
+        failureLaw: "Blue-grey tint / Watery base / Tough ribs",
+        autoReject: "Blue-grey tint (lack of acid) / Watery on plate",
+        status: "ACTIVE",
+        executionCard: true,
+        printCard: true,
         allergens: ["none"],
-        pass: "Deep colour · glossy finish · tender texture · balanced profile",
-        station: "Veg Station",
-        menuLayers: {
-          core: "Slow-roasted Cabbage",
-          bulk: "Reduction Liquor",
-          wet: "Syrup Matrix",
-          acid: "Apple Cider Vinegar",
-          finish: "Glossy reduction"
-        },
-        specLayers: {
-          functional: "Anthocyanin protection via low pH.",
-          control: "ANTHOCYANIN LOCK + Slow Reduction Law.",
-          output: "Abundant purple gloss."
-        },
         larousse: {
           principle: "Anthocyanin pigments require acidity to maintain a vibrant red-purple hue.",
           method: [
@@ -3119,8 +4655,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "DESSERT-001",
         name: "Sticky Toffee Pudding",
-        engine: "DESSERT",
+        engine: "AETHER",
         section: "HOT",
+        forgev3: {
+          wmm: [
+            "Medjool dates: 500g",
+            "Boiling water: 600ml",
+            "Bicarb: 10g",
+            "Butter/Sugar/Eggs/Self-raising flour",
+            "Method: Emulsify dates/water/bicarb (THE DATE LAW) → Cream butter/sugar → Fold in flour/date paste → Tray bake 160°C"
+          ],
+          yield: "20 Portions",
+          timeLaw: "40 min Bake | 45s Reheat to order | Target 65°C core",
+          passSignals: ["Steaming 65°C core", "Uniform dark crumb (no date chunks)", "Moist high-retention crumb"],
+          rejectSignals: ["Fibrous date chunks", "Dry/Crumbly edges", "Cold center on pass"],
+          failureLaw: "THE DATE LAW breach; failure to fully emulsify dates creates structural inconsistency and unpleasant fibrous texture.",
+          recoveryProtocol: "If dry: Steam with 10ml toffee sauce. If chunks: REJECT Batch.",
+          jemmaMapping: ["STRUCTURAL INCONSISTENCY", "THERMAL UNDER-PENETRATION"],
+          memoryTag: "Date paste micron-level"
+        },
         rootLayer: "Date-sugar sponge with high-moisture retention.",
         controlLaw: "THE DATE LAW — Dates must be emulsified into smooth paste to prevent 'fibrous bite' failure.",
         ingredients: [
@@ -3155,8 +4708,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "DESSERT-002",
         name: "Sea Salt Toffee Sauce",
-        engine: "DESSERT",
+        engine: "LUNA-002",
         section: "PREP",
+        forgev3: {
+          wmm: [
+            "Double cream: 1L",
+            "Dark brown sugar: 500g",
+            "Unsalted butter: 200g",
+            "Maldon salt: 15g",
+            "Method: Melt butter/sugar → Boil to 104°C (THE EMULSION LAW) → Whisk in cream → Simmer 2m → Salt"
+          ],
+          yield: "1.5L yield",
+          timeLaw: "10 min Cook | Hold at 60°C",
+          passSignals: ["Glossy amber finish", "High viscosity (coats spoon)", "Zero sugar grain"],
+          rejectSignals: ["Split fat surface", "Grainy mouthfeel", "Burnt/Bitter notes"],
+          failureLaw: "THE EMULSION LAW breach; adding cream before 104°C prevents full protein-fat-sugar binding.",
+          recoveryProtocol: "If split: Whisk in 5% cold cream off-heat. If grainy: REJECT.",
+          jemmaMapping: ["EMULSION FAILURE", "THERMAL STALL"],
+          memoryTag: "Sugar boil accuracy"
+        },
         rootLayer: "High-viscosity butter-fat emulsion.",
         controlLaw: "THE EMULSION LAW — Sauce must hit 104°C before cream addition to prevent splitting.",
         ingredients: [
@@ -3188,8 +4758,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "DESSERT-003",
         name: "Tiramisu Classico",
-        engine: "DESSERT",
+        engine: "AETHER",
         section: "COLD",
+        forgev3: {
+          wmm: [
+            "Mascarpone: 1kg",
+            "Egg yolks: 10 units",
+            "Savoiardi: 60 units",
+            "Espresso: 1L",
+            "Method: Whisk yolks/sugar → Fold mascarpone → Fold whipped cream → 2s dip biscuits (THE SATURATION LAW) → Layer → Set 12h"
+          ],
+          yield: "20 Portions",
+          timeLaw: "12h Set | 2s Dip per unit | 48h Shelf life",
+          passSignals: ["Stable vertical cream layers", "Matte cocoa finish", "Clean 90° edge on slice"],
+          rejectSignals: ["Liquid seepage from base", "Soggy sponge collapse", "Grainy cream texture"],
+          failureLaw: "THE SATURATION LAW breach; >2s dip allows excess coffee to rupture the protein-fat matrix of the mascarpone.",
+          recoveryProtocol: "If soggy: REJECT. If grainy: check mascarpone temp during fold.",
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "EMULSION INSTABILITY"],
+          memoryTag: "Sponge saturation level"
+        },
         rootLayer: "Coffee-saturated sponge in whipped fat matrix.",
         controlLaw: "THE SATURATION LAW — 2 second dip max per biscuit to prevent base collapse.",
         ingredients: [
@@ -3223,8 +4810,25 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "DESSERT-004",
         name: "Flourless Chocolate Cake",
-        engine: "DESSERT",
+        engine: "AETHER",
         section: "COLD",
+        forgev3: {
+          wmm: [
+            "70% Dark chocolate: 600g",
+            "Unsalted butter: 400g",
+            "Large eggs: 10 units",
+            "Caster sugar: 300g",
+            "Method: Melt choc/butter over water bath → Whisk eggs/sugar (No foam) → Combine → Bake in bain-marie 150°C (THE WOBBLE LAW) → Chill 6h"
+          ],
+          yield: "12 Portions",
+          timeLaw: "30 min Bake | 6h Set | 3 day shelf life",
+          passSignals: ["Cracked top surface crust", "Fudgy dense center (non-cakey)", "Clean cold wedge release"],
+          rejectSignals: ["Cakey/Dry appearance", "Grainy mouthfeel", "Broken/Crumbled wedge"],
+          failureLaw: "THE WOBBLE LAW breach; over-baking past the 'center jiggle' point causes protein coagulation to squeeze out fat, leading to dry/grainy texture.",
+          recoveryProtocol: "If dry: Serve with extra Crème Fraîche. If split: REJECT.",
+          jemmaMapping: ["LIPID EXTRUSION", "OVER-COAGULATION"],
+          memoryTag: "Oven exit jiggle physics"
+        },
         rootLayer: "High-density 70% cocoa fat system.",
         controlLaw: "THE WOBBLE LAW — Remove from oven with slight center jiggle to ensure fudge set.",
         ingredients: [
@@ -3256,8 +4860,26 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "DESSERT-005",
         name: "Vanilla Bean Panna Cotta",
-        engine: "DESSERT",
+        engine: "AETHER",
         section: "COLD",
+        forgev3: {
+          wmm: [
+            "Double cream: 1L",
+            "Whole milk: 500ml",
+            "Sugar: 150g",
+            "Vanilla pods: 2 units",
+            "Gelatin leaves: 6 (gold grade)",
+            "Method: Bloom gelatin → Heat dairy to 60°C (THE JIGGLE LAW) → Dissolve gelatin → Strain → Set 6h"
+          ],
+          yield: "15 Portions",
+          timeLaw: "6h Set | Bloom at 60°C maximum",
+          passSignals: ["Audible wobble on plate", "Uniform vanilla speckle suspension", "Velvet-smooth surface"],
+          rejectSignals: ["Rubbery/Hard set", "Liquid core (set failure)", "Vanilla clumped at bottom"],
+          failureLaw: "THE JIGGLE LAW breach; boiling gelatin destroys its triple-helix structure, preventing the formation of a stable mesh network.",
+          recoveryProtocol: "If liquid: Re-melt to 60°C and add 1 extra gelatin leaf. If rubbery: REJECT.",
+          jemmaMapping: ["STRUCTURAL SET FAILURE", "VANILLA SEDIMENTATION"],
+          memoryTag: "Gelatin thermal limit"
+        },
         rootLayer: "Thermosetting dairy suspension.",
         controlLaw: "THE JIGGLE LAW — Gelatin must be bloom-dissolved at 60°C (not boiling).",
         ingredients: [
@@ -3290,8 +4912,24 @@ export const ENGINES: Record<string, Engine> = {
       {
         id: "DESSERT-006",
         name: "Apple & Sultana Crumble",
-        engine: "DESSERT",
+        engine: "AETHER",
         section: "HOT",
+        forgev3: {
+          wmm: [
+            "Bramley apples: 3kg",
+            "Sultanas: 200g",
+            "Crumble Mix: 1 batch",
+            "Method: Stew fruit → Bake crumble separately (THE SEPARATION LAW) → Assemble and reheat to order"
+          ],
+          yield: "20 Portions",
+          timeLaw: "20 min Crumble Bake | Reheat fruit to 65°C | Hold separately",
+          passSignals: ["Visible steam from center", "Audible crumble crunch", "Fruit holds structural shape"],
+          rejectSignals: ["Soggy/Soft topping", "Mushy fruit puree", "Cold base center"],
+          failureLaw: "THE SEPARATION LAW breach; storing crumble on wet fruit causes moisture migration into the starch matrix (sogginess).",
+          recoveryProtocol: "If soggy: Remove topping and replace with fresh baked crumble.",
+          jemmaMapping: ["MOISTURE MIGRATION", "STRUCTURAL COLLAPSE (TOPPING)"],
+          memoryTag: "Assembly-at-point-of-fire"
+        },
         rootLayer: "Acid-balanced fruit base with dry-rub starch cap.",
         controlLaw: "THE SEPARATION LAW — Fruit and crumble must be stored separately until reheat to maintain crispness.",
         ingredients: [

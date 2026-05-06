@@ -182,6 +182,22 @@ export default function App() {
           backgroundColor: "#ffffff",
           logging: true,
           windowWidth: 1200, // Fixed width for consistent rendering
+          onclone: (clonedDoc) => {
+            // CRITICAL: Strip oklch from all styles in the cloned document
+            const styleTags = clonedDoc.querySelectorAll('style');
+            styleTags.forEach(tag => {
+              if (tag.innerHTML.includes('oklch')) {
+                tag.innerHTML = tag.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
+              }
+            });
+            const allElements = clonedDoc.querySelectorAll('*');
+            allElements.forEach(el => {
+              const htmlEl = el as HTMLElement;
+              if (htmlEl.style && htmlEl.style.cssText.includes('oklch')) {
+                htmlEl.style.cssText = htmlEl.style.cssText.replace(/oklch\([^)]+\)/g, '#000000');
+              }
+            });
+          }
         });
 
         const imgData = canvas.toDataURL("image/png");
@@ -312,7 +328,7 @@ export default function App() {
   };
 
   const renderExecutionCardLayer = (card: any) => {
-    if (!card) return null;
+    if (!card || typeof card !== "object") return null;
     return (
       <div className="bg-panel-alt border-2 border-orange-500/50 p-6 mt-6 rounded-lg shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">

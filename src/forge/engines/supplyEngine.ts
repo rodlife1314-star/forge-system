@@ -18,19 +18,23 @@ export const formatQuantity = (quantity: number, unit: string): string => {
 export const generateIceCreamSupply = (recipes: any[]): Record<string, { quantity: number; unit: string }> => {
   const stock: Record<string, { quantity: number; unit: string }> = {};
 
-  const add = (name: string, qty: number | string, unit: string) => {
+  const add = (rawName: string, qty: number | string, unit: string) => {
     // Clean up name for aggregation
-    const cleanName = name.trim().toUpperCase();
+    const name = String(rawName || "").trim();
+    if (!name) return;
+    const cleanName = name.toUpperCase();
     let numQty = typeof qty === "string" ? parseFloat(qty) : qty;
     let targetUnit = unit || "g";
 
     if (isNaN(numQty)) return;
 
     // Handle unit normalization during aggregation
-    if (targetUnit === "kg") {
+    const normalizedUnit = targetUnit ? targetUnit.toLowerCase() : "g";
+
+    if (normalizedUnit === "kg") {
       numQty *= 1000;
       targetUnit = "g";
-    } else if (targetUnit === "L") {
+    } else if (normalizedUnit === "l") {
       numQty *= 1000;
       targetUnit = "ml";
     }
@@ -45,7 +49,27 @@ export const generateIceCreamSupply = (recipes: any[]): Record<string, { quantit
     // Standard ingredients array
     if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
       recipe.ingredients.forEach((i: any) => {
-        add(i.name, i.twenty, i.unit);
+        if (typeof i === "string") {
+          // Regex for: "100g Ingredient" or "100 ml Ingredient"
+          const matchA = i.match(/^([\d.]+)\s*(g|kg|ml|l|L|units?|pods?|slices?|pcs?|g)?\s+(.+)$/i);
+          // Regex for: "Ingredient - 100g" or "Ingredient — 100ml"
+          const matchB = i.split(/[—–-]/);
+
+          if (matchA) {
+            add(matchA[3], matchA[1], matchA[2]);
+          } else if (matchB.length > 1) {
+            const name = matchB[0].trim();
+            const qtyPart = matchB[1].trim();
+            const qtyMatch = qtyPart.match(/^([\d.]+)\s*(g|kg|ml|l|L|units?|pods?|slices?|pcs?|g)?$/i);
+            if (qtyMatch) {
+              add(name, qtyMatch[1], qtyMatch[2]);
+            } else {
+              add(name, 0, ""); // Fallback if no qty found but name exists
+            }
+          }
+        } else {
+          add(i.name, i.twenty, i.unit);
+        }
       });
     }
 

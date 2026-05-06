@@ -46,7 +46,7 @@ export function runJemmaValidation(item: any): JemmaValidationResult {
   }
   
   if (item.status !== "ACTIVE") warnings.push("Item is not marked ACTIVE.");
-  if (item.executionCard !== true) warnings.push("executionCard is not true.");
+  if (!item.executionCard) warnings.push("executionCard is missing or false.");
 
   let verdict: JemmaVerdict = "PASS";
   if (missingFields.length > 0) {

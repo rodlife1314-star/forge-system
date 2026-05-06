@@ -119,6 +119,22 @@ export const exportToPDF = async (elementIdOrFilename: string, optionalFilename?
           logging: false,
           backgroundColor: "#ffffff",
           windowWidth: 794,
+          onclone: (clonedDoc) => {
+            // CRITICAL: Strip oklch from all styles in the cloned document
+            const styleTags = clonedDoc.querySelectorAll('style');
+            styleTags.forEach(tag => {
+              if (tag.innerHTML.includes('oklch')) {
+                tag.innerHTML = tag.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
+              }
+            });
+            const allElements = clonedDoc.querySelectorAll('*');
+            allElements.forEach(el => {
+              const htmlEl = el as HTMLElement;
+              if (htmlEl.style && htmlEl.style.cssText.includes('oklch')) {
+                htmlEl.style.cssText = htmlEl.style.cssText.replace(/oklch\([^)]+\)/g, '#000000');
+              }
+            });
+          }
         });
 
         if (!canvas.width || !canvas.height) {
@@ -138,6 +154,22 @@ export const exportToPDF = async (elementIdOrFilename: string, optionalFilename?
         allowTaint: true,
         logging: false,
         backgroundColor: "#ffffff",
+        onclone: (clonedDoc) => {
+          // CRITICAL: Strip oklch from all styles in the cloned document
+          const styleTags = clonedDoc.querySelectorAll('style');
+          styleTags.forEach(tag => {
+            if (tag.innerHTML.includes('oklch')) {
+              tag.innerHTML = tag.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
+            }
+          });
+          const allElements = clonedDoc.querySelectorAll('*');
+          allElements.forEach(el => {
+            const htmlEl = el as HTMLElement;
+            if (htmlEl.style && htmlEl.style.cssText.includes('oklch')) {
+              htmlEl.style.cssText = htmlEl.style.cssText.replace(/oklch\([^)]+\)/g, '#000000');
+            }
+          });
+        }
       });
 
       if (!canvas.width || !canvas.height || isNaN(canvas.width) || isNaN(canvas.height)) {
