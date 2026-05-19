@@ -144,7 +144,7 @@ export const ValidationStatusLayer: React.FC<ValidationStatusLayerProps> = ({ it
             <div className="text-[12px] font-bold text-amber-500 tracking-widest uppercase">State of Transition</div>
           </div>
           <div className="text-[13px] text-text-soft leading-relaxed">
-            Items marked 🟡 MONITOR are in a state of transition (drift). Re-validation required at <strong>preService</strong> checkpoint for flow stabilization.
+            Items marked 🟡 MONITOR are in a state of transition (governance phase). Re-validation required at <strong>preService</strong> checkpoint for flow stabilization.
           </div>
         </div>
 

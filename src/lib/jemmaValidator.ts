@@ -87,13 +87,13 @@ export function renderJemmaResult(result: JemmaValidationResult): string {
 
   if (result.verdict === "PASS") {
     lines.push("✓ SYSTEM DOCTRINE CONFIRMED");
-    lines.push("✓ NO DRIFT DETECTED");
+    lines.push("✓ STABILITY CONFIRMED");
   } else if (result.verdict === "CONDITIONAL") {
     lines.push("◈ SYSTEM DOCTRINE PARTIALLY CONFIRMED");
-    lines.push("◈ MINOR DRIFT / WATCH POINTS DETECTED");
+    lines.push("◈ TRANSITION STATE / WATCH POINTS DETECTED");
   } else {
     lines.push("REJECTED — MAJOR DOCTRINE FAILURE");
-    lines.push("ENGINE STATUS: LOCKED");
+    lines.push("ENGINE STATUS: TRANSITIONING");
   }
 
   if (result.autoReject) {

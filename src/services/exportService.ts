@@ -35,7 +35,7 @@ export const exportJemmaPDF = (title: string, content: string) => {
   // Metadata
   doc.setFontSize(8);
   doc.setFont("Helvetica", "normal");
-  doc.text(`EXPORTED: ${new Date().toLocaleString()} | FORGE ZERO-DRIFT EXPORT`, margin, cursorY);
+  doc.text(`EXPORTED: ${new Date().toLocaleString()} | FORGE STABILITY EXPORT`, margin, cursorY);
   cursorY += 5;
   doc.setLineWidth(0.5);
   doc.line(margin, cursorY, pdfWidth - margin, cursorY);

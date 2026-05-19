@@ -1641,7 +1641,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Overproof stickiness", "Sour/Vinegar aroma", "Dense center (underproof)"],
           failureLaw: "THE TEMPERATURE LAW breach; deviation from 23°C FDT results in uncontrolled enzyme activity—either thermal death or stagnant dormancy.",
           recoveryProtocol: "If cold: Temper at 25°C. If hot: REJECT.",
-          jemmaMapping: ["THERMAL GRADIENT DRIFT", "YEAST METABOLIC COLLAPSE"],
+          jemmaMapping: ["THERMAL GRADIENT TRANSITION", "YEAST METABOLIC COLLAPSE"],
           memoryTag: "FDT 23.0 stability"
         },
         rootLayer: "48h cold-ferment high-hydration (65%) system.",
@@ -1787,7 +1787,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Grey/Muddied color", "Chipotle chunks (unblended)", "Flat acid profile"],
           failureLaw: "THE SMOKE LAW breach; failure to pre-blend chipotle in adobo creates hot-spots and prevents uniform integration into the fat matrix.",
           recoveryProtocol: "If chunky: Strain and re-blend. If flat: Increase lime 10%.",
-          jemmaMapping: ["PARTICULATE DRIFT", "ACID SUPPRESSION"],
+          jemmaMapping: ["PARTICULATE TRANSITION", "ACID SUPPRESSION"],
           memoryTag: "Smokey heat-depth"
         },
         rootLayer: "High-heat smoke-acid emulsion.",
@@ -2250,7 +2250,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Oil slick (split emulsion)", "Grainy/Lumpy marrow particles", "Salt-dominant flat profile"],
           failureLaw: "THE GLOSS LAW breach; failure to achieve specific gravity (syrup phase) before marrow enrichment leads to lipid incompatibility and split.",
           recoveryProtocol: "If split: High-RPM blend for 30s off-heat. If too thin: Further reduction.",
-          jemmaMapping: ["LIPID REJECTION", "REDUCTION DRIFT"],
+          jemmaMapping: ["LIPID REJECTION", "REDUCTION TRANSITION"],
           memoryTag: "Maillard-fat mirror"
         },
         rootLayer: "Fat-fortified reduction system.",
@@ -2297,7 +2297,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Bitter/Chlorophyll skin notes", "Watery/loose consistency", "Burnt sugar acrid scent"],
           failureLaw: "THE HEAT LAW breach; failure to sufficiently reduce the juice volume results in an imbalance where capsaicin overwhelms the fructose structure.",
           recoveryProtocol: "If thin: Simmer on low heat with 10g honey. If too hot: Dilute with 10% pineapple juice.",
-          jemmaMapping: ["CAPSAICIN OVER-DOMINANCE", "REDUCTION DRIFT"],
+          jemmaMapping: ["CAPSAICIN OVER-DOMINANCE", "REDUCTION TRANSITION"],
           memoryTag: "Sugar-heat equilibrium"
         },
         rootLayer: "Sugar-capsaicin-enzyme matrix.",
@@ -2391,7 +2391,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Grainy texture (under-temp)", "Visible fat separation", "Burnt sugar smell"],
           failureLaw: "Failure to reach 104°C prevents full sugar-fat integration. Over 106°C leads to bitter caramelization.",
           recoveryProtocol: "If grainy: Reheat to 104°C and add 5% warm cream. If burnt: REJECT.",
-          jemmaMapping: ["THERMAL DRIFT", "EMULSION FAILURE"],
+          jemmaMapping: ["THERMAL TRANSITION", "EMULSION FAILURE"],
           memoryTag: "Crystallization point / Thermal accuracy"
         },
         rootLayer: "Butter-sugar-emulsion matrix.",
@@ -2458,7 +2458,7 @@ export const ENGINES: Record<string, Engine> = {
         ],
         holding: "5 days dry / 2 days baked",
         service: "100g scoop per portion; audible crunch finish",
-        timeLaw: "18–25 min Bake (Zero Drift)",
+        timeLaw: "18–25 min Bake (Stabilized)",
         validationPoints: {
           postPrep: "Texture: Rubble / irregular; No dust; Temp: ≤8°C",
           preService: "No moisture clumping; No butter bleed",
@@ -2571,7 +2571,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Oil-slicked surface", "Faded smoky aroma", "Separation"],
           failureLaw: "RATIO LOCK breach; aggressive folding causes emulsion collapse.",
           recoveryProtocol: "If split: whisk in 10% fresh mayo base.",
-          jemmaMapping: ["EMULSION DRIFT"],
+          jemmaMapping: ["EMULSION TRANSITION"],
           memoryTag: "Smoky aroma intensity"
         },
         rootLayer: "Capsaicin-lipid emulsion system.",
@@ -2620,7 +2620,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Visible oil bleed", "Streaks of sriracha", "Uneven mixing"],
           failureLaw: "COLOR LOCK breach; improper distribution of capsaicin-oil suspension.",
           recoveryProtocol: "Re-whisk until perfectly uniform color achieved.",
-          jemmaMapping: ["COLOR DRIFT"],
+          jemmaMapping: ["COLOR TRANSITION"],
           memoryTag: "Heat uniformity"
         },
         rootLayer: "Chilli-oil fat suspension.",
@@ -2670,7 +2670,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Grey tint (oxidation)", "Visible oil droplets", "Bitter zest"],
           failureLaw: "SEQUENCE LAW breach; adding un-mashed garlic causes structural pockets and fat-bleed.",
           recoveryProtocol: "If grainy: pass through fine sieve. If grey: REJECT (oxidation).",
-          jemmaMapping: ["OXIDATION EVENT", "STRUCTURAL DRIFT"],
+          jemmaMapping: ["OXIDATION EVENT", "STRUCTURAL TRANSITION"],
           memoryTag: "Garlic roast depth"
         },
         rootLayer: "Aromatic fat-suspension emulsion.",
@@ -2790,7 +2790,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Cloudy/greasy appearance", "Bitter or burnt notes", "Watery consistency at 4°C"],
           failureLaw: "Temperature >94°C (boiling) causes fat emulsification and permanent clouding.",
           recoveryProtocol: "If watery: further reduce. If cloudy: attempt secondary clarification. If bitter: REJECT.",
-          jemmaMapping: ["REDUCTION DRIFT", "EXTRACTION FAILURE (OVER-TEMP)"],
+          jemmaMapping: ["REDUCTION TRANSITION", "EXTRACTION FAILURE (OVER-TEMP)"],
           memoryTag: "Gelatin density / Bitterness threshold"
         },
         rootLayer: "Collagen extraction + Maillard concentration system.",
@@ -2853,7 +2853,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Skin formation", "Visible fat split (greasy)", "Floury/Raw starch aftertaste"],
           failureLaw: "Under-cooking roux or failing to whisk during incorporation leads to starch clumping.",
           recoveryProtocol: "If lumpy: pass through fine sieve. If greasy: blend at high RPM.",
-          jemmaMapping: ["STARCH CLUMPING", "REDUCTION DRIFT"],
+          jemmaMapping: ["STARCH CLUMPING", "REDUCTION TRANSITION"],
           memoryTag: "Gloss stability / Salt concentration"
         },
         rootLayer: "Starch-thickened reduction liquid system.",
@@ -2974,7 +2974,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Visible oil bleed", "Peppercorns puddled at base", "Split fat"],
           failureLaw: "NAPPE LAW breach; attempting fat enrichment before structural reduction.",
           recoveryProtocol: "If split: whisk in cold cream hit off-heat.",
-          jemmaMapping: ["EMULSION FAILURE", "REDUCTION DRIFT"],
+          jemmaMapping: ["EMULSION FAILURE", "REDUCTION TRANSITION"],
           memoryTag: "Peppercorn suspension stability"
         },
         rootLayer: "Fat-Starch reduction emulsion system.",
@@ -3211,7 +3211,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Oily surface bleed", "Grey tint (oxidation)", "Sugar dominance"],
           failureLaw: "ACID BALANCE LAW breach; failure to offset ketchup carbohydrates with adequate citric acid.",
           recoveryProtocol: "Adjust with 10ml lemon juice increments until balanced.",
-          jemmaMapping: ["PH DRIFT", "EMULSION INSTABILITY"],
+          jemmaMapping: ["PH TRANSITION", "EMULSION INSTABILITY"],
           memoryTag: "Acid-sugar ratio"
         },
         rootLayer: "High-acid stable cold emulsion system.",
@@ -3617,7 +3617,7 @@ export const ENGINES: Record<string, Engine> = {
         ]
       },
       {
-        name: "PREP ENGINE v2.5.2 — FAT / MARROW FLOW LAYER (LOCKED)",
+        name: "PREP ENGINE v2.5.2 — FAT / MARROW FLOW LAYER (RELEASED)",
         subtitle: "Marrow Transformation & Fat Lifecycle Control",
         sections: [
           {
@@ -3789,7 +3789,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Grey band >5mm from edge", "Blood pooling on plate (rest failure)", "Ragged texture"],
           failureLaw: "THE CORE TECH LAW breach; skipping the 30m carry-over rest results in fibre tension and juice loss.",
           recoveryProtocol: "If cold: Flash slices for 15s in hot reduction. If grey: Slice ultra-thin (1mm) for texture.",
-          jemmaMapping: ["CARRY-OVER DRIFT", "MAILLARD STALL"],
+          jemmaMapping: ["CARRY-OVER TRANSITION", "MAILLARD STALL"],
           memoryTag: "Resting temperature peak"
         },
         rootLayer: "Large muscle dry-roasting system (Sirloin/Topside).",
@@ -4282,7 +4282,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Limp/Flabby texture", "Dull grey tint", "Butter pooling at base"],
           failureLaw: "THE SNAP LAW breach; failure to ice-shock allows carry-over cooking to destroy structural hemicellulose.",
           recoveryProtocol: "If limp: REJECT. Component is structurally dead.",
-          jemmaMapping: ["STRUCTURAL COLLAPSE", "CHLOROPHYLL DRIFT"],
+          jemmaMapping: ["STRUCTURAL COLLAPSE", "CHLOROPHYLL TRANSITION"],
           memoryTag: "Ice-shock efficiency"
         },
         rootLayer: "Architectural snap preservation system.",
@@ -4403,7 +4403,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Dull grey color", "Strong sulphuric aroma", "Mushy/Watery texture"],
           failureLaw: "SULPHUR BLOCK LAW breach; over-cooking or failure to ice-shock triggers anaerobic sulphur development and bitterness.",
           recoveryProtocol: "If grey: REJECT. If watery: Drain on cloth and re-sauté with fresh butter.",
-          jemmaMapping: ["SULPHUR EVENT", "CHLOROPHYLL DRIFT"],
+          jemmaMapping: ["SULPHUR EVENT", "CHLOROPHYLL TRANSITION"],
           memoryTag: "Blanch timing precision"
         },
         rootLayer: "Emerald-leaf texture assembly.",
@@ -4466,7 +4466,7 @@ export const ENGINES: Record<string, Engine> = {
           rejectSignals: ["Blue-grey oxidation tint", "Watery liquor pooling", "Tough/Stringy ribs"],
           failureLaw: "ANTHOCYANIN LOCK breach; delay in acid addition (vinegar) allows alkaline shift and permanent blue-grey oxidation.",
           recoveryProtocol: "If blue: Add 50ml cider vinegar and reduce further. If watery: Continue reduction to syrup.",
-          jemmaMapping: ["PH DRIFT (ALKALINE SHIFT)", "REDUCTION FAILURE"],
+          jemmaMapping: ["PH TRANSITION (ALKALINE SHIFT)", "REDUCTION FAILURE"],
           memoryTag: "Initial acid timing / Viscosity target"
         },
         rootLayer: "Anthocyanin-protected slow-reduction system.",
@@ -4596,7 +4596,7 @@ export const ENGINES: Record<string, Engine> = {
       },
       {
         name: "SUNDAY ENGINE — FAILURE LAYER",
-        subtitle: "System Layer: Rejection / Standards / No Drift",
+        subtitle: "System Layer: Rejection / Standards / Stability",
         sections: [
           {
             title: "HARD REJECT CONDITIONS (AUTO FAIL)",

@@ -765,7 +765,7 @@ export default function App() {
         </div>
 
         <div className="pt-10 border-t border-border-ui text-[10px] text-text-mute tracking-widest text-center italic opacity-50">
-          Fellini / FORGE — Sunday Engine Control Layer | Zero Drift Execution
+          Fellini / FORGE — Sunday Engine Control Layer | Stability Execution
         </div>
       </div>
     );
@@ -1375,7 +1375,7 @@ export default function App() {
                 <div className="text-[11px] leading-loose tracking-widest">
                   <div>░ JEMMA READY</div>
                   <div>░ SELECT SPEC → ENFORCE DOCTRINE</div>
-                  <div>░ NO DRIFT TOLERATED</div>
+                  <div>░ STABILITY MANDATORY</div>
                 </div>
                 <div className="text-[9px] leading-none text-text-mute break-all">
                   {Array(20).fill("01010101010101010101010101010101").join(" ")}
@@ -1395,7 +1395,7 @@ export default function App() {
                   "ENFORCING CONTROL LAW",
                   "MAPPING AUTO REJECTS", 
                   "VERIFYING PASS CRITERIA", 
-                  "SCANNING FOR DRIFT",
+                  "MONITORING TRANSITION",
                   "RENDERING FINAL VERDICT"
                 ].map((s, i) => (
                   <motion.div 
@@ -1431,7 +1431,7 @@ export default function App() {
               <ShieldCheck size={10} />
               FORGE UNIFIED ZERO POINT ENGINE · V2.6
             </span>
-            <span className="text-orange-500/20 uppercase font-black tracking-[0.4em]">NO DRIFT</span>
+            <span className="text-orange-500/20 uppercase font-black tracking-[0.4em]">STABILITY</span>
           </footer>
         </section>
       </main>
