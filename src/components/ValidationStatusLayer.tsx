@@ -141,10 +141,10 @@ export const ValidationStatusLayer: React.FC<ValidationStatusLayerProps> = ({ it
             <div className="p-2 bg-amber-500/10 rounded">
               <Activity className="text-amber-500" size={20} />
             </div>
-            <div className="text-[12px] font-bold text-amber-500 tracking-widest uppercase">Operational Drift</div>
+            <div className="text-[12px] font-bold text-amber-500 tracking-widest uppercase">State of Transition</div>
           </div>
           <div className="text-[13px] text-text-soft leading-relaxed">
-            Items marked 🟡 MONITOR exhibit signs of drift. Re-validation required at <strong>preService</strong> checkpoint.
+            Items marked 🟡 MONITOR are in a state of transition (drift). Re-validation required at <strong>preService</strong> checkpoint for flow stabilization.
           </div>
         </div>
 

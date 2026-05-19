@@ -9,7 +9,7 @@ const doctrinePatch = (item: any) => {
     status: String(item.status || "ACTIVE").trim(),
     executionCard: item.executionCard ?? true,
     rootLayer: String(item.rootLayer || "Root layer pending final chef validation.").trim(),
-    controlLaw: String(item.controlLaw || "No drift: execute only to locked spec.").trim(),
+    controlLaw: String(item.controlLaw || "State of Transition: Monitor for flow.").trim(),
     timeLaw: String(item.timeLaw || "Time law pending final chef validation.").trim(),
     validationPoints: item.validationPoints ?? {
       postPrep: "Post-prep validation pending.",
@@ -64,7 +64,7 @@ export const ENGINES: Record<string, Engine> = {
           {
             title: "2. 20 UNIT LAW — PRODUCTION DEPTH",
             content: [
-              "• Batch prep is strictly locked at 20 portions.",
+              "• Batch prep is strictly stabilized at 20 portions.",
               "• No estimation. Repeatable batch cycles only.",
               "• 20 / 40 / 60 cover scaling for full governance."
             ]
@@ -118,9 +118,9 @@ export const ENGINES: Record<string, Engine> = {
           timeLaw: "23°C FDT | 44h Cold Set | 4h Temper before use",
           passSignals: ["Abundant internal aeration (leopard skin bubble)", "Elastic snap-back recovery", "Neutral/clean dough scent"],
           rejectSignals: ["Overproof stickiness (collapse)", "Sour lactic/acetic smell", "Dense/dead rim (underproof)"],
-          failureLaw: "THE FERMENTATION LAW breach; deviation from 23°C FDT causes yeast metabolic drift—either excessive CO2 production (tearing) or dormancy (leathery crumb).",
+          failureLaw: "THE FERMENTATION LAW breach; deviation from 23°C FDT causes yeast metabolic transition—either excessive CO2 production (tearing) or dormancy (leathery crumb).",
           recoveryProtocol: "If underproof: Temper at 25°C for 60 mins. If overproof: REJECT.",
-          jemmaMapping: ["YEAST DRIFT", "STARCH GELATINIZATION FAILURE"],
+          jemmaMapping: ["METABOLIC TRANSITION", "STARCH GELATINIZATION FAILURE"],
           memoryTag: "FDT 23.0 Precision"
         },
         rootLayer: "48h fermentation system (65% hydration).",
@@ -741,7 +741,7 @@ export const ENGINES: Record<string, Engine> = {
         name: "THE SYNCHRONISATION LAW",
         subtitle: "PATTY SYNCHRONISATION",
         sections: [
-          { title: "THE LAW", content: ["Both patties must finish simultaneously.", "No drift: execute only to locked spec."] },
+          { title: "THE LAW", content: ["Both patties must finish simultaneously.", "State of Transition: Monitor for flow."] },
           { title: "DRIVE", content: ["Speed-of-service double patty system.", "Compact stack, tight build."] }
         ]
       },
@@ -2439,7 +2439,7 @@ export const ENGINES: Record<string, Engine> = {
           failureLaw: "Friction heat during rubbing causes fat melt → leads to starch saturation and loss of cluster identity.",
           recoveryProtocol: "If fat melts: REJECT. Component is structurally compromised.",
           jemmaMapping: ["STRUCTURAL COLLAPSE", "THERMAL MELT (ENCAPSULATION BREACH)"],
-          memoryTag: "Cluster size drift / Moisture bleed"
+          memoryTag: "Cluster size transition / Moisture bleed"
         },
         rootLayer: "Shortening / Contrast System (Dry-rub starch-fat).",
         controlLaw: "FAT ENCAPSULATION LAW — Fat must encapsulate flour particles without melting to inhibit gluten formation and preserve discrete clusters.",
@@ -3659,11 +3659,11 @@ export const ENGINES: Record<string, Engine> = {
               "PASS: Pale-gold, aerated, homogeneous. Clean 10 g disc release. Even herb suspension. Stable melt (no pooling).",
               "INTEGRATION: Grill/Mains (10g finish on rest) / Burger (melt disc post-cook) / Sauce (off-heat enrichment) / Bread (controlled upsell on Day 3)."
             ],
-            quote: "Zero waste loop. Higher perceived value. Consistent flavour. No drift under pressure."
+            quote: "Zero waste loop. Higher perceived value. Consistent flavour. Stable under pressure."
           },
           {
             title: "RESULT",
-            content: "Zero waste loop. Higher perceived value without menu change. Consistent flavour layer across engines. No drift under pressure."
+            content: "Zero waste loop. Higher perceived value without menu change. Consistent flavour layer across engines. Stable under pressure."
           }
         ]
       },
@@ -3676,11 +3676,11 @@ export const ENGINES: Record<string, Engine> = {
             content: [
               "1. TEMPERATURE SHOCK LAW: Any rapid mismatch between component temperatures risks split, grain, collapse, or set failure.",
               "2. OVERWORK LAW: Excess whipping, folding, or agitation damages structure and destabilizes fat systems.",
-              "3. SEQUENCE LAW: Soft systems must be built in the correct order; premature combination or incorrect staging creates irreversible drift.",
+              "3. SEQUENCE LAW: Soft systems must be built in the correct order; premature combination or incorrect staging creates irreversible transition.",
               "4. REST LAW: Creams, gels, and baked structural components require a defined rest/set window before service release.",
-              "5. NO DRIFT LAW: Any bleed, grain, collapse, rubber set, grease leak, or structural inconsistency is an auto-reject."
+              "5. STABILITY LAW: Any bleed, grain, collapse, rubber set, grease leak, or structural inconsistency is an auto-reject."
             ],
-            quote: "DESSERT CHECK — NO DRIFT: Cream = smooth + stable | Set = correct tension | Crumble = crisp + dry | No bleed / no grain / no collapse"
+            quote: "DESSERT CHECK — STABILITY: Cream = smooth + stable | Set = correct tension | Crumble = crisp + dry | No bleed / no grain / no collapse"
           },
           {
             title: "GLOBAL FAIL SIGNALS",
@@ -4479,7 +4479,7 @@ export const ENGINES: Record<string, Engine> = {
           "Mulled spices (clove/cinnamon)"
         ],
         method: [
-          "PH CONTROL: Add vinegar immediately to locked red hue",
+          "PH CONTROL: Add vinegar immediately to stabilize red hue",
           "Slow braise until cabbage is melt-in-mouth tender",
           "Reduce liquor to syrup for correct glaze viscosity",
           "Balance sugar/acid regularly during braise"
@@ -4971,11 +4971,11 @@ export const ENGINES: Record<string, Engine> = {
             content: [
               "1. TEMPERATURE SHOCK LAW: Any rapid mismatch between component temperatures risks split, grain, collapse, or set failure.",
               "2. OVERWORK LAW: Excess whipping, folding, or agitation damages structure and destabilizes fat systems.",
-              "3. SEQUENCE LAW: Soft systems must be built in the correct order; premature combination or incorrect staging creates irreversible drift.",
+              "3. SEQUENCE LAW: Soft systems must be built in the correct order; premature combination or incorrect staging creates irreversible transition.",
               "4. REST LAW: Creams, gels, and baked structural components require a defined rest/set window before service release.",
-              "5. NO DRIFT LAW: Any bleed, grain, collapse, rubber set, grease leak, or structural inconsistency is an auto-reject."
+              "5. STABILITY LAW: Any bleed, grain, collapse, rubber set, grease leak, or structural inconsistency is an auto-reject."
             ],
-            quote: "DESSERT CHECK — NO DRIFT: Cream = smooth + stable | Set = correct tension | Crumble = crisp + dry"
+            quote: "DESSERT CHECK — STABILITY: Cream = smooth + stable | Set = correct tension | Crumble = crisp + dry"
           },
           {
             title: "GLOBAL FAIL SIGNALS (AUTO-REJECT)",
@@ -5007,7 +5007,7 @@ export const ENGINES: Record<string, Engine> = {
           },
           {
             title: "3. 20 SCALE PREP LAW",
-            content: "Production locked in 20 unit batches. Prep scale: 1-20 (1x), 21-40 (2x), 41-60 (3x)."
+            content: "Production stabilized in 20 unit batches. Prep scale: 1-20 (1x), 21-40 (2x), 41-60 (3x)."
           },
           {
             title: "3. FAILURE CONDITION",

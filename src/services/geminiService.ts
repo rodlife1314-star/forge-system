@@ -164,7 +164,7 @@ ROOT LAYER
 [Sharp definition of what must lead.]
 
 CONTROL LAW
-[What kills this spec? Temperature? Timing? Prep drift?]
+[What kills this spec? Temperature? Timing? Transition state?]
 
 VALIDATION POINTS
 [Audit the postPrep/preService/atPass checkpoints.]
@@ -178,7 +178,7 @@ REVENUE ENGINE
 TECHNICAL FAULTS
 [Any gaps in the spec? Missing allergens? Timing ambiguity?]
 
-VERDICT: [LOCKED / CONDITIONAL / REJECTED]`;
+VERDICT: [RELEASED / CONDITIONAL / REJECTED]`;
   }
 
   return {
@@ -205,7 +205,7 @@ ENGINE STATUS
 [One line per engine: Status / Count / Critical Risk.]
 
 DOCTRINE ALIGNMENT
-[Does the Larousse technical layer match the Forge execution layer? Any drift?]
+[Does the Larousse technical layer match the Forge execution layer? Any transition points?]
 
 PREP ENGINE COHERENCE
 [Linked components vs Orphans. Is the prep engine supporting the service engines?]
@@ -216,7 +216,7 @@ ALLERGEN EXPOSURE
 PRESSURE POINT ANALYSIS
 [What fails first under overload? Identify the bottleneck dish/station.]
 
-SYSTEM VERDICT: [LOCKED / CONDITIONAL / INCOMPLETE]
+SYSTEM VERDICT: [RELEASED / CONDITIONAL / INCOMPLETE]
 
 CHEF'S NOTE
 [2-3 sentences. Direct. Honest. No vague praise. What is the biggest operational risk right now?]`,

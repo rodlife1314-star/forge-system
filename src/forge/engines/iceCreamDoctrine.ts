@@ -156,5 +156,5 @@ export const iceCreamDoctrine = {
   ],
 
   finalLock:
-    "ICE CREAM ENGINE is structured, governed, scalable, and zero-drift compliant.",
+    "ICE CREAM ENGINE is structured, governed, and scalable; drift is managed as a state of transition.",
 } as const;

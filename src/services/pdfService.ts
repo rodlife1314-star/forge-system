@@ -13,7 +13,8 @@ const forceHexSafeStyles = (root: HTMLElement) => {
   style.innerHTML = `
     * {
       color: #000000 !important;
-      background-color: transparent !important;
+      background-color: #ffffff !important;
+      background-image: none !important;
       border-color: #000000 !important;
       fill: #000000 !important;
       stroke: #000000 !important;
@@ -27,6 +28,7 @@ const forceHexSafeStyles = (root: HTMLElement) => {
     .print-page, .pdf-page, .page {
       background: #ffffff !important;
       background-color: #ffffff !important;
+      background-image: none !important;
       color: #000000 !important;
       display: block !important;
       visibility: visible !important;
@@ -113,28 +115,39 @@ export const exportToPDF = async (elementIdOrFilename: string, optionalFilename?
         const page = pages[i] as HTMLElement;
         
         const canvas = await html2canvas(page, {
-          scale: 2,
+          scale: 3, // MICHELIN GRADE SCALE
           useCORS: true,
           allowTaint: true,
           logging: false,
           backgroundColor: "#ffffff",
           windowWidth: 794,
-          onclone: (clonedDoc) => {
-            // CRITICAL: Strip oklch from all styles in the cloned document
-            const styleTags = clonedDoc.querySelectorAll('style');
-            styleTags.forEach(tag => {
-              if (tag.innerHTML.includes('oklch')) {
-                tag.innerHTML = tag.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
-              }
-            });
-            const allElements = clonedDoc.querySelectorAll('*');
-            allElements.forEach(el => {
-              const htmlEl = el as HTMLElement;
-              if (htmlEl.style && htmlEl.style.cssText.includes('oklch')) {
-                htmlEl.style.cssText = htmlEl.style.cssText.replace(/oklch\([^)]+\)/g, '#000000');
-              }
-            });
-          }
+            onclone: (clonedDoc) => {
+              // CRITICAL: Strip oklch/oklab from ALL styles and attributes in the cloned document as they are unsupported by html2canvas
+              const styleTags = clonedDoc.querySelectorAll('style');
+              styleTags.forEach(tag => {
+                if (tag.textContent?.match(/oklch|oklab/i)) {
+                  tag.textContent = tag.textContent.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
+                }
+              });
+              
+              const allElements = clonedDoc.querySelectorAll('*');
+              allElements.forEach(el => {
+                const htmlEl = el as HTMLElement;
+                
+                // Check style attribute
+                if (htmlEl.style && htmlEl.style.cssText.match(/oklch|oklab/i)) {
+                  htmlEl.style.cssText = htmlEl.style.cssText.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
+                }
+
+                // Check common SVG color attributes
+                ['fill', 'stroke', 'stop-color', 'flood-color'].forEach(attr => {
+                  const val = el.getAttribute(attr);
+                  if (val && val.match(/oklch|oklab/i)) {
+                    el.setAttribute(attr, '#000000');
+                  }
+                });
+              });
+            }
         });
 
         if (!canvas.width || !canvas.height) {
@@ -149,25 +162,36 @@ export const exportToPDF = async (elementIdOrFilename: string, optionalFilename?
       }
     } else {
       const canvas = await html2canvas(clone, {
-        scale: 2,
+        scale: 3, // MICHELIN GRADE SCALE
         useCORS: true,
         allowTaint: true,
         logging: false,
         backgroundColor: "#ffffff",
         onclone: (clonedDoc) => {
-          // CRITICAL: Strip oklch from all styles in the cloned document
+          // CRITICAL: Strip oklch/oklab from ALL styles and attributes in the cloned document
           const styleTags = clonedDoc.querySelectorAll('style');
           styleTags.forEach(tag => {
-            if (tag.innerHTML.includes('oklch')) {
-              tag.innerHTML = tag.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
+            if (tag.textContent?.match(/oklch|oklab/i)) {
+              tag.textContent = tag.textContent.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
             }
           });
+          
           const allElements = clonedDoc.querySelectorAll('*');
           allElements.forEach(el => {
             const htmlEl = el as HTMLElement;
-            if (htmlEl.style && htmlEl.style.cssText.includes('oklch')) {
-              htmlEl.style.cssText = htmlEl.style.cssText.replace(/oklch\([^)]+\)/g, '#000000');
+            
+            // Check style attribute
+            if (htmlEl.style && htmlEl.style.cssText.match(/oklch|oklab/i)) {
+              htmlEl.style.cssText = htmlEl.style.cssText.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
             }
+
+            // Check common SVG color attributes
+            ['fill', 'stroke', 'stop-color', 'flood-color'].forEach(attr => {
+              const val = el.getAttribute(attr);
+              if (val && val.match(/oklch|oklab/i)) {
+                el.setAttribute(attr, '#000000');
+              }
+            });
           });
         }
       });

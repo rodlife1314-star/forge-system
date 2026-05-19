@@ -37,7 +37,7 @@ import { OperatorPrintCard, UnitSpecificationPrint, PrintPackDocument, FullSyste
 import { exportToPDF } from "./services/pdfService";
 import { ValidationStatusLayer } from "./components/ValidationStatusLayer";
 import { RenderSwitch } from './components/RenderSwitch';
-import { getEngineByKey } from './forge/forgeOutputRouter';
+import { getEngineByKey } from './forge/engines/forgeOutputRouter';
 import { SpecTable } from './components/SpecTable';
 import { generateIceCreamSupply, getSupplierFriendlyMapping, formatQuantity } from "./forge/engines/supplyEngine";
 import { calculateBatchCost, formatCostReport } from "./forge/engines/costEngine";
@@ -135,12 +135,12 @@ export default function App() {
         `CONDITIONAL: ${condCount}`,
         `FAIL: ${failCount}`,
         "━".repeat(40),
-        failCount === 0 ? "✓ SYSTEM INTEGRITY CONFIRMED" : "❌ SYSTEM DRIFT DETECTED",
-        "ENGINE STATUS: " + (failCount === 0 ? "PASSED" : "LOCKED")
+        failCount === 0 ? "✓ SYSTEM INTEGRITY CONFIRMED" : "🔄 SYSTEM TRANSITION ACTIVE",
+        "ENGINE STATUS: " + (failCount === 0 ? "RELEASED" : "TRANSITIONING")
       ].join("\n");
       
       setJemmaOutput(summary);
-      if (failCount > 0) setLocked(true);
+      if (failCount > 0) setLocked(true); // Keeping state for UI but changing meaning to 'transitioning'
     } catch (error) {
       setJemmaOutput("JEMMA FAULT — validation failed.");
     } finally {
@@ -167,55 +167,131 @@ export default function App() {
 
     // Wait for React to render the print components
     setTimeout(async () => {
-      const element = document.getElementById("print-area");
-      if (!element) {
-        console.error("PRINT AREA NOT FOUND");
+      const element = printRef.current;
+      const fallback = document.getElementById("print-area");
+      const targetElement = element || fallback;
+
+      if (!targetElement) {
+        console.error("PRINT AREA NOT FOUND via ref or fallback");
         setIsExportingPDF(false);
         return;
       }
 
       try {
         console.log("Starting PDF capture for mode:", mode);
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: "#ffffff",
-          logging: true,
-          windowWidth: 1200, // Fixed width for consistent rendering
-          onclone: (clonedDoc) => {
-            // CRITICAL: Strip oklch from all styles in the cloned document
-            const styleTags = clonedDoc.querySelectorAll('style');
-            styleTags.forEach(tag => {
-              if (tag.innerHTML.includes('oklch')) {
-                tag.innerHTML = tag.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
-              }
-            });
-            const allElements = clonedDoc.querySelectorAll('*');
-            allElements.forEach(el => {
-              const htmlEl = el as HTMLElement;
-              if (htmlEl.style && htmlEl.style.cssText.includes('oklch')) {
-                htmlEl.style.cssText = htmlEl.style.cssText.replace(/oklch\([^)]+\)/g, '#000000');
-              }
-            });
-          }
-        });
-
-        const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
-        const imgWidth = 210;
-        const pageHeight = 297; // Correct A4 height
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
+        const pageWidth = 210;
+        const pageHeight = 297;
 
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pageHeight;
+        // Find all printable pages
+        const pages = targetElement.querySelectorAll(".print-page, .page, [data-pdf-page]");
+        
+        if (pages.length > 0) {
+          for (let i = 0; i < pages.length; i++) {
+            const page = pages[i] as HTMLElement;
+            
+            const canvas = await html2canvas(page, {
+              scale: 3, // MICHELIN GRADE BOOST
+              useCORS: true,
+              backgroundColor: "#ffffff",
+              logging: false,
+              windowWidth: 1200,
+              onclone: (clonedDoc) => {
+                // CRITICAL: Strip oklch/oklab from ALL styles and attributes
+                const styleTags = clonedDoc.querySelectorAll('style');
+                styleTags.forEach(tag => {
+                  if (tag.textContent?.match(/oklch|oklab/i)) {
+                    tag.textContent = tag.textContent.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
+                  }
+                });
+                
+                const allElements = clonedDoc.querySelectorAll('*');
+                allElements.forEach(el => {
+                  const htmlEl = el as HTMLElement;
+                  
+                  // Check style attribute
+                  if (htmlEl.style && htmlEl.style.cssText.match(/oklch|oklab/i)) {
+                    htmlEl.style.cssText = htmlEl.style.cssText.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
+                  }
 
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
+                  // Check common SVG color attributes
+                  ['fill', 'stroke', 'stop-color', 'flood-color'].forEach(attr => {
+                    const val = el.getAttribute(attr);
+                    if (val && val.match(/oklch|oklab/i)) {
+                      el.setAttribute(attr, '#000000');
+                    }
+                  });
+                });
+
+                // Ensure fonts are fully loaded in clone
+                clonedDoc.fonts.ready.then(() => {
+                  console.log("Fonts loaded in clone");
+                });
+              }
+            });
+
+            if (!canvas.width || !canvas.height) continue;
+
+            const imgData = canvas.toDataURL("image/jpeg", 0.95);
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+          }
+        } else {
+          // Fallback for single container capture
+          const canvas = await html2canvas(targetElement, {
+            scale: 3, // MICHELIN GRADE BOOST
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            logging: false,
+            windowWidth: 1200,
+            onclone: (clonedDoc) => {
+              // CRITICAL: Strip oklch/oklab from ALL styles and attributes
+              const styleTags = clonedDoc.querySelectorAll('style');
+              styleTags.forEach(tag => {
+                if (tag.textContent?.match(/oklch|oklab/i)) {
+                  tag.textContent = tag.textContent.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
+                }
+              });
+              
+              const allElements = clonedDoc.querySelectorAll('*');
+              allElements.forEach(el => {
+                const htmlEl = el as HTMLElement;
+                
+                // Check style attribute
+                if (htmlEl.style && htmlEl.style.cssText.match(/oklch|oklab/i)) {
+                  htmlEl.style.cssText = htmlEl.style.cssText.replace(/(oklch|oklab)\([^)]+\)/gi, '#000000');
+                }
+
+                // Check common SVG color attributes
+                ['fill', 'stroke', 'stop-color', 'flood-color'].forEach(attr => {
+                  const val = el.getAttribute(attr);
+                  if (val && val.match(/oklch|oklab/i)) {
+                    el.setAttribute(attr, '#000000');
+                  }
+                });
+              });
+            }
+          });
+
+          if (!canvas.width || !canvas.height) {
+            throw new Error(`Invalid canvas dimensions: ${canvas.width}x${canvas.height}`);
+          }
+
+          const imgData = canvas.toDataURL("image/jpeg", 0.95);
+          const imgWidth = pageWidth;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
           heightLeft -= pageHeight;
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= pageHeight;
+          }
         }
 
         let filename = "";
@@ -610,10 +686,10 @@ export default function App() {
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/40 mt-2 shrink-0" />
                   <div>
                     <div className="text-[14px] font-black text-white group-hover:text-emerald-400 transition-colors">
-                      {item.supplierFormat.split(' — ')[0]}
+                      {item.supplierFormat && typeof item.supplierFormat === 'string' ? item.supplierFormat.split(' — ')[0] : String(item.supplierFormat || '')}
                     </div>
                     <div className="text-[12px] text-emerald-400/60 font-mono italic">
-                      {item.supplierFormat.split(' — ')[1] || '---'}
+                      {(item.supplierFormat && typeof item.supplierFormat === 'string' && item.supplierFormat.includes(' — ')) ? item.supplierFormat.split(' — ')[1] : '---'}
                     </div>
                   </div>
                 </div>
@@ -630,7 +706,7 @@ export default function App() {
             <Zap size={14} /> NEXT PHASE: REVENUE ENGINE
           </div>
           <p className="text-[13px] text-emerald-200/60 leading-relaxed mb-4">
-            System unified. Production, Procurement, and Pricing engines locked. Ready to layer daily volume projections and full revenue forecasting.
+            System unified. Production, Procurement, and Pricing engines released for transition. Ready to layer daily volume projections and full revenue forecasting.
           </p>
           <button 
             className="px-4 py-2 bg-emerald-500 text-black text-[10px] font-black tracking-widest rounded hover:opacity-90 transition-all active:translate-y-0.5"
@@ -751,8 +827,8 @@ export default function App() {
                 animate={{ opacity: 1, x: 0 }}
                 className="hidden md:flex bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] tracking-widest px-3 py-1.5 rounded items-center gap-2"
               >
-                <ShieldCheck size={12} />
-                SYSTEM LOCKED
+                <Activity size={12} />
+                SYSTEM UNLOCKED
               </motion.div>
             )}
           </AnimatePresence>
@@ -1341,7 +1417,7 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 className="text-[13px] leading-relaxed whitespace-pre-wrap"
               >
-                {jemmaOutput.split("\n").map((line, i) => (
+                {(jemmaOutput && typeof jemmaOutput === 'string' ? jemmaOutput.split("\n") : [String(jemmaOutput || '')]).map((line, i) => (
                   <span key={i} className={`${colorLine(line)} block min-h-[1.2em]`}>
                     {line || " "}
                   </span>
