@@ -51,7 +51,7 @@ export default function App() {
   const [jemmaOutput, setJemmaOutput] = useState("");
   const [jemmaLoading, setJemmaLoading] = useState(false);
   const [jemmaMode, setJemmaMode] = useState<JemmaMode | null>(null);
-  const [locked, setLocked] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [printMode, setPrintMode] = useState<null | "operator" | "unit" | "pack" | "system" | "weapon">(null);
   const [showSupplyMatrix, setShowSupplyMatrix] = useState(false);
@@ -98,12 +98,14 @@ export default function App() {
     setSelectedLayer(null);
     setJemmaOutput("");
     setMobileMenuOpen(false);
+    setIsTransitioning(false);
   };
 
   const runJemma = async (mode: JemmaMode, item: DishItem | null = null) => {
     setJemmaLoading(true);
     setJemmaOutput("");
     setJemmaMode(mode);
+    setIsTransitioning(false);
     
     // For single items, we use the local validator to avoid connection failures
     if (mode === "item" && item) {
@@ -111,7 +113,7 @@ export default function App() {
         const result = localJemmaValidation(item);
         const output = renderJemmaResult(result);
         setJemmaOutput(output);
-        if (result.verdict === "FAIL") setLocked(true);
+        if (result.verdict === "FAIL") setIsTransitioning(true);
       } catch (error) {
         setJemmaOutput("JEMMA FAULT — local validation failed.");
       } finally {
@@ -140,7 +142,7 @@ export default function App() {
       ].join("\n");
       
       setJemmaOutput(summary);
-      if (failCount > 0) setLocked(true); // Keeping state for UI but changing meaning to 'transitioning'
+      if (failCount > 0) setIsTransitioning(true);
     } catch (error) {
       setJemmaOutput("JEMMA FAULT — validation failed.");
     } finally {
@@ -774,8 +776,8 @@ export default function App() {
   const colorLine = (line: string) => {
     if (line.match(/^(JEMMA VALIDATION|TITLE|TYPE|SYSTEM VALIDATION|ROOT LAYER|CONTROL LAW|SEQUENCE LAW|AUTO REJECT|PASS CRITERIA|TECHNICAL FAULTS|VERDICT|ENGINE STATUS|DOCTRINE|PREP ENGINE|ALLERGEN|PRESSURE|SYSTEM VERDICT|CHEF'S NOTE|━)/))
       return "text-orange-500 font-black tracking-tight";
-    if (line.match(/PASS|LOCKED|COMPLETE|CONFIRMED|PASSED|✓/i)) return "text-emerald-500 font-bold";
-    if (line.match(/CONDITIONAL|WATCH|FLAG|RISK|GAP/i)) return "text-amber-500";
+    if (line.match(/PASS|UNLOCKED|RELEASED|COMPLETE|CONFIRMED|PASSED|STABILISE|STABILITY|✓/i)) return "text-emerald-500 font-bold";
+    if (line.match(/CONDITIONAL|WATCH|FLAG|RISK|GAP|TRANSITION|TRANSITIONING/i)) return "text-amber-500";
     if (line.match(/NEEDS WORK|REJECTED|FAIL|INCOMPLETE|FAULT/i)) return "text-rose-500 font-black italic";
     return "text-text-mute";
   };
@@ -821,14 +823,27 @@ export default function App() {
         
         <div className="flex items-center gap-2 sm:gap-4">
           <AnimatePresence>
-            {locked && (
+            {isTransitioning ? (
               <motion.div 
+                key="transition"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="hidden md:flex bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] tracking-widest px-3 py-1.5 rounded items-center gap-2"
+                exit={{ opacity: 0, x: 20 }}
+                className="hidden md:flex bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[10px] tracking-widest px-3 py-1.5 rounded items-center gap-2 font-mono"
               >
-                <Activity size={12} />
-                SYSTEM UNLOCKED
+                <Activity size={12} className="animate-pulse" />
+                TRANSITION ACTIVE
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="unlocked"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="hidden md:flex bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] tracking-widest px-3 py-1.5 rounded items-center gap-2 font-mono"
+              >
+                <ShieldCheck size={12} />
+                SYSTEM UNLOCKED · STABILIZED
               </motion.div>
             )}
           </AnimatePresence>
