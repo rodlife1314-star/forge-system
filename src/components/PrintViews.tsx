@@ -194,7 +194,7 @@ export const UnitSpecificationPrint: React.FC<PrintProps> = ({ item }) => {
   const Footer = () => (
     <div className="mt-auto pt-6 border-t border-gray-200 flex justify-between items-end text-[8px] font-mono text-gray-400 uppercase tracking-[0.3em]">
       <div className="space-y-1">
-        <div>GALYONS CORE DOCTRINE · MASTER BIBLE ARCHIVE</div>
+        <div>GALYONS CORE DOCTRINE · FORGE OS ARCHIVE</div>
         <div>AUTHORIZED FOR PRODUCTION USE ONLY · v2.5.2</div>
       </div>
       <div className="text-right">
@@ -667,7 +667,7 @@ export const FullSystemPackDocument: React.FC<{ engines: Record<string, Engine> 
       <div className="print-page page a4 bg-[#000000] flex flex-col items-center justify-center text-center p-[40mm] border-[2px] border-white relative">
         <div className="absolute inset-x-0 top-0 h-1/2 bg-white flex flex-col items-center justify-end pb-24 px-10">
           <div className="text-[16px] tracking-[1.5em] font-black mb-12 uppercase text-black opacity-40">GALYONS CORE</div>
-          <h1 className="text-[100px] font-serif font-black tracking-tighter text-black uppercase leading-[0.8] italic">MASTER BIBLE</h1>
+          <h1 className="text-[100px] font-serif font-black tracking-tighter text-black uppercase leading-[0.8] italic">FORGE OS</h1>
         </div>
         
         <div className="mt-[300px] flex flex-col items-center text-white">

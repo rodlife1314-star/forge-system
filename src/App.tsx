@@ -23,7 +23,15 @@ import {
   FileDown,
   Copy,
   Check,
-  ClipboardCheck
+  ClipboardCheck,
+  Send,
+  Globe,
+  Shield,
+  Plus,
+  Trash2,
+  Settings,
+  MessageSquare,
+  BookOpen
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -64,6 +72,116 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
+  // TAB SELECTION FOR THE RIGHT SIDE JEMMA/HERMES PANEL
+  const [jemmaTab, setJemmaTab] = useState<"audit" | "rag">("audit");
+  
+  // HERMES CO-PILOT CHAT STATES
+  const [ragMessages, setRagMessages] = useState<Array<{
+    id: string;
+    role: "user" | "model" | "system";
+    text: string;
+    timestamp: Date;
+    sources?: Array<{ title: string; uri: string }>;
+  }>>([
+    {
+      id: "init",
+      role: "model",
+      text: "◈ HERMES SYSTEM ACTIVE ◈\n━\nI am HERMES, the Agentic RAG Co-Pilot for the FORGE OPERATING SYSTEM.\n\nReady to query internal spec doctrine layers of Galyons or scan local and external knowledge stores.\n\nWe have secured full integration for your requested architectures, loaded with:\n- **Galyons Culinary Laws & Recipes**\n- **Web Grounding Control Laws** (NVIDIA Workbench RAG inspired)\n- **Agentic Capability Registries** (NousResearch Hermes inspired)\n\nHow can I assist you with Galyons kitchen alignment today?",
+      timestamp: new Date()
+    }
+  ]);
+  const [ragInput, setRagInput] = useState("");
+  const [webSearch, setWebSearch] = useState(true);
+  const [accuracyGuard, setAccuracyGuard] = useState(true);
+  const [ragTemperature, setRagTemperature] = useState(0.2);
+  const [ingestedRepos, setIngestedRepos] = useState<string[]>([
+    "https://github.com/NousResearch/hermes-agent.git",
+    "https://github.com/NVIDIA/workbench-example-agentic-rag.git"
+  ]);
+  const [newRepoUrl, setNewRepoUrl] = useState("");
+  const [ragLoading, setRagLoading] = useState(false);
+
+  const sendRagMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!ragInput.trim() || ragLoading) return;
+
+    const userText = ragInput.trim();
+    setRagInput("");
+
+    // Append user message
+    const userMsg = {
+      id: Math.random().toString(36).substring(7),
+      role: "user" as const,
+      text: userText,
+      timestamp: new Date()
+    };
+    setRagMessages(prev => [...prev, userMsg]);
+    setRagLoading(true);
+
+    // Build context
+    let contextStr = ``;
+    if (selectedItem) {
+      contextStr += `ACTIVE INSPECTED SPEC: ${selectedItem.name}\n`;
+      contextStr += `Station: ${selectedItem.station}\n`;
+      contextStr += `Allergens: ${selectedItem.allergens?.join(", ") || "None"}\n`;
+      if (selectedItem.passCriteria) contextStr += `Pass Criteria: ${JSON.stringify(selectedItem.passCriteria)}\n`;
+      if (selectedItem.ingredients) contextStr += `Local Ingredients & Prep: ${JSON.stringify(selectedItem.ingredients)}\n`;
+      if (selectedItem.fellini) contextStr += `Fellini Directives: ${JSON.stringify(selectedItem.fellini)}\n`;
+      if (selectedItem.executionCard) contextStr += `Execution Guidelines: ${JSON.stringify(selectedItem.executionCard)}\n`;
+      if (selectedItem.larousse) contextStr += `Larousse Classical Context: ${JSON.stringify(selectedItem.larousse)}\n`;
+    } else {
+      contextStr += `ACTIVE SYSTEM MODULES:\n`;
+      Object.entries(ENGINES).forEach(([key, eng]) => {
+        contextStr += `- Station: ${eng.station} (${eng.label}) has ${eng.items.length} locked specs.\n`;
+      });
+    }
+
+    try {
+      // Map message history into standard format
+      const historyPayload = ragMessages.slice(1).map(m => ({
+        role: m.role,
+        text: m.text
+      }));
+
+      const res = await fetch("/api/gemini/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userText,
+          history: historyPayload,
+          ragContext: contextStr,
+          temperature: ragTemperature,
+          accuracyGuard,
+          webSearch,
+          ingestedRepos
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Server connector error");
+      }
+
+      setRagMessages(prev => [...prev, {
+        id: Math.random().toString(36).substring(7),
+        role: "model",
+        text: data.text,
+        timestamp: new Date(),
+        sources: data.sources
+      }]);
+    } catch (error: any) {
+      console.error(error);
+      setRagMessages(prev => [...prev, {
+        id: Math.random().toString(36).substring(7),
+        role: "model",
+        text: `⚠️ HERMES CO-PILOT FAULT:\n\n${error.message || "Please check server is run or local API key is provided inside App Settings."}`,
+        timestamp: new Date()
+      }]);
+    } finally {
+      setRagLoading(false);
+    }
+  };
+
   const view: any = showSupplyMatrix ? "supply" : showValidationStatus ? "validation" : selectedLayer ? "layer" : selectedItem ? "item" : "idle";
   const allItems = Object.values(ENGINES).flatMap(e => e.items);
 
@@ -86,7 +204,7 @@ export default function App() {
   };
 
   const engine = activeEngine === "all" 
-    ? { label: "MASTER BIBLE", color: "#FFB347", station: "ALL STATIONS", items: Object.values(ENGINES).flatMap(e => e.items) }
+    ? { label: "FORGE OS UNIFIED", color: "#FFB347", station: "ALL STATIONS", items: Object.values(ENGINES).flatMap(e => e.items) }
     : ENGINES[activeEngine];
 
   // Helper to clear supply matrix view when changing engine
@@ -130,7 +248,7 @@ export default function App() {
       const condCount = results.filter(r => r.verdict === "CONDITIONAL").length;
       
       const summary = [
-        "SYSTEM DOCTRINE AUDIT — MASTER BIBLE",
+        "SYSTEM DOCTRINE AUDIT — FORGE OS UNIFIED",
         "━".repeat(40),
         `TOTAL SPECS AUDITED: ${items.length}`,
         `PASS: ${items.length - failCount - condCount}`,
@@ -813,10 +931,10 @@ export default function App() {
             <Cpu className="text-orange-500" size={24} />
           </div>
           <div>
-            <div className="text-[9px] uppercase tracking-[0.4em] text-text-mute mb-0.5">Octagon OS · Forge · MASTER BIBLE v2.5</div>
+            <div className="text-[9px] uppercase tracking-[0.4em] text-text-mute mb-0.5">Octagon OS · FORGE OPERATING SYSTEM v2.5</div>
             <div className="text-lg sm:text-xl font-black tracking-tighter text-orange-500 flex items-center gap-2">
-              FORGE BIBLE
-              <span className="hidden sm:inline text-[10px] font-normal tracking-widest text-text-mute bg-panel-alt px-2 py-0.5 rounded ml-2">UNLIMITED</span>
+              FORGE OS
+              <span className="hidden sm:inline text-[10px] font-normal tracking-widest text-text-mute bg-panel-alt px-2 py-0.5 rounded ml-2">UNRELAXED</span>
             </div>
           </div>
         </div>
@@ -939,7 +1057,7 @@ export default function App() {
             >
               <div>
                 <div className="text-[12px] font-black tracking-[0.2em] flex items-center gap-2 mb-1" style={{ color: activeEngine === "all" ? "#FFB347" : "#8B949E" }}>
-                  <Terminal size={16} /> MASTER BIBLE
+                  <Terminal size={16} /> FORGE OS UNIFIED
                 </div>
                 <div className="text-[10px] text-text-mute tracking-wider text-orange-500/60 font-bold">
                   {Object.values(ENGINES).flatMap(e => e.items).length} TOTAL SPECS
@@ -1316,130 +1434,399 @@ export default function App() {
           )}
         </section>
 
-        {/* JEMMA PANEL */}
-        <section className="bg-panel border-l border-border-ui flex flex-col h-[400px] lg:h-auto jemma-panel no-print">
-          <div className="p-6 border-b border-border-ui flex justify-between items-center bg-bg/20">
-            <div>
-              <div className="text-[11px] tracking-[0.3em] text-text-mute uppercase mb-1 flex items-center gap-2">
-                <Cpu size={12} className="text-orange-500" />
-                JEMMA · VALIDATION ENFORCER
-              </div>
-              <div className="text-[11px] text-text-mute font-mono uppercase">
-                {jemmaMode === "item" && selectedItem ? `AUDIT: ${selectedItem.name}` :
-                 jemmaMode === "full" ? "SYSTEM: FULL DOCTRINE AUDIT" : "STATUS: STANDBY"}
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {jemmaOutput && !jemmaLoading && (
-                <div className="flex bg-panel-alt/50 p-1 rounded border border-border-ui mr-2">
-                  <button
-                    onClick={async () => {
-                      const title = jemmaMode === "item" && selectedItem ? selectedItem.name : "System_Audit";
-                      await exportJemmaPDF(title, jemmaOutput);
-                    }}
-                    title="Export PDF"
-                    className="p-1.5 hover:bg-white/5 rounded text-text-mute hover:text-orange-500 transition-colors"
-                  >
-                    <FileDown size={14} />
-                  </button>
-                  <button
-                    onClick={async () => {
-                      const title = jemmaMode === "item" && selectedItem ? selectedItem.name : "System_Audit";
-                      await exportJemmaDocx(title, jemmaOutput);
-                    }}
-                    title="Export Word (.docx)"
-                    className="p-1.5 hover:bg-white/5 rounded text-text-mute hover:text-orange-500 transition-colors"
-                  >
-                    <FileText size={14} />
-                  </button>
-                  <button
-                    onClick={async () => {
-                      const success = await copyCleanSpec(jemmaOutput);
-                      if (success) {
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      }
-                    }}
-                    title="Copy Clean Spec"
-                    className="p-1.5 hover:bg-white/5 rounded text-text-mute hover:text-orange-500 transition-colors"
-                  >
-                    {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
-                  </button>
-                </div>
-              )}
-
-              {jemmaLoading && (
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <motion.div 
-                      key={i}
-                      animate={{ opacity: [0.2, 1, 0.2] }}
-                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-                      className="w-1.5 h-1.5 bg-orange-500 rounded-full"
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+        {/* JEMMA PANEL WITH DUAL-MODE OPERATIONAL CONTROLS (AUDIT + AGENTIC RAG) */}
+        <section className="bg-panel border-l border-border-ui flex flex-col h-[550px] lg:h-auto jemma-panel no-print">
+          {/* TABS NAVIGATION */}
+          <div className="flex border-b border-border-ui text-xs font-bold font-mono">
+            <button
+              onClick={() => setJemmaTab("audit")}
+              className={`flex-1 py-4 flex items-center justify-center gap-2 border-r border-border-ui transition-all ${
+                jemmaTab === "audit"
+                  ? "bg-bg/40 text-orange-500 border-b-2 border-b-orange-500"
+                  : "text-text-mute hover:text-text-soft hover:bg-bg/10"
+              }`}
+            >
+              <Cpu size={14} className={jemmaTab === "audit" ? "text-orange-500" : "text-text-mute"} />
+              AUDIT ENFORCER
+            </button>
+            <button
+              onClick={() => setJemmaTab("rag")}
+              className={`flex-1 py-4 flex items-center justify-center gap-2 transition-all ${
+                jemmaTab === "rag"
+                  ? "bg-bg/40 text-orange-500 border-b-2 border-b-orange-500"
+                  : "text-text-mute hover:text-text-soft hover:bg-bg/10"
+              }`}
+            >
+              <MessageSquare size={14} className={jemmaTab === "rag" ? "text-orange-500" : "text-text-mute"} />
+              HERMES RAG
+            </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 bg-bg/40 font-mono custom-scrollbar">
-            {!jemmaOutput && !jemmaLoading && (
-              <div className="space-y-4 opacity-30">
-                <div className="text-[11px] leading-loose tracking-widest">
-                  <div>░ JEMMA READY</div>
-                  <div>░ SELECT SPEC → ENFORCE DOCTRINE</div>
-                  <div>░ STABILITY MANDATORY</div>
+          {jemmaTab === "audit" ? (
+            /* AUDIT ENFORCER PANEL VIEW */
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="p-6 border-b border-border-ui flex justify-between items-center bg-bg/20">
+                <div>
+                  <div className="text-[11px] tracking-[0.3em] text-text-mute uppercase mb-1 flex items-center gap-2">
+                    <Cpu size={12} className="text-orange-500" />
+                    JEMMA · VALIDATION ENFORCER
+                  </div>
+                  <div className="text-[11px] text-text-mute font-mono uppercase">
+                    {jemmaMode === "item" && selectedItem ? `AUDIT: ${selectedItem.name}` :
+                     jemmaMode === "full" ? "SYSTEM: FULL DOCTRINE AUDIT" : "STATUS: STANDBY"}
+                  </div>
                 </div>
-                <div className="text-[9px] leading-none text-text-mute break-all">
-                  {Array(20).fill("01010101010101010101010101010101").join(" ")}
+                
+                <div className="flex items-center gap-2">
+                  {jemmaOutput && !jemmaLoading && (
+                    <div className="flex bg-panel-alt/50 p-1 rounded border border-border-ui mr-2">
+                      <button
+                        onClick={async () => {
+                          const title = jemmaMode === "item" && selectedItem ? selectedItem.name : "System_Audit";
+                          await exportJemmaPDF(title, jemmaOutput);
+                        }}
+                        title="Export PDF"
+                        className="p-1.5 hover:bg-white/5 rounded text-text-mute hover:text-orange-500 transition-colors"
+                      >
+                        <FileDown size={14} />
+                      </button>
+                      <button
+                        onClick={async () => {
+                          const title = jemmaMode === "item" && selectedItem ? selectedItem.name : "System_Audit";
+                          await exportJemmaDocx(title, jemmaOutput);
+                        }}
+                        title="Export Word (.docx)"
+                        className="p-1.5 hover:bg-white/5 rounded text-text-mute hover:text-orange-500 transition-colors"
+                      >
+                        <FileText size={14} />
+                      </button>
+                      <button
+                        onClick={async () => {
+                          const success = await copyCleanSpec(jemmaOutput);
+                          if (success) {
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }
+                        }}
+                        title="Copy Clean Spec"
+                        className="p-1.5 hover:bg-white/5 rounded text-text-mute hover:text-orange-500 transition-colors"
+                      >
+                        {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      </button>
+                    </div>
+                  )}
+
+                  {jemmaLoading && (
+                    <div className="flex gap-1.5">
+                      {[0, 1, 2].map(i => (
+                        <motion.div 
+                          key={i}
+                          animate={{ opacity: [0.2, 1, 0.2] }}
+                          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                          className="w-1.5 h-1.5 bg-orange-500 rounded-full"
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
 
-            {jemmaLoading && (
-              <div className="space-y-3">
-                <div className="text-orange-500 text-[11px] font-bold tracking-widest animate-pulse flex items-center gap-2">
-                  <Zap size={12} />
-                  ◈ INITIATING DOCTRINE AUDIT
-                </div>
-                {[
-                  "INJECTING SYSTEM DOCTRINE", 
-                  "INSPECTING ROOT LAYER", 
-                  "ENFORCING CONTROL LAW",
-                  "MAPPING AUTO REJECTS", 
-                  "VERIFYING PASS CRITERIA", 
-                  "MONITORING TRANSITION",
-                  "RENDERING FINAL VERDICT"
-                ].map((s, i) => (
+              <div className="flex-1 overflow-y-auto p-6 bg-bg/40 font-mono custom-scrollbar">
+                {!jemmaOutput && !jemmaLoading && (
+                  <div className="space-y-4 opacity-30">
+                    <div className="text-[11px] leading-loose tracking-widest">
+                      <div>░ JEMMA READY</div>
+                      <div>░ SELECT SPEC → ENFORCE DOCTRINE</div>
+                      <div>░ STABILITY MANDATORY</div>
+                    </div>
+                    <div className="text-[9px] leading-none text-text-mute break-all">
+                      {Array(20).fill("01010101010101010101010101010101").join(" ")}
+                    </div>
+                  </div>
+                )}
+
+                {jemmaLoading && (
+                  <div className="space-y-3">
+                    <div className="text-orange-500 text-[11px] font-bold tracking-widest animate-pulse flex items-center gap-2">
+                      <Zap size={12} />
+                      ◈ INITIATING DOCTRINE AUDIT
+                    </div>
+                    {[
+                      "INJECTING SYSTEM DOCTRINE", 
+                      "INSPECTING ROOT LAYER", 
+                      "ENFORCING CONTROL LAW",
+                      "MAPPING AUTO REJECTS", 
+                      "VERIFYING PASS CRITERIA", 
+                      "MONITORING TRANSITION",
+                      "RENDERING FINAL VERDICT"
+                    ].map((s, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="text-text-mute text-[11px] flex items-center gap-2"
+                      >
+                        <span className="text-orange-500/50">◈</span> {s}
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {jemmaOutput && (
                   <motion.div 
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="text-text-mute text-[11px] flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-[13px] leading-relaxed whitespace-pre-wrap"
                   >
-                    <span className="text-orange-500/50">◈</span> {s}
+                    {(jemmaOutput && typeof jemmaOutput === 'string' ? jemmaOutput.split("\n") : [String(jemmaOutput || '')]).map((line, i) => (
+                      <span key={i} className={`${colorLine(line)} block min-h-[1.2em]`}>
+                        {line || " "}
+                      </span>
+                    ))}
                   </motion.div>
-                ))}
+                )}
               </div>
-            )}
-
-            {jemmaOutput && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-[13px] leading-relaxed whitespace-pre-wrap"
-              >
-                {(jemmaOutput && typeof jemmaOutput === 'string' ? jemmaOutput.split("\n") : [String(jemmaOutput || '')]).map((line, i) => (
-                  <span key={i} className={`${colorLine(line)} block min-h-[1.2em]`}>
-                    {line || " "}
+            </div>
+          ) : (
+            /* HERMES AGENTIC RAG CHAT VIEW */
+            <div className="flex-1 flex flex-col min-h-0 bg-bg/25">
+              {/* RAG PARAMS CONTROLS */}
+              <div className="p-4 border-b border-border-ui bg-panel/30 text-[11px] font-mono space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-text-mute flex items-center gap-1">
+                    <Settings size={12} className="text-orange-500/80" /> AGENT CONTROLS
                   </span>
+                  
+                  <div className="flex gap-2">
+                    {/* ACCURACY CHANGER PRESETS */}
+                    <button
+                      onClick={() => setRagTemperature(0.0)}
+                      className={`px-1.5 py-0.5 rounded border text-[9px] font-bold ${
+                        ragTemperature === 0.0
+                          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                          : "bg-panel border-border-ui text-text-mute hover:text-text-soft"
+                      }`}
+                      title="Tighter local code reasoning"
+                    >
+                      STRICT
+                    </button>
+                    <button
+                      onClick={() => setRagTemperature(0.2)}
+                      className={`px-1.5 py-0.5 rounded border text-[9px] font-bold ${
+                        ragTemperature === 0.2
+                          ? "bg-orange-500/15 text-orange-400 border-orange-500/30"
+                          : "bg-panel border-border-ui text-text-mute hover:text-text-soft"
+                      }`}
+                      title="Optimal RAG grounding balance"
+                    >
+                      BALANCED
+                    </button>
+                    <button
+                      onClick={() => setRagTemperature(0.7)}
+                      className={`px-1.5 py-0.5 rounded border text-[9px] font-bold ${
+                        ragTemperature === 0.7
+                          ? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                          : "bg-panel border-border-ui text-text-mute hover:text-text-soft"
+                      }`}
+                      title="Free external model ideas"
+                    >
+                      CREATIVE
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* SEARCH GROUNDING TOGGLE */}
+                  <label className="flex items-center justify-between p-2 bg-panel rounded border border-border-ui cursor-pointer group hover:bg-panel-alt/55 select-none">
+                    <span className="flex items-center gap-1.5 text-text-soft group-hover:text-white transition-colors">
+                      <Globe size={11} className={webSearch ? "text-blue-400" : "text-text-mute"} />
+                      WEB SEARCH
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={webSearch}
+                      onChange={(e) => setWebSearch(e.target.checked)}
+                      className="accent-orange-500 w-3 h-3 cursor-pointer"
+                    />
+                  </label>
+
+                  {/* ACCURACY GUARD TOGGLE */}
+                  <label className="flex items-center justify-between p-2 bg-panel rounded border border-border-ui cursor-pointer group hover:bg-panel-alt/55 select-none" title="Strict non-hallucination constraint and verification">
+                    <span className="flex items-center gap-1.5 text-text-soft group-hover:text-white transition-colors">
+                      <Shield size={11} className={accuracyGuard ? "text-emerald-400" : "text-text-mute"} />
+                      ACCURACY GD
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={accuracyGuard}
+                      onChange={(e) => setAccuracyGuard(e.target.checked)}
+                      className="accent-orange-500 w-3 h-3 cursor-pointer"
+                    />
+                  </label>
+                </div>
+
+                {/* INGESTED SOURCES PANEL */}
+                <details className="text-[10px] bg-panel-alt/20 rounded p-2 border border-border-ui/50">
+                  <summary className="cursor-pointer font-bold flex items-center justify-between text-text-mute hover:text-text-soft">
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen size={11} className="text-orange-500/70" />
+                      INGESTED SOURCES ({ingestedRepos.length + 1})
+                    </span>
+                  </summary>
+                  
+                  <div className="mt-2 space-y-1.5">
+                    <div className="p-1 px-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded flex justify-between items-center">
+                      <span>📦 INTERNAL GALYONS DATABASE (ACTIVE)</span>
+                      <span className="text-[8px] font-bold uppercase py-0.2 px-1 bg-emerald-500/20 rounded">LOCAL</span>
+                    </div>
+
+                    {ingestedRepos.map((repo, idx) => (
+                      <div key={idx} className="p-1 px-2 bg-bg border border-border-ui text-text-soft rounded flex justify-between items-center group/item">
+                        <span className="truncate max-w-[240px] font-mono break-all text-[9.5px]">
+                          🔗 {repo.replace("https://github.com/", "")}
+                        </span>
+                        <button
+                          onClick={() => setIngestedRepos(prev => prev.filter((_, i) => i !== idx))}
+                          className="opacity-0 group-hover/item:opacity-100 hover:text-rose-500 transition-all ml-1"
+                          title="Eject Knowledge Store"
+                        >
+                          <Trash2 size={10} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* ADD URL ROW */}
+                    <div className="flex gap-1.5 pt-1.5">
+                      <input
+                        type="text"
+                        value={newRepoUrl}
+                        onChange={(e) => setNewRepoUrl(e.target.value)}
+                        placeholder="Ingest github registry URL..."
+                        className="flex-1 bg-bg border border-border-ui rounded px-2 py-0.5 text-[9px] text-text-primary placeholder:text-text-mute font-mono outline-none focus:border-orange-500"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && newRepoUrl.trim()) {
+                            setIngestedRepos(p => [...p, newRepoUrl.trim()]);
+                            setNewRepoUrl("");
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          if (newRepoUrl.trim()) {
+                            setIngestedRepos(p => [...p, newRepoUrl.trim()]);
+                            setNewRepoUrl("");
+                          }
+                        }}
+                        className="p-1 bg-orange-500/20 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/30 rounded transition-all"
+                      >
+                        <Plus size={10} />
+                      </button>
+                    </div>
+                  </div>
+                </details>
+
+                {selectedItem && (
+                  <div className="text-[10px] text-orange-400/80 bg-orange-500/5 p-1.5 rounded border border-orange-500/20 flex justify-between items-center">
+                    <span>📌 INSTRUCTING CONTEXT ON : {selectedItem.name}</span>
+                    <button onClick={() => setSelectedItem(null)} className="text-text-mute hover:text-white font-black">×</button>
+                  </div>
+                )}
+              </div>
+
+              {/* CHAT FEED LIST */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-bg/10">
+                {ragMessages.map((msg) => (
+                  <div key={msg.id} className={`p-3 rounded-lg border max-w-[90%] transition-all ${
+                    msg.role === "user"
+                      ? "ml-auto bg-panel-alt/80 border-border-ui text-right"
+                      : "mr-auto bg-panel/75 border-border-ui/50"
+                  }`}>
+                    <div className={`text-[9px] tracking-widest text-text-mute font-black uppercase mb-1.5 flex items-center gap-1.5 ${
+                      msg.role === "user" ? "justify-end text-orange-500/70" : "text-emerald-500/70"
+                    }`}>
+                      {msg.role === "user" ? "◈ OPERATIONAL CHEF" : "◈ HERMES OS AGENT"}
+                    </div>
+                    
+                    {/* CUSTOM PARSING OF MARDKOWN PRESET TO ENHANCE READABILITY */}
+                    <div className="text-[12px] leading-relaxed font-mono whitespace-pre-wrap text-left break-words">
+                      {msg.text.split("\n").map((line, lIdx) => {
+                        let styledLine = line;
+                        // Handle bullet lists
+                        if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
+                          return (
+                            <div key={lIdx} className="pl-4 relative min-h-[1.2rem] my-0.5 text-text-soft">
+                              <span className="absolute left-1 text-orange-500">▪</span>
+                              {line.trim().replace(/^[-*]\s+/, "")}
+                            </div>
+                          );
+                        }
+                        return <div key={lIdx} className="min-h-[1.2rem]">{styledLine}</div>;
+                      })}
+                    </div>
+
+                    {/* CITATION PILLS */}
+                    {msg.sources && msg.sources.length > 0 && (
+                      <div className="mt-3 pt-2 border-t border-border-ui/30 text-left">
+                        <div className="text-[8.5px] font-bold text-text-mute tracking-wider mb-1">CITED WEBSOURCES:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {msg.sources.map((s, sIdx) => (
+                            <a
+                              key={sIdx}
+                              href={s.uri}
+                              target="_blank"
+                              rel="noreferrer"
+                              referrerPolicy="no-referrer"
+                              className="text-[9px] bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 border border-blue-500/20 rounded max-w-[130px] truncate block hover:border-blue-400/50 transition-all"
+                              title={s.title}
+                            >
+                              🌐 {s.title}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </motion.div>
-            )}
-          </div>
+
+                {/* RETRIEVING LOAD INDICATOR */}
+                {ragLoading && (
+                  <div className="mr-auto bg-panel/40 border border-border-ui/40 p-3 rounded-lg flex items-center gap-2 max-w-[70%]">
+                    <span className="flex gap-1">
+                      {[0, 1, 2].map(i => (
+                        <motion.span
+                          key={i}
+                          animate={{ opacity: [0.2, 1, 0.2] }}
+                          transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+                          className="w-1.5 h-1.5 bg-orange-500 rounded-full inline-block"
+                        />
+                      ))}
+                    </span>
+                    <span className="text-[10px] font-mono tracking-widest text-text-mute animate-pulse">HERMES AGENT RETRIEVING...</span>
+                  </div>
+                )}
+              </div>
+
+              {/* MESSAGE BAR FORM */}
+              <form onSubmit={sendRagMessage} className="p-3 border-t border-border-ui bg-panel/80 flex items-center gap-2">
+                <input
+                  type="text"
+                  value={ragInput}
+                  onChange={(e) => setRagInput(e.target.value)}
+                  placeholder="Ask Hermes: 'What is Galyons 6x6 law?' or recipes..."
+                  disabled={ragLoading}
+                  className="flex-1 bg-bg border border-border-ui rounded px-3 py-2 text-xs text-text-primary font-mono placeholder:text-text-mute outline-none focus:border-orange-500 disabled:opacity-50"
+                />
+                <button
+                  type="submit"
+                  disabled={ragLoading || !ragInput.trim()}
+                  className="p-2 bg-orange-500 hover:bg-orange-400 disabled:bg-panel-alt text-black disabled:text-text-mute rounded transition-all active:translate-y-0.5 disabled:translate-y-0 disabled:opacity-50 shadow-md shadow-orange-500/10"
+                >
+                  <Send size={14} />
+                </button>
+              </form>
+            </div>
+          )}
 
           <footer className="p-4 border-t border-border-ui bg-bg/40 flex justify-between items-center text-[9px] tracking-[0.3em] text-text-mute">
             <span className="flex items-center gap-2">

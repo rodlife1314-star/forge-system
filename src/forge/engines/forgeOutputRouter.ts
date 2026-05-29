@@ -5,7 +5,7 @@ export const getEngineByKey = (key: string): Engine | null => {
   if (key === 'all') {
     const allItems = Object.values(ENGINES).flatMap((e: Engine) => e.items);
     return {
-      label: "MASTER BIBLE",
+      label: "FORGE OS UNIFIED",
       color: "#FFB347",
       station: "ALL STATIONS",
       items: allItems,

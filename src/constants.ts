@@ -58,7 +58,7 @@ export const ENGINES: Record<string, Engine> = {
             content: [
               "• Live production window is capped at 6 active production items per service.",
               "• This is a production limitation, not a menu/archive limitation.",
-              "• Master Bible archive remains unlimited and accessible."
+              "• Forge OS archive remains unlimited and accessible."
             ]
           },
           {
@@ -4999,11 +4999,11 @@ export const ENGINES: Record<string, Engine> = {
         sections: [
           {
             title: "1. 6 ITEM QTY (FOUNDER RULE)",
-            content: "Each section limited to 6 ACTIVE items in production. The Master Bible is an unlimited archive; the 6 QTY rule governs the Live Service window only."
+            content: "Each section limited to 6 ACTIVE items in production. The Forge OS is an unlimited archive; the 6 QTY rule governs the Live Service window only."
           },
           {
             title: "2. PRODUCTION vs ARCHIVE",
-            content: "Bible = Unlimited Arsenal. 6 QTY = Live Service selection. Innovation remains free; production remains controlled."
+            content: "OS = Unlimited Arsenal. 6 QTY = Live Service selection. Innovation remains free; production remains controlled."
           },
           {
             title: "3. 20 SCALE PREP LAW",

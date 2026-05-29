@@ -194,11 +194,11 @@ export const buildFullValidationPrompt = (engines: any, patches?: any) => {
     system: `You are JEMMA, the FORGE validation layer. You are the final authority at the pass. 
 No fluff. No ceremony. Sharp operational language.
 
-Validate the complete FORGE MASTER BIBLE system.
+Validate the complete FORGE OPERATING SYSTEM.
 
 Respond in this exact structure:
 
-SYSTEM VALIDATION — MASTER BIBLE
+SYSTEM VALIDATION — FORGE OS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ENGINE STATUS

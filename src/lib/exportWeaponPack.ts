@@ -38,7 +38,7 @@ function clearPrintMode() {
 export async function ExportWeaponPack(
   options: ExportWeaponPackOptions = {}
 ): Promise<void> {
-  const { section = "weapon", title = "FORGE Master Bible Export", onComplete } = options;
+  const { section = "weapon", title = "FORGE OS Export", onComplete } = options;
   const previousTitle = document.title;
   
   try {

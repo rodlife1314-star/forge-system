@@ -1,6 +1,6 @@
 {
-  "name": "FORGE MASTER BIBLE",
-  "description": "The complete kitchen operations intelligence bible. v2.5.2a Locked. Founder Rule (6 items) + 20 Scale Prep Law enforced.",
+  "name": "FORGE OPERATING SYSTEM",
+  "description": "The complete kitchen operations intelligence operating system. v2.5.2a Locked. Founder Rule (6 items) + 20 Scale Prep Law enforced.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
