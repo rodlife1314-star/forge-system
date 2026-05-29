@@ -96,7 +96,8 @@ export default function App() {
   const [ragTemperature, setRagTemperature] = useState(0.2);
   const [ingestedRepos, setIngestedRepos] = useState<string[]>([
     "https://github.com/NousResearch/hermes-agent.git",
-    "https://github.com/NVIDIA/workbench-example-agentic-rag.git"
+    "https://github.com/NVIDIA/workbench-example-agentic-rag.git",
+    "https://github.com/rodlife1314-star/forge-system.git"
   ]);
   const [newRepoUrl, setNewRepoUrl] = useState("");
   const [ragLoading, setRagLoading] = useState(false);
