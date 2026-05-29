@@ -4,11 +4,122 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Helper for local workspace search & chunk retrieval
+interface WorkspaceChunk {
+  filePath: string;
+  relativePath: string;
+  content: string;
+  lineStart: number;
+  lineEnd: number;
+}
+
+function scanWorkspaceDir(dir: string, baseDir: string, fileList: string[] = []): string[] {
+  try {
+    if (!fs.existsSync(dir)) return fileList;
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+      if (["node_modules", "dist", ".git", ".next", ".cache", "package-lock.json"].includes(file)) continue;
+      const filePath = path.join(dir, file);
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory()) {
+        scanWorkspaceDir(filePath, baseDir, fileList);
+      } else {
+        const ext = path.extname(file).toLowerCase();
+        if ([".ts", ".tsx", ".json", ".md", ".txt", ".js", ".css"].includes(ext)) {
+          fileList.push(filePath);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Workspace scan dir error:", err);
+  }
+  return fileList;
+}
+
+function getWorkspaceDocs(): WorkspaceChunk[] {
+  const rootDir = process.cwd();
+  const srcDir = path.join(rootDir, "src");
+  const allFiles = scanWorkspaceDir(srcDir, rootDir);
+  const chunks: WorkspaceChunk[] = [];
+
+  for (const f of allFiles) {
+    try {
+      const relPath = path.relative(rootDir, f);
+      const content = fs.readFileSync(f, "utf8");
+      const lines = content.split("\n");
+      
+      // Let's index full files under 1000 lines, or chunk if they're larger.
+      // But keeping them intact as complete file specs helps HERMES have full context!
+      if (lines.length <= 600) {
+        chunks.push({
+          filePath: f,
+          relativePath: relPath,
+          content,
+          lineStart: 1,
+          lineEnd: lines.length
+        });
+      } else {
+        // Chunk into 150-line overlapping blocks for precision search
+        const chunkSize = 150;
+        const overlap = 30;
+        for (let i = 0; i < lines.length; i += (chunkSize - overlap)) {
+          const end = Math.min(i + chunkSize, lines.length);
+          const chunkLines = lines.slice(i, end);
+          chunks.push({
+            filePath: f,
+            relativePath: relPath,
+            content: chunkLines.join("\n"),
+            lineStart: i + 1,
+            lineEnd: end
+          });
+          if (end === lines.length) break;
+        }
+      }
+    } catch (e) {
+      console.warn(`Failed to read workspace file for RAG: ${f}`, e);
+    }
+  }
+  return chunks;
+}
+
+// Simple keyword matching search for workspace chunks
+function searchWorkspace(query: string): { chunk: WorkspaceChunk; score: number }[] {
+  const chunks = getWorkspaceDocs();
+  const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2);
+  if (queryTerms.length === 0) return [];
+
+  const results: { chunk: WorkspaceChunk; score: number }[] = [];
+  
+  for (const chunk of chunks) {
+    let score = 0;
+    const relLower = chunk.relativePath.toLowerCase();
+    const contentLower = chunk.content.toLowerCase();
+
+    // Prioritize direct filename queries (e.g. "iceCreamRecipes.ts" or "recipes")
+    for (const term of queryTerms) {
+      if (relLower.includes(term)) {
+        score += 20; // High premium for file path matches
+      }
+      // Count raw matches in file contents
+      const regex = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "g");
+      const count = (contentLower.match(regex) || []).length;
+      score += count;
+    }
+
+    if (score > 0) {
+      results.push({ chunk, score });
+    }
+  }
+
+  return results.sort((a, b) => b.score - a.score);
+}
 
 // Lazy-initialize GoogleGenAI to handle errors gracefully if key is missing on startup
 let aiInstance: GoogleGenAI | null = null;
@@ -23,11 +134,29 @@ function getGemini(): GoogleGenAI {
       httpOptions: {
         headers: {
           "User-Agent": "aistudio-build"
-        }
-      }
+        },
+        timeout: 120000 // 2 minutes to completely avoid undici HeadersTimeoutError on long or crowded RAG queues
+      } as any
     });
   }
   return aiInstance;
+}
+
+// Helper for safe external fetches with a strict timeout
+async function fetchWithTimeout(url: string, options: any = {}, timeoutMs = 4000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return res;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
 }
 
 // GitHub RAG Repository parsing and caching
@@ -68,7 +197,7 @@ async function indexRepo(repoUrl: string) {
 
   try {
     let branch = "main";
-    let res = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`, {
+    let res = await fetchWithTimeout(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`, {
       headers: {
         "User-Agent": "ForgeOS-RAG-Client/1.0",
         "Accept": "application/vnd.github.v3+json"
@@ -77,7 +206,7 @@ async function indexRepo(repoUrl: string) {
 
     if (res.status === 404) {
       branch = "master";
-      res = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`, {
+      res = await fetchWithTimeout(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`, {
         headers: {
           "User-Agent": "ForgeOS-RAG-Client/1.0",
           "Accept": "application/vnd.github.v3+json"
@@ -103,7 +232,7 @@ async function indexRepo(repoUrl: string) {
 
         for (const file of readableFiles) {
           try {
-            const rawRes = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`);
+            const rawRes = await fetchWithTimeout(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`);
             if (rawRes.ok) {
               const text = await rawRes.text();
               result.contents[file.path] = text.slice(0, 15000);
@@ -227,6 +356,26 @@ async function startServer() {
 
       const reposContextText = loadedReposContexts.join("\n\n");
 
+      // Real-time Local Workspace Searching and Chunking
+      const matchedWorkspace = searchWorkspace(message);
+      let workspaceContextText = "";
+      const workspaceSources: Array<{ title: string; uri: string }> = [];
+
+      if (matchedWorkspace.length > 0) {
+        // Retrieve top 3 workspace matches to compile highly specific grounding contexts
+        const topMatched = matchedWorkspace.slice(0, 3);
+        workspaceContextText = "REAL ACTIVE WORKSPACE CHUNKS (DIRECT HISTORIC AND SPECS RETRIEVAL VIA HOST DISK):\n";
+        for (const match of topMatched) {
+          workspaceContextText += `--- SOURCE FILE: ${match.chunk.relativePath} (Lines ${match.chunk.lineStart}-${match.chunk.lineEnd}) ---\n`;
+          workspaceContextText += `${match.chunk.content}\n\n`;
+          
+          workspaceSources.push({
+            title: `Workspace: ${match.chunk.relativePath}`,
+            uri: `file:///${match.chunk.relativePath}`
+          });
+        }
+      }
+
       // Formulate a powerful developer instruction matching Galyons kitchen theme + RAG / Hermes principles
       let systemInstruction = `You are HERMES, the Agentic RAG Co-Pilot for the FORGE OPERATING SYSTEM. 
 You think like a premium technical chef-advisor, combining the strict technical authority of Galyons culinary laws with agentic intelligence (inspired by NousResearch Hermes-Agent and NVIDIA Web-Search RAG).
@@ -247,14 +396,22 @@ ${ragContext}
 INGESTED GITHUB REPOSITORIES CONTEXT (RETRIEVED VIA VECTOR SEARCH & DECENTRALIZED SOURCE PIPELINE):
 ${reposContextText || "No external repositories ingested yet."}
 
-INSTRUCTIONS FOR THE CONVERSATION:
-- Users will ask you questions about files in these repositories or specific doctrines.
+REAL ACTIVE WORKSPACE CHUNKS (DYNAMIC HOST DISK GROUNDING):
+${workspaceContextText || "No active local workspace matches found for this query."}
+
+INSTRUCTIONS FOR THE CONVERSATION AND CHAIN OF CUSTODY PROVENANCE REPORTING:
+- Users will ask you questions about files in external repositories, local workspace files, or specific doctrines.
+- When asked about a recipe or spec (such as Strawberry Sorbet, Sicilian Gelato, or standard rules), ALWAYS inspect the "REAL ACTIVE WORKSPACE CHUNKS" above. This contains actual, non-simulated codebase definitions directly from disk!
+- Present a clear Provenance & Chain of Custody block in your response when retrieving technical specifications or recipes from actual files. Highlight:
+  * SOURCE FILE: The relative file path (e.g. \`src/forge/engines/iceCreamRecipes.ts\`).
+  * KNOWLEDGE STORE: Report whether retrieving from "Workspace Retrieval = Active" (if the chunk is found in Workspace Chunks) or "GitHub Repository Retrieval" (if in github contexts).
+  * DESCRIPTION/INTERPRETATION & VERDICT: The parsed doctrine or recipe.
 - When asked if documents/repositories are Registered/Indexed/Retrievable, you must confirm they are:
   * Registered: Yes (URL loaded).
   * Indexed: Yes (file tree mapped, metadata parsed).
   * Retrievable: Yes (text extracted and present in current prompt vector context!).
 - If asked to list filenames or contents of files inside any of the ingested repositories (like forge-system.git), inspect the "INGESTED GITHUB REPOSITORIES CONTEXT" block above and deliver the precise filenames or contents.
-- Do NOT guess file names or contents if they aren't in the context. Since we have a real fetch / offline indexing fallback above, the exact filenames and file contents WILL be present in the context!
+- Do NOT guess file names or contents if they aren't in the context. Since we have standard workspace scan and fetch pipelines, the exact filenames and file contents WILL be present in the context!
 - If the user specifies: "Show filenames only. Do not summarize contents. Do not infer", output EXACTLY and ONLY the list of filenames with no other text.
 - If Accuracy Guard is ACTIVE: You MUST reject hallucination. If a specific weight, temperature, or rule is not explicitly provided in the local context or verified via Search, state that it is not defined rather than inventing it.
 - If Web Search is ACTIVE: Provide factual answers backed by Google Search Grounding and ensure sources can be cleanly cited.`;
@@ -277,15 +434,37 @@ INSTRUCTIONS FOR THE CONVERSATION:
         parts: [{ text: message }]
       });
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: gContents,
-        config: {
-          systemInstruction,
-          temperature,
-          tools: webSearch ? [{ googleSearch: {} }] : []
+      let response;
+      let attempts = 0;
+      const maxAttempts = 3;
+      let activeWebSearch = webSearch;
+      while (attempts < maxAttempts) {
+        try {
+          response = await ai.models.generateContent({
+            model: "gemini-3.5-flash",
+            contents: gContents,
+            config: {
+              systemInstruction,
+              temperature,
+              tools: activeWebSearch ? [{ googleSearch: {} }] : []
+            }
+          });
+          break; // Success!
+        } catch (err: any) {
+          attempts++;
+          console.warn(`Gemini generation attempt ${attempts} failed:`, err);
+          if (activeWebSearch) {
+            console.warn("Attempting fallback: disabling search grounding because of a potential network fetch/headers timeout.");
+            activeWebSearch = false; // Disable search for the retry attempt
+            continue; // Retry immediately without search
+          }
+          if (attempts >= maxAttempts) {
+            throw err; // Rethrow to be caught in outer try-catch block
+          }
+          // Wait 1 second before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
-      });
+      }
 
       const text = response.text || "No response generated by JEMMA/HERMES.";
       
@@ -301,9 +480,12 @@ INSTRUCTIONS FOR THE CONVERSATION:
         return null;
       }).filter(Boolean);
 
+      // Mix in dynamic local workspace citation sources for frontend citation tags!
+      const combinedSources = [...workspaceSources, ...sources];
+
       return res.json({
         text,
-        sources
+        sources: combinedSources
       });
 
     } catch (error: any) {
